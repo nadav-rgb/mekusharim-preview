@@ -414,12 +414,43 @@ svg {
    מעברי מסך — "מסך נכנס לתוך מסך" (חוצה-מסמכים, נתמך ב-Chrome). RTL: קדימה = שמאלה. (#8)
    ============================================================================ */
 @view-transition { navigation: auto; }
+
+/* עקומת המגירה של iOS — מתחילה מהר ונוחתת רך. זה מה שנותן את תחושת ה"מרגרינה". */
+:root { --vt-dur: 320ms; --vt-ease: cubic-bezier(0.32, 0.72, 0, 1); }
+
+/* ברירת מחדל (כיוון לא ידוע) — הצצה עדינה, בלי החלקה מלאה */
 @keyframes vt-in  { from { opacity: 0; transform: translateX(-6%); } to { opacity: 1; transform: none; } }
 @keyframes vt-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateX(6%); } }
 ::view-transition-old(root) { animation: vt-out 220ms var(--ease-out) both; }
 ::view-transition-new(root) { animation: vt-in 250ms var(--ease-out) both; }
+
+/* ---- מעבר כיווני: "מסך נכנס לתוך מסך" (RTL — קדימה = שמאלה) ----
+   קדימה: החדש נכנס מלא משמאל ויושב מעל; הישן נסוג ימינה 28% ומתעמעם (פרלקסה).
+   חזרה:  הפוך בדיוק — הישן מחליק החוצה שמאלה, והקודם חוזר ממקום הנסיגה שלו. */
+@keyframes vt-new-fwd  { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes vt-old-fwd  { from { transform: none; filter: brightness(1); }
+                         to   { transform: translateX(28%); filter: brightness(0.9); } }
+@keyframes vt-new-back { from { transform: translateX(28%); filter: brightness(0.9); }
+                         to   { transform: none; filter: brightness(1); } }
+@keyframes vt-old-back { from { transform: none; } to { transform: translateX(-100%); } }
+
+:root[data-vt='forward']::view-transition-new(root) {
+  animation: vt-new-fwd var(--vt-dur) var(--vt-ease) both; z-index: 2;
+}
+:root[data-vt='forward']::view-transition-old(root) {
+  animation: vt-old-fwd var(--vt-dur) var(--vt-ease) both; z-index: 1;
+}
+/* בחזרה המסך היוצא הוא זה שמחליק מעל — כך העין עוקבת אחריו החוצה */
+:root[data-vt='back']::view-transition-old(root) {
+  animation: vt-old-back var(--vt-dur) var(--vt-ease) both; z-index: 2;
+}
+:root[data-vt='back']::view-transition-new(root) {
+  animation: vt-new-back var(--vt-dur) var(--vt-ease) both; z-index: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  ::view-transition-old(root), ::view-transition-new(root),
+  :root[data-vt]::view-transition-old(root), :root[data-vt]::view-transition-new(root) { animation: none; }
 }
 
 /* ============================================================================

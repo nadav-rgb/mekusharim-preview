@@ -63,7 +63,7 @@
           items: [
             { label: 'כל המסכים', icon: 'layout-grid', href: 'index.html' },
             { label: 'הגדרות', icon: 'settings', href: '#' },
-            { label: 'יציאה', icon: 'log-out', href: 'index.html', exit: true },
+            { label: 'יציאה', icon: 'log-out', href: 'launcher.html', exit: true },
           ],
         },
       ],
@@ -111,6 +111,12 @@
 
   function icon(name, size) {
     return '<i data-icon="' + name + '" data-size="' + (size || 20) + '"></i>'
+  }
+
+  /* כיוון המעבר חי ב-assets/vt.js (נטען ב-head — חייב לרוץ לפני שהמעבר נלכד).
+     כאן רק מסמנים כיוון לפני ניווט יזום. */
+  function markDir(d) {
+    if (window.VT) window.VT.mark(d)
   }
 
   /* ---------- סרגל תחתון ---------- */
@@ -175,6 +181,7 @@
     b.setAttribute('aria-label', 'חזרה')
     b.innerHTML = icon('chevron-right', 22)
     b.addEventListener('click', function () {
+      markDir('back')
       if (window.history.length > 1 && document.referrer) window.history.back()
       else window.location.href = kind === 'consumer' ? '08-consumer-home.html' : '01-shaliach-home.html'
     })
@@ -284,7 +291,14 @@
   function wireSwipe(screen, def, current) {
     var idx = -1
     def.items.forEach(function (it, i) { if (it.key === current) idx = i })
-    if (idx < 0) return
+
+    /* "מסך עמוק" = מסך שמתויג ללשונית אך אינו המסך הראשי שלה
+       (03/04 מתויגים "קשרים" אך הראשי הוא 02). שם החלקה ימינה = חזרה בהיסטוריה,
+       כמו בכל אפליקציה נייטיב — ולא קפיצה ללשונית שכנה, שזה מבלבל. */
+    var here = location.pathname.split('/').pop() || ''
+    var root = idx >= 0 ? String(def.items[idx].href).split('/').pop() : ''
+    var isDeep = idx < 0 || (!!root && root !== here)
+
     var x0 = 0, y0 = 0, t0 = 0, on = false
 
     function inHScroll(node) {
@@ -313,13 +327,30 @@
       var dx = t.clientX - x0, dy = t.clientY - y0, dt = Date.now() - t0
       if (dt > 550 || Math.abs(dx) < 66) return
       if (Math.abs(dx) < Math.abs(dy) * 1.7) return // בעיקר אנכי = גלילה, לא החלקה
-      // RTL: החלקה שמאלה (dx<0) => היעד השמאלי הבא (index+1); ימינה => index-1
-      var next = dx < 0 ? idx + 1 : idx - 1
-      if (next < 0 || next > def.items.length - 1) return
-      var href = def.items[next].href
-      if (!href || href === '#') return
-      window.location.href = href
+
+      // RTL: ימינה = חזרה, שמאלה = קדימה
+      if (dx > 0) {
+        if (isDeep) {
+          // חזרה אמיתית בהיסטוריה; אם אין לאן — נופלים למסך הראשי של הלשונית
+          markDir('back')
+          if (window.history.length > 1 && document.referrer) window.history.back()
+          else if (root) go(def.items[idx].href, 'back')
+          return
+        }
+        if (idx - 1 < 0) return
+        go(def.items[idx - 1].href, 'back')
+      } else {
+        // במסך עמוק אין "קדימה" משמעותי — לא קופצים ללשונית שכנה
+        if (isDeep || idx < 0 || idx + 1 > def.items.length - 1) return
+        go(def.items[idx + 1].href, 'forward')
+      }
     }, { passive: true })
+
+    function go(href, dir) {
+      if (!href || href === '#') return
+      markDir(dir)
+      window.location.href = href
+    }
   }
 
   /* ---------- בנייה למסך ---------- */
