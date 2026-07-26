@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>מרכז השליח — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      /* כל מידה בקובץ הזה נמדדה מ"דף הבית של השליח.png" (853x1844 = @2x)
+         וחולקה ב-2. גדלי הגופן חושבו בכיול: רינדור המחרוזת ב-100px, מדידת
+         רוחב הדיו, וחילוץ הגודל שנותן בדיוק את הרוחב שבמוקאפ. */
+
+      /* ===== אזור הכותרת (0–157) — פריסה ממוקמת, כמו במוקאפ ===== */
+      .hero {
+        position: relative;
+        height: 153.5px;
+      }
+
+      .burger {
+        position: absolute;
+        inset-inline-end: 15.5px; /* ב-RTL: end = שמאל. במוקאפ ההמבורגר בשמאל */
+        top: 20.5px;
+        padding: 3px;
+        color: #17130f;
+      }
+      .burger span {
+        display: block;
+        width: 20px;
+        height: 2.4px;
+        border-radius: 2px;
+        background: currentColor;
+      }
+      .burger span + span { margin-top: 3.4px; }
+
+      .titlewrap {
+        position: absolute;
+        inset-inline: 0;
+        top: 17px;
+        text-align: center;
+      }
+      .house {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 15.5px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #100d0b;
+      }
+      .house svg { color: #2b2724; margin-top: 2px; }
+      .role {
+        font-size: 12.5px;
+        font-weight: 400;
+        color: #6b6763;
+        line-height: 1.3;
+        margin-top: 4.5px;
+      }
+
+      .brand {
+        position: absolute;
+        inset-inline-start: 11.5px; /* ב-RTL: start = ימין */
+        top: 11px;
+        text-align: center;
+        color: #171310;
+      }
+      .brand .bh { font-size: 10.5px; font-weight: 600; line-height: 1; margin-bottom: 3.5px; }
+
+      .avatar {
+        position: absolute;
+        inset-inline-start: 21px;
+        top: 46px;
+        width: 81px;
+        height: 81px;
+        border-radius: var(--r-pill);
+        border: 3px solid #fffdfb;
+        box-shadow: 0 2px 10px rgba(60, 42, 24, 0.14);
+        object-fit: cover;
+        background: var(--surface-sunken);
+      }
+
+      /* הברכה מיושרת לשמאל במוקאפ (נמדד: שתי השורות מתחילות ב-x≈18.5) */
+      .hello {
+        position: absolute;
+        inset-inline-end: 18.5px; /* ב-RTL: end = שמאל */
+        top: 83px;
+        text-align: end; /* במוקאפ שתי השורות מיושרות לשמאל */
+        width: 290px;
+      }
+      .hello h1 {
+        font-size: 17px;
+        font-weight: 800;
+        line-height: 1.24;
+        color: #0b0b0b;
+        white-space: nowrap;
+      }
+      .hello h1 .wave { font-size: 16px; margin-inline-start: 3px; }
+      .hello p {
+        margin-top: 6px;
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 1.35;
+        color: #2c2b2a;
+        white-space: nowrap;
+      }
+
+      .msg-btn {
+        position: absolute;
+        inset-inline-start: 111.5px;
+        top: 107.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 3.5px;
+        height: 30px;
+        padding: 0 4px 0 6px;
+        background: #fffdfb;
+        border: 1px solid #ece4d9;
+        border-radius: 9px;
+        box-shadow: 0 1px 2px rgba(60, 42, 24, 0.045);
+        font-size: 10px;
+        font-weight: 500;
+        color: #17130f;
+      }
+      .msg-btn .count {
+        width: 15px;
+        height: 15px;
+        border-radius: var(--r-pill);
+        background: #3a2a1e;
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 8.5px;
+        font-weight: 600;
+      }
+      .msg-btn svg { color: #9a6a1f; }
+
+      /* ===== ארבעת כרטיסי הסטטיסטיקה (157–271) =====
+         סדר התצוגה במוקאפ הוא 27·156·18·42 משמאל לימין. ב-RTL הילד הראשון
+         הוא הימני, ולכן ה-DOM הפוך בכוונה כדי לשחזר את התצוגה במדויק.
+         מתועד ביומן ההכרעות כחשד לבאג RTL במוקאפ המקורי. */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        padding-inline: var(--pad-page);
+      }
+      .stat {
+        min-width: 0;
+        min-height: 121px;
+        background: #fffefd;
+        border: 1px solid #f0eae3;
+        border-radius: 15px;
+        padding: 8px 4px 9px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 1px 2px rgba(60, 42, 24, 0.035);
+      }
+      .stat .bubble {
+        width: 30px;
+        height: 30px;
+        border-radius: var(--r-pill);
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .stat .num {
+        font-size: 17.5px;
+        font-weight: 800;
+        line-height: 1;
+        margin-top: 7px;
+      }
+      .stat .lbl {
+        margin-top: 6px;
+        font-size: 10.5px;
+        font-weight: 500;
+        line-height: 1.45;
+        word-spacing: normal; /* בלי זה "זקוקים להמשך קשר" נשבר לשתי שורות */
+        color: #2f2d2b;
+      }
+      .stat .cap {
+        margin-top: auto;
+        font-size: 10px;
+        font-weight: 500;
+        line-height: 1.35;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+      }
+      .s-green .bubble { background: #e7edda; color: #22551f; }
+      .s-green .num, .s-green .cap { color: #22551f; }
+      .s-navy .bubble { background: #dde5f0; color: #143a5f; }
+      .s-navy .num, .s-navy .cap { color: #143a5f; }
+      .s-orange .bubble { background: #fde1c0; color: #a8480a; }
+      .s-orange .num { color: #94400b; }
+      .s-orange .cap { color: #7c7773; font-weight: 400; }
+      .s-purple .bubble { background: #e3ddef; color: #3a2674; }
+      .s-purple .num, .s-purple .cap { color: #3a2674; }
+
+      /* ===== שלושת כרטיסי האמצע (299–483) ===== */
+      .trio {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        padding-inline: var(--pad-page);
+        margin-top: 18px;
+      }
+      .panel {
+        min-width: 0;
+        height: 195px;
+        background: #fffefd;
+        border: 1px solid #f0eae3;
+        border-radius: 15px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 1px 2px rgba(60, 42, 24, 0.035);
+      }
+      .panel > header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 3px;
+        height: 33.5px;
+        padding: 0 6px;
+        font-size: 10.5px;
+        font-weight: 700;
+        flex: none;
+      }
+      .panel > header span { white-space: nowrap; overflow: hidden; }
+      .panel .body {
+        flex: 1;
+        min-height: 0;
+        padding: 0 6px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+      .panel .more {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        height: 33px;
+        margin: 0 9px;
+        border-top: 1px solid #f2ede7;
+        font-size: 10px;
+        font-weight: 600;
+      }
+      .p-purple > header { background: #f1eef7; color: #4b2f8f; }
+      .p-purple .more { color: #4b2f8f; }
+      .p-gold > header { background: #fbf1e2; color: #a06616; }
+      .p-gold .more { color: #a06616; }
+      .p-green > header { background: #ecf3e8; color: #2c6b2e; }
+      .p-green .more { color: #2c6b2e; }
+
+      /* אירועים קרובים */
+      .ev {
+        display: flex;
+        gap: 5px;
+        padding: 3.5px 0;
+        align-items: flex-start;
+        flex: 1;
+        min-height: 0;
+      }
+      .ev + .ev { border-top: 1px solid #f4efe9; }
+      .ev .date {
+        flex: none;
+        width: 23.5px;
+        height: 23.5px;
+        border-radius: var(--r-pill);
+        background: #6b4b9e;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        margin-top: 1px;
+      }
+      .ev .date b { font-size: 10.5px; font-weight: 800; }
+      .ev .date small { font-size: 6.5px; font-weight: 500; margin-top: 1px; }
+      .ev .meta { min-width: 0; padding-top: 1px; }
+      .ev .meta b { display: block; font-size: 11px; font-weight: 700; line-height: 1.25; color: #131211; word-spacing: normal; }
+      .ev .meta span { display: block; font-size: 8.5px; color: #7d7975; line-height: 1.4; margin-top: 1px; }
+
+      /* קמפיין */
+      .camp { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; padding-bottom: 4px; }
+      .camp b { font-size: 11.5px; font-weight: 700; line-height: 1.3; color: #131211; }
+      .camp .goal { font-size: 9px; color: #7d7975; margin-top: 9px; }
+      .camp .track { height: 8px; border-radius: var(--r-pill); background: #f3ede4; margin: 11px 6px 9px; overflow: hidden; }
+      .camp .fill {
+        height: 100%;
+        width: 58.7%;
+        border-radius: var(--r-pill);
+        background: linear-gradient(90deg, #a9752a, #d0973f);
+        transition: width 700ms var(--ease-out);
+      }
+      .camp .ratio { font-size: 15px; font-weight: 800; color: #a9752a; line-height: 1.1; }
+      .camp .ratio-lbl { font-size: 8.5px; color: #7d7975; margin-top: 3px; }
+
+      /* משימות */
+      .task { display: flex; gap: 7px; align-items: flex-start; padding: 9px 0; flex: 1; min-height: 0; }
+      .task + .task { border-top: 1px solid #f4efe9; }
+      .task .box {
+        flex: none;
+        width: 13px;
+        height: 13px;
+        margin-top: 2px;
+        border: 1.4px solid #cdc7bf;
+        border-radius: 3.5px;
+        display: grid;
+        place-items: center;
+        color: transparent;
+        transition: background-color var(--dur-ui) var(--ease-out), border-color var(--dur-ui) var(--ease-out),
+          color var(--dur-ui) var(--ease-out), transform var(--dur-press) var(--ease-out);
+      }
+      .task .box:active { transform: scale(0.88); }
+      .task .box[aria-checked='true'] { background: #2c6b2e; border-color: #2c6b2e; color: #fff; }
+      .task p {
+        flex: 1;
+        min-width: 0;
+        font-size: 9.5px;
+        line-height: 1.42;
+        color: #2f2d2b;
+        transition: opacity var(--dur-ui) var(--ease-out);
+      }
+      .task.done p { opacity: 0.42; text-decoration: line-through; }
+
+      /* ===== רשימת אנשי הקשר (506.5–853) ===== */
+      .people {
+        margin: 16.5px var(--pad-page) 0;
+        background: #fffefd;
+        border: 1px solid #f0eae3;
+        border-radius: 17px;
+        box-shadow: 0 1px 2px rgba(60, 42, 24, 0.035);
+        overflow: hidden;
+      }
+      .people > header { display: flex; align-items: flex-start; gap: 9px; padding: 7px 22px 6px 14px; height: 50px; }
+      .people > header .badge {
+        flex: none;
+        width: 35px;
+        height: 35px;
+        border-radius: var(--r-pill);
+        background: #e4eaf4;
+        color: #1d4671;
+        display: grid;
+        place-items: center;
+      }
+      .people > header .htxt { min-width: 0; }
+      .people > header h2 { font-size: 10.5px; font-weight: 700; line-height: 1.25; color: #0d0d0d; }
+      .people > header p { font-size: 10px; color: #757170; margin-top: 3px; line-height: 1.3; }
+
+      .prow {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding-inline: 20px 14px;
+        height: 53.5px;
+        position: relative;
+        transition: background-color var(--dur-ui) var(--ease-out);
+      }
+      .prow + .prow::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        inset-inline: 20px 14px;
+        height: 1px;
+        background: #f2ece6;
+      }
+      .prow:active { background: #fbf8f4; }
+      .prow .face { flex: none; width: 40px; height: 40px; border-radius: var(--r-pill); object-fit: cover; background: var(--surface-sunken); }
+      .prow .who { flex: none; width: 76px; }
+      .prow .who b { display: block; font-size: 11px; font-weight: 700; line-height: 1.3; color: #0d0d0d; }
+      .prow .who span { display: block; font-size: 8px; color: #7d7975; line-height: 1.45; }
+      .prow .why { flex: 1; min-width: 0; text-align: center; }
+      .prow .why p { font-size: 9.5px; color: #46433f; line-height: 1.45; margin-top: 4px; }
+      .prow .acts { display: flex; gap: 6px; flex: none; }
+      .prow .acts button {
+        width: 30px;
+        height: 30px;
+        border-radius: var(--r-pill);
+        border: 1px solid #ece6df;
+        background: #fdfcfa;
+        color: #5f5b57;
+        display: grid;
+        place-items: center;
+      }
+      .chip { padding: 3.5px 14px; font-size: 9px; font-weight: 600; }
+      .chip-gold { background: #fbf0da; color: #a2701f; }
+      .chip-green { background: #e9f0e1; color: #3d6b38; }
+      .chip-rose { background: #fbe5e2; color: #b4483c; }
+      .chip-blue { background: #e4ecf6; color: #35618f; }
+
+      .people .all {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        height: 29px;
+        margin-inline: 20px 14px;
+        border-top: 1px solid #f2ece6;
+        font-size: 10px;
+        font-weight: 600;
+        color: #1d4671;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="shaliach" data-current="home">
+      <!-- ============ אזור כותרת ============ -->
+      <div class="hero">
+        <button class="burger press tap" aria-label="תפריט" data-action="sheet" data-sheet="menu-sheet">
+          <span></span><span></span><span></span>
+        </button>
+
+        <div class="titlewrap">
+          <button class="house press" data-action="sheet" data-sheet="house-sheet">
+            <i data-icon="chevron-down" data-size="13" data-stroke="2.2"></i>
+            בית חב״ד במארסיי
+          </button>
+          <div class="role">מרכז השליח</div>
+        </div>
+
+        <div class="brand">
+          <div class="bh">ב״ה</div>
+          <svg width="32.5" height="22.5" viewBox="0 0 29 25" fill="none" aria-hidden="true">
+            <path d="M1.6 1.6h25.8L14.5 23Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" />
+            <path d="M7 5.6h15L14.5 17.8Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+            <path d="M11.6 9.6h5.8L14.5 14Z" fill="currentColor" />
+          </svg>
+        </div>
+
+        <img class="avatar" src="assets/img/01-rabbi.png" alt="הרב שניאור" />
+
+        <div class="hello">
+          <h1>שלום רב, הרב שניאור!<span class="wave">👋</span></h1>
+          <p>תמונת מצב עדכנית לפעילות בית חב״ד שלך</p>
+        </div>
+
+        <button class="msg-btn press" data-action="sheet" data-sheet="msg-sheet">
+          <span class="count">3</span>
+          <span>הודעות</span>
+          <i data-icon="square-pen" data-size="11"></i>
+        </button>
+      </div>
+
+      <!-- ============ סטטיסטיקה ============ -->
+      <!-- סדר עברי: יהודים חדשים (הימני) ← נרשמים לאירועים (השמאלי) -->
+      <div class="stats">
+        <a class="stat s-green press" href="03-followup.html">
+          <span class="bubble"><i data-icon="users" data-size="17"></i></span>
+          <span class="num">27</span>
+          <span class="lbl">יהודים חדשים החודש</span>
+          <span class="cap"><i data-icon="arrow-up" data-size="9"></i>9 מהחודש הקודם</span>
+        </a>
+        <a class="stat s-navy press" href="03-followup.html">
+          <span class="bubble"><i data-icon="users-round" data-size="17"></i></span>
+          <span class="num">156</span>
+          <span class="lbl">קשרים פעילים</span>
+          <span class="cap">12+ השבוע</span>
+        </a>
+        <a class="stat s-orange press" href="03-followup.html">
+          <span class="bubble"><i data-icon="heart" data-size="17"></i></span>
+          <span class="num">18</span>
+          <span class="lbl">זקוקים להמשך קשר</span>
+          <span class="cap">לא נוצר קשר מעל 14 ימים</span>
+        </a>
+        <a class="stat s-purple press" href="05-events-campaigns.html">
+          <span class="bubble"><i data-icon="calendar-plus" data-size="17"></i></span>
+          <span class="num">42</span>
+          <span class="lbl">נרשמים לאירועים</span>
+          <span class="cap">בשבועות הקרובים</span>
+        </a>
+      </div>
+
+      <!-- ============ שלושה כרטיסים ============ -->
+      <div class="trio">
+        <section class="panel p-green">
+          <header>
+            <i data-icon="clipboard-check" data-size="14"></i>
+            <span>פעולות חשובות להיום</span>
+          </header>
+          <div class="body">
+            <div class="task" data-checkrow>
+              <button class="box" role="checkbox" aria-checked="false" aria-label="סמן כבוצע" data-action="check" data-toast="המשימה סומנה כבוצעה"><i data-icon="check" data-size="9" data-stroke="3.2"></i></button>
+              <p>לעקוב אחרי 5 קשרים שלא נענו</p>
+            </div>
+            <div class="task" data-checkrow>
+              <button class="box" role="checkbox" aria-checked="false" aria-label="סמן כבוצע" data-action="check" data-toast="המשימה סומנה כבוצעה"><i data-icon="check" data-size="9" data-stroke="3.2"></i></button>
+              <p>לאשר הרשמות לסעודה של שבת</p>
+            </div>
+            <div class="task" data-checkrow>
+              <button class="box" role="checkbox" aria-checked="false" aria-label="סמן כבוצע" data-action="check" data-toast="המשימה סומנה כבוצעה"><i data-icon="check" data-size="9" data-stroke="3.2"></i></button>
+              <p>לשלוח תזכורת על שיעור תניא</p>
+            </div>
+          </div>
+          <a class="more press" href="#">לכל המשימות <i data-icon="chevron-left" data-size="12"></i></a>
+        </section>
+
+        <section class="panel p-gold">
+          <header>
+            <i data-icon="megaphone" data-size="14"></i>
+            <span>קמפיין פעיל</span>
+          </header>
+          <div class="body">
+            <div class="camp">
+              <b>מבצע מצות שמורות</b>
+              <div class="goal">יעד: 300 משפחות</div>
+              <div class="track"><div class="fill"></div></div>
+              <div class="ratio" dir="ltr">176 / 300</div>
+              <div class="ratio-lbl">משפחות נרשמו</div>
+            </div>
+          </div>
+          <a class="more press" href="05-events-campaigns.html">לפרטי הקמפיין <i data-icon="chevron-left" data-size="12"></i></a>
+        </section>
+
+        <section class="panel p-purple">
+          <header>
+            <i data-icon="calendar" data-size="14"></i>
+            <span>אירועים קרובים</span>
+          </header>
+          <div class="body">
+            <a class="ev press-soft" href="15-event.html">
+              <span class="date"><b>23</b><small>מאי</small></span>
+              <span class="meta">
+                <b>סעודת שבת</b>
+                <span>ליל שבת פרשת נשא</span>
+                <span>20:15 | 23 במאי</span>
+              </span>
+            </a>
+            <a class="ev press-soft" href="15-event.html">
+              <span class="date"><b>29</b><small>מאי</small></span>
+              <span class="meta">
+                <b>התוועדות י״ב תמוז</b>
+                <span>יום חמישי | 19:30</span>
+              </span>
+            </a>
+            <a class="ev press-soft" href="15-event.html">
+              <span class="date"><b>1</b><small>יוני</small></span>
+              <span class="meta">
+                <b>שיעור תניא לנשים</b>
+                <span>כל יום ראשון | 20:00</span>
+              </span>
+            </a>
+          </div>
+          <a class="more press" href="05-events-campaigns.html">לכל האירועים <i data-icon="chevron-left" data-size="12"></i></a>
+        </section>
+      </div>
+
+      <!-- ============ אנשים ליצירת קשר ============ -->
+      <section class="people">
+        <header>
+          <span class="badge"><i data-icon="users" data-size="19"></i></span>
+          <span class="htxt">
+            <h2>7 אנשים שכדאי ליצור איתם קשר השבוע</h2>
+            <p>הזדמנויות להתחבר, לחזק ולהשפיע</p>
+          </span>
+        </header>
+
+        <a class="prow" href="02-contact.html">
+          <img class="face" src="assets/img/01-face-0.png" alt="" />
+          <span class="who"><b>דוד לוי</b><span>סטודנט מצרפת</span><span>לא נוצר קשר 12 ימים</span></span>
+          <span class="why">
+            <span class="chip chip-gold">מבקר קבוע</span>
+            <p>היה בשני שיעורים,<br />עדיין לא הצטרף לקבוצה</p>
+          </span>
+          <span class="acts">
+            <button class="press tap" aria-label="פנייה לדוד לוי" data-action="contact" data-name="דוד לוי"><i data-icon="phone" data-size="15"></i></button>
+          </span>
+        </a>
+
+        <a class="prow" href="02-contact.html">
+          <img class="face" src="assets/img/01-face-1.png" alt="" />
+          <span class="who"><b>שרה כהן</b><span>עלתה חדשה</span><span>לא נוצר קשר 9 ימים</span></span>
+          <span class="why">
+            <span class="chip chip-green">יום הולדת בקרוב</span>
+            <p>י״ד סיון (עוד 5 ימים)<br />הזדמנות לחיזוק הקשר</p>
+          </span>
+          <span class="acts">
+            <button class="press tap" aria-label="פנייה לשרה כהן" data-action="contact" data-name="שרה כהן"><i data-icon="phone" data-size="15"></i></button>
+          </span>
+        </a>
+
+        <a class="prow" href="02-contact.html">
+          <img class="face" src="assets/img/01-face-2.png" alt="" />
+          <span class="who"><b>יוסי אברהם</b><span>עסק עצמאי</span><span>לא נוצר קשר 16 ימים</span></span>
+          <span class="why">
+            <span class="chip chip-gold">הראה עניין</span>
+            <p>דיברנו על הנחת תפילין,<br />צריך מעקב</p>
+          </span>
+          <span class="acts">
+            <button class="press tap" aria-label="פנייה ליוסי אברהם" data-action="contact" data-name="יוסי אברהם"><i data-icon="phone" data-size="15"></i></button>
+          </span>
+        </a>
+
+        <a class="prow" href="02-contact.html">
+          <img class="face" src="assets/img/01-face-3.png" alt="" />
+          <span class="who"><b>מיכל רוזן</b><span>אמא צעירה</span><span>לא נוצר קשר 21 ימים</span></span>
+          <span class="why">
+            <span class="chip chip-rose">זקוקה לחיזוק</span>
+            <p>עברה תקופה לא קלה,<br />מחכה למענה</p>
+          </span>
+          <span class="acts">
+            <button class="press tap" aria-label="פנייה למיכל רוזן" data-action="contact" data-name="מיכל רוזן"><i data-icon="phone" data-size="15"></i></button>
+          </span>
+        </a>
+
+        <a class="prow" href="02-contact.html">
+          <img class="face" src="assets/img/01-face-4.png" alt="" />
+          <span class="who"><b>איתן מלכה</b><span>חייל בודד</span><span>לא נוצר קשר 15 ימים</span></span>
+          <span class="why">
+            <span class="chip chip-blue">צריך ליווי</span>
+            <p>הגיע לא מזמן לעיר,<br />לבד, מחפש חיבור</p>
+          </span>
+          <span class="acts">
+            <button class="press tap" aria-label="פנייה לאיתן מלכה" data-action="contact" data-name="איתן מלכה"><i data-icon="phone" data-size="15"></i></button>
+          </span>
+        </a>
+
+        <a class="all press" href="03-followup.html">לכל הקשרים והמעקב <i data-icon="chevron-left" data-size="12"></i></a>
+      </section>
+
+      <!-- ============ סרגל תחתון ============ -->
+
+<!-- ============ גיליונות ============ -->
+    <div class="sheet" id="house-sheet" role="dialog" aria-label="בחירת בית חב״ד">
+      <div class="sheet-grab"></div>
+      <h3 style="font-size: 16px; margin-bottom: 8px">בתי חב״ד שלך</h3>
+      <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px;font-weight:600" data-action="close-sheet"><i data-icon="check" data-size="16"></i> בית חב״ד במארסיי</button>
+      <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px;color:var(--ink-2)" data-action="toast" data-toast="החלפת בית חב״ד תיבנה בגרסה הבאה"><i data-icon="building" data-size="16"></i> בית חב״ד ליון</button>
+    </div>
+
+    <div class="sheet" id="menu-sheet" role="dialog" aria-label="תפריט">
+      <div class="sheet-grab"></div>
+      <h3 style="font-size: 16px; margin-bottom: 4px">תפריט</h3>
+      <a class="press" href="07-network.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="globe" data-size="17"></i> רישות בתי חב״ד</a>
+      <a class="press" href="06-rebbe-report.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="scroll-text" data-size="17"></i> דוח לרבי</a>
+      <a class="press" href="04-call-prep.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="sparkles" data-size="17"></i> הכנה אישית לשיחה</a>
+      <a class="press" href="all.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px"><i data-icon="layout-grid" data-size="17"></i> כל המסכים</a>
+    </div>
+
+    <div class="sheet" id="msg-sheet" role="dialog" aria-label="הודעות">
+      <div class="sheet-grab"></div>
+      <h3 style="font-size: 16px; margin-bottom: 8px">3 הודעות חדשות</h3>
+      <p style="padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14px"><b>שרה כהן</b> — תודה על ההזמנה לשבת!</p>
+      <p style="padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14px"><b>יוסי אברהם</b> — אפשר להביא חבר?</p>
+      <p style="padding:11px 0;font-size: 14px"><b>מיכל רוזן</b> — מתי השיעור הבא?</p>
+      </div>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+    <script src="assets/diag.js"></script>
+</body>
+</html>
