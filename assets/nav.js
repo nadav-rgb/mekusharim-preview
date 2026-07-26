@@ -63,7 +63,7 @@
           items: [
             { label: 'כל המסכים', icon: 'layout-grid', href: 'index.html' },
             { label: 'הגדרות', icon: 'settings', href: '#' },
-            { label: 'יציאה', icon: 'log-out', href: 'launcher.html', exit: true },
+            { label: 'יציאה', icon: 'log-out', href: 'index.html', exit: true },
           ],
         },
       ],
