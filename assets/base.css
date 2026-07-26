@@ -547,7 +547,13 @@ svg {
     border-radius: 0;
     /* מקום לסרגל התחתון המוצמד כדי שהתוכן האחרון לא ייחתך */
     padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 4px);
-    overscroll-behavior-y: none;
+    /* ⚠ קריטי — אל תחזיר לכאן overflow:hidden או overscroll-behavior.
+       השילוב הזה הרג את הגלילה במגע: overflow:hidden הופך את .screen
+       למיכל-גלילה, התוכן נכנס בו בדיוק ולכן הוא עצמו לא זז, ו-overscroll-
+       behavior:none חסם את התנועה מלהישרשר למסמך — שכן היה לו מה לגלול.
+       במובייל אין מסגרת-מכשיר, אז אין מה לחתוך: הגלילה שייכת למסמך.
+       (body שומר overflow-x:clip נגד גלישה אופקית.) */
+    overflow: visible;
   }
   /* הכול נעוץ לחלון התצוגה — לא לתחתית הדף הארוך. זה מה שהחזיר את המגירה
      והגיליונות לחיים בטלפון (הבאג של "ההמבורגר לא נפתח"). */
