@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>דו״ח לרבי — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      /* ======================================================================
+         מסך 06 — דו״ח לרבי
+         המוקאפ "דוח לרבי.png" הוא 864x1821 (לא 853x1844!). מקדם ההמרה הוא
+         427/864 = 0.494213, ולכן גובה הצילום הוא 1821 × 0.494213 = 900 CSS.
+         כל מידה כאן = פיקסל מוקאפ × 0.494213.
+
+         האייקונים משורטטים ב-viewBox שיחידותיו הן **פיקסלי מוקאפ**, ולכן
+         stroke-width 2.3 = עובי הקו שנמדד במוקאפ (2.3px @2x ≈ 1.15 CSS).
+
+         זה המסך הכהה היחיד בסט: רקע נייבי #021123, כרטיסים #0A1A2D, זהב #E5AB68.
+         ====================================================================== */
+
+      .screen {
+        height: 900px;
+        min-height: 900px;
+        background: #021123;
+        color: #fff;
+      }
+      /* הרקע אינו שטוח — נמדדה הבהרה עדינה סביב מרכז-מעלה */
+      .screen::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(115% 50% at 50% 32%, rgba(17, 42, 72, 0.5), rgba(2, 17, 35, 0) 72%);
+        pointer-events: none;
+        z-index: 0;
+      }
+      /* מחריג את מעטפות הניווט המוזרקות (סרגל/מגירה/כפתורים/גיליונות) — הן חייבות
+         להישאר fixed/absolute עם z-index גבוה, לא relative בזרימה. */
+      .screen > *:not(.nav):not(.fab):not(.navbtn):not(.drawer):not(.sheet):not(.sheet-backdrop):not(.toast) { position: relative; z-index: 1; }
+
+      /* ===== אזור הכותרת (מוקאפ y 0–424) ==================================== */
+      .hero { position: relative; height: 208.6px; }
+      .hero .portrait {
+        position: absolute;
+        left: 0; /* מיקום פיזי בכוונה: הדיוקן במוקאפ צמוד לקצה השמאלי */
+        top: 0;
+        width: 203.6px;
+        height: 209.5px;
+        object-fit: cover;
+      }
+      /* עמודת הטקסט: מרכזה נמדד ב-x=585 מוקאפ (289.1 CSS), קצה ימני 17.3 */
+      .hero-col {
+        position: absolute;
+        inset-inline-start: 17.3px;
+        top: 0;
+        width: 241px;
+        text-align: center;
+      }
+      .globe-btn { display: block; margin: 27.9px auto 0; color: #d09d63; }
+      .h-title {
+        display: inline-block;
+        margin-top: 8.5px;
+        font-size: 44px;
+        font-weight: 800;
+        line-height: 1.02;
+        /* המוקאפ מרנדר את הכותרת בגופן צר-וגבוה מ-Heebo. הרוחב מכויל מדויק,
+           והפרש הגובה (‎38.6 מול 31.5 CSS) נסגר במתיחה אנכית מבוקרת. */
+        transform: scaleY(1.225);
+        transform-origin: top center;
+        background: linear-gradient(180deg, #f7c886 0%, #e5ad69 50%, #c08a4f 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        white-space: nowrap;
+      }
+      .h-sub {
+        margin-top: 4.6px;
+        font-size: 13.5px;
+        font-weight: 700;
+        line-height: 1.35;
+        color: #fdfcfa;
+        white-space: nowrap;
+      }
+      .h-lead {
+        margin-top: 12.7px;
+        font-size: 10.5px;
+        font-weight: 400;
+        line-height: 15.2px;
+        color: #dae0e8;
+      }
+      .h-lead b { color: #e3a866; font-weight: 700; }
+
+      /* ===== כרטיס הציטוט (מוקאפ y 422–558) ================================= */
+      .quote {
+        position: relative;
+        display: flex;
+        margin-inline: 17.3px;
+        height: 67.2px;
+        border-radius: 11px;
+        background: linear-gradient(180deg, #0d2440 0%, #091b31 100%);
+        border: 1px solid rgba(150, 180, 215, 0.17);
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+      }
+      .quote p {
+        font-size: 17.5px;
+        font-weight: 400;
+        line-height: 21.25px;
+        color: #f2f5f9;
+        margin-inline-end: 8px; /* מרכז הטקסט נמדד 4px משמאל למרכז הכרטיס */
+      }
+      .quote b { color: #e5ac6c; font-weight: 700; }
+      .qm { position: absolute; color: #bf8c55; }
+      .qm-open { top: 9.9px; inset-inline-start: 85px; }
+      .qm-close { bottom: 10.4px; inset-inline-end: 72.7px; }
+
+      /* ===== תווית הסקשן (מוקאפ y 576–589) ================================== */
+      .sec-label {
+        height: 18.7px;
+        padding-top: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1;
+        color: #eec07a;
+      }
+
+      /* ===== רשתות הסטטיסטיקה ===============================================
+         ⚠ סדר ה-DOM בכל שורה הפוך בכוונה: במוקאפ המספר הגדול יושב בשמאל
+         והסדרה יורדת שמאלה→ימינה — כלומר סידור LTR. ב-RTL הילד הראשון הוא
+         הימני, ולכן נכתב מהימני לשמאלי. מתועד ביומן ההכרעות. */
+      .grid4,
+      .grid2 { display: grid; gap: 5.2px; padding-inline: 17.3px; }
+      .grid4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 6.9px; }
+      .grid4 + .grid4 { margin-top: 6.9px; }
+
+      .stat {
+        min-width: 0;
+        min-height: 109.2px;
+        border-radius: 9px;
+        background: linear-gradient(180deg, #0d2033 0%, #091827 100%);
+        border: 1px solid rgba(150, 180, 215, 0.13);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 14.5px;
+        text-align: center;
+        overflow: hidden;
+      }
+      .grid4 + .grid4 .stat { min-height: 110.7px; }
+      .stat .ic { color: #e0a566; height: 33px; display: grid; place-items: center; flex: none; }
+      .stat .num {
+        margin-top: 7px;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1;
+        color: #e5ab68;
+        direction: ltr;
+      }
+      .stat .lbl {
+        margin-top: 2.2px;
+        font-size: 10.5px;
+        font-weight: 400;
+        line-height: 15.1px;
+        color: #f2f5f9;
+        min-width: 0;
+      }
+
+      /* --- שתי הרצועות הרחבות (מוקאפ y 1069–1217) ---
+         ⚠ במוקאפ האייקון בשמאל, הטקסט בימין ומיושר לשמאל — סידור LTR.
+         משוחזר עם direction:ltr על העטיפה בלבד; הטקסט עצמו נשאר RTL. */
+      .wide {
+        min-width: 0;
+        height: 73.1px;
+        border-radius: 9px;
+        background: linear-gradient(180deg, #0d2033 0%, #091827 100%);
+        border: 1px solid rgba(150, 180, 215, 0.13);
+        direction: ltr;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding-inline: 8px;
+        overflow: hidden;
+      }
+      .wide .ic { color: #e0a566; flex: none; display: block; }
+      .wide .txt { direction: rtl; text-align: left; min-width: 0; position: relative; top: 6.6px; }
+      .wide .num,
+      .wide .lbl { display: block; }
+      .wide .num {
+        font-size: 19.5px;
+        font-weight: 700;
+        line-height: 1;
+        color: #e5ab68;
+        direction: ltr;
+        text-align: left;
+      }
+      .wide .lbl {
+        margin-top: 2.3px;
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 12.6px;
+        color: #f2f5f9;
+      }
+
+      /* ===== מפת העולם (מוקאפ y 1218–1588) ================================== */
+      .map {
+        display: block;
+        width: 427px;
+        height: 182.9px;
+        margin-top: 0.6px;
+        object-fit: cover;
+      }
+
+      /* ===== סיום (מוקאפ y 1592–1701) ======================================= */
+      .closing { text-align: center; margin-top: -1px; }
+      .closing .gold {
+        font-size: 13.5px;
+        font-weight: 700;
+        line-height: 1.35;
+        color: #e5a869;
+      }
+      .closing .sub {
+        margin-top: 3.8px;
+        font-size: 12.5px;
+        font-weight: 400;
+        line-height: 1.35;
+        color: #fdfcfa;
+      }
+      .heart {
+        display: block;
+        margin: 7.4px auto 0;
+        color: #c99a63;
+        transition: transform var(--dur-ui) var(--ease-out), color var(--dur-ui) var(--ease-out);
+      }
+      .heart[aria-pressed='true'] { color: #f0b978; transform: scale(1.12); }
+
+      /* ===== גיליון וטוסט על רקע כהה ======================================= */
+      .sheet { background: #0d2033; color: #f2f5f9; }
+      .sheet h3 { color: #f0bd7c; }
+      .sheet .row {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 0;
+        font-size: 14.5px;
+        border-bottom: 1px solid rgba(150, 180, 215, 0.16);
+        color: #f2f5f9;
+      }
+      .sheet .row:last-child { border-bottom: 0; }
+      .toast { background: #123055; color: #fdf6ec; }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="shaliach" data-current="reports">
+      <!-- ========================= כותרת ========================= -->
+      <header class="hero">
+        <img class="portrait" src="assets/img/06-rebbe.png" alt="דיוקן הרבי מליובאוויטש" />
+
+        <div class="hero-col">
+          <button class="globe-btn press tap" aria-label="בחירת תקופת הדוח" data-action="sheet" data-sheet="period-sheet">
+            <svg width="32.5" height="32" viewBox="0 0 62 61" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" aria-hidden="true">
+              <circle cx="31" cy="29.5" r="26" />
+              <ellipse cx="31" cy="29.5" rx="11" ry="26" />
+              <path d="M5 29.5h52" />
+              <path d="M11 17h40M11 42h40" />
+              <path d="M2 58.5h58" />
+              <path d="M12 38.5 4 41" />
+            </svg>
+          </button>
+
+          <h1 class="h-title">דו״ח לרבי</h1>
+          <p class="h-sub">השפעה האמיתית של השליחות</p>
+          <p class="h-lead">
+            בזכות השליחות, הטכנולוגיה והשותפים לדרך –<br />
+            אנחנו לא רק מגיעים לעוד יהודים,<br />
+            אנחנו <b>יוצרים קשרים</b> שנשארים.
+          </p>
+        </div>
+      </header>
+
+      <!-- ========================= ציטוט ========================= -->
+      <button class="quote press-soft" data-action="toast" data-toast="הציטוט הועתק לשיתוף" data-toast-icon="share-2">
+        <span class="qm qm-open" aria-hidden="true">
+          <svg width="17.3" height="12.4" viewBox="0 0 35 25" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round">
+            <path d="M3.5 23.5 8.5 1.5h7L10.5 23.5z" />
+            <path d="M20 23.5 25 1.5h7L27 23.5z" />
+          </svg>
+        </span>
+        <p>לא רק כמה יהודים פגשנו —<br />כמה <b>קשרים המשיכו</b> לחיות.</p>
+        <span class="qm qm-close" aria-hidden="true">
+          <svg width="18.8" height="12.4" viewBox="0 0 38 25" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round">
+            <path d="M4 1.5 9 23.5h7L11 1.5z" />
+            <path d="M22 1.5 27 23.5h7L29 1.5z" />
+          </svg>
+        </span>
+      </button>
+
+      <div class="sec-label">השפעה שממשיכה את השליחות</div>
+
+      <!-- ============ שורה 1 — DOM הפוך בכוונה (ר' הערה למעלה) ============ -->
+      <div class="grid4">
+        <a class="stat press-soft" href="#" data-action="toast" data-toast="18,392 מזוזות נקבעו בשנה החולפת" data-toast-icon="check-circle">
+          <span class="ic">
+            <svg width="28.7" height="33.1" viewBox="0 0 58 67" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <g transform="rotate(26 29 33.5)">
+                <rect x="18" y="2" width="22" height="63" rx="9" />
+                <path d="M29 13v11" />
+                <path d="M23 30h12" />
+              </g>
+            </svg>
+          </span>
+          <span class="num">18,392</span>
+          <span class="lbl">מזוזות<br />שנקבעו</span>
+        </a>
+
+        <a class="stat press-soft" href="#" data-action="toast" data-toast="28,719 יהודים הניחו תפילין בזכות השלוחים" data-toast-icon="check-circle">
+          <span class="ic">
+            <svg width="35.6" height="33.1" viewBox="0 0 72 67" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 16 46 6l24 12-25 10z" />
+              <path d="M21 16v22l24 12V28" />
+              <path d="M70 18v22L45 50" />
+              <circle cx="31" cy="27" r="6" />
+              <path d="M8 54 18 44h40l8 10z" />
+              <path d="M8 54v10h58V54" />
+            </svg>
+          </span>
+          <span class="num">28,719</span>
+          <span class="lbl">יהודים<br />הניחו תפילין</span>
+        </a>
+
+        <a class="stat press-soft" href="03-followup.html">
+          <span class="ic">
+            <svg width="30.1" height="30.1" viewBox="0 0 61 61" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <g transform="rotate(-42 30.5 30.5)">
+                <path d="M25 43h-6.5a12.5 12.5 0 0 1 0-25H25" />
+                <path d="M36 18h6.5a12.5 12.5 0 0 1 0 25H36" />
+                <path d="M20 30.5h21" />
+              </g>
+            </svg>
+          </span>
+          <span class="num">147,862</span>
+          <span class="lbl">קשרים פעילים<br />שממשיכים לאורך זמן</span>
+        </a>
+
+        <a class="stat press-soft" href="03-followup.html">
+          <span class="ic">
+            <svg width="31.6" height="32.6" viewBox="0 0 64 66" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="32" cy="11" r="8.5" />
+              <path d="M21.5 64V35.5a10.5 10.5 0 0 1 21 0V64" />
+              <path d="M26.5 64V51.5M37.5 64V51.5" />
+              <circle cx="11.5" cy="19.5" r="6.5" />
+              <path d="M2 64V42.5a9 9 0 0 1 9-9c2.2 0 4.3.8 5.9 2.2" />
+              <path d="M6.5 64V54" />
+              <circle cx="52.5" cy="19.5" r="6.5" />
+              <path d="M62 64V42.5a9 9 0 0 0-9-9c-2.2 0-4.3.8-5.9 2.2" />
+              <path d="M57.5 64V54" />
+            </svg>
+          </span>
+          <span class="num">326,734</span>
+          <span class="lbl">יהודים חדשים<br />שיצרנו איתם קשר</span>
+        </a>
+      </div>
+
+      <!-- ============ שורה 2 — DOM הפוך בכוונה ============ -->
+      <div class="grid4">
+        <a class="stat press-soft" href="05-events-campaigns.html">
+          <span class="ic">
+            <svg width="29.6" height="31.6" viewBox="0 0 60 64" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="1.5" y="9" width="57" height="53" rx="6" />
+              <path d="M1.5 23h57" />
+              <path d="M16 2v12M44 2v12" />
+              <g fill="currentColor" stroke="none">
+                <rect x="10" y="31" width="6.5" height="6.5" rx="1" />
+                <rect x="21.5" y="31" width="6.5" height="6.5" rx="1" />
+                <rect x="33" y="31" width="6.5" height="6.5" rx="1" />
+                <rect x="44.5" y="31" width="6.5" height="6.5" rx="1" />
+                <rect x="10" y="45" width="6.5" height="6.5" rx="1" />
+                <rect x="21.5" y="45" width="6.5" height="6.5" rx="1" />
+                <rect x="33" y="45" width="6.5" height="6.5" rx="1" />
+                <rect x="44.5" y="45" width="6.5" height="6.5" rx="1" />
+              </g>
+            </svg>
+          </span>
+          <span class="num">4,732</span>
+          <span class="lbl">אירועים ופעילויות<br />בכל העולם</span>
+        </a>
+
+        <a class="stat press-soft" href="#" data-action="toast" data-toast="23,156 החלטות טובות ותחילות חדשות" data-toast-icon="check-circle">
+          <span class="ic">
+            <svg width="31.6" height="32.1" viewBox="0 0 64 65" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="32" cy="32.5" r="30" />
+              <path d="m17.5 33.5 9.5 10L46.5 21" />
+            </svg>
+          </span>
+          <span class="num">23,156</span>
+          <span class="lbl">החלטות טובות<br />ותחילות חדשות</span>
+        </a>
+
+        <a class="stat press-soft" href="14-shabbat-meal.html">
+          <span class="ic">
+            <svg width="34.1" height="33.1" viewBox="0 0 69 67" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M44 25v33M58.5 20v38" />
+              <path d="M44 23c0-3.6 3.8-5.3 3.8-10 3.2 2.7 4.9 5.9 4.9 9.3 0 3.4-2 5.7-4.3 5.7S44 26.4 44 23z" />
+              <path d="M58.5 18c0-3.6 3.8-5.3 3.8-10 3.2 2.7 4.9 5.9 4.9 9.3 0 3.4-2 5.7-4.3 5.7s-4.4-1.7-4.4-5z" />
+              <path d="M5 52.5c0-7.2 6.7-13 15-13s15 5.8 15 13" />
+              <path d="M11 46c1.6 2 4 3.2 7 3.4M20 41c1.4 2.6 3.9 4.4 7 4.9" />
+              <path d="M2 58.5h64" />
+            </svg>
+          </span>
+          <span class="num">51,247</span>
+          <span class="lbl">משתתפים<br />בסעודות שבת</span>
+        </a>
+
+        <a class="stat press-soft" href="12-daily-study.html">
+          <span class="ic">
+            <svg width="45" height="29.2" viewBox="0 0 91 59" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M45.5 14v43" />
+              <path d="M45.5 14C39 6 27 2 12 2 8 2 5 2.3 2 2.8v40C5 42.3 8 42 12 42c15 0 27 4 33.5 12" />
+              <path d="M45.5 14C52 6 64 2 79 2c4 0 7 .3 10 .8v40c-3-.5-6-.8-10-.8-15 0-27 4-33.5 12" />
+              <path d="M56 15h23M56 24h23M56 33h15" />
+            </svg>
+          </span>
+          <span class="num">64,985</span>
+          <span class="lbl">משתתפים קבועים<br />בשיעורי תורה</span>
+        </a>
+      </div>
+
+      <!-- ============ שורה 3 — DOM הפוך בכוונה ============ -->
+      <div class="grid2">
+        <a class="wide press-soft" href="07-network.html">
+          <span class="ic">
+            <svg width="37.1" height="28.2" viewBox="0 0 75 57" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="37.5" cy="10" r="8" />
+              <path d="M26.5 55.5V32a11 11 0 0 1 22 0v23.5" />
+              <path d="M32 55.5V44.5M43 55.5V44.5" />
+              <circle cx="14" cy="16.5" r="6" />
+              <path d="M5 55.5V36a9 9 0 0 1 9-9c2 0 3.9.7 5.4 1.8" />
+              <path d="M9 55.5V46.5" />
+              <circle cx="61" cy="16.5" r="6" />
+              <path d="M70 55.5V36a9 9 0 0 0-9-9c-2 0-3.9.7-5.4 1.8" />
+              <path d="M66 55.5V46.5" />
+            </svg>
+          </span>
+          <span class="txt">
+            <span class="num">9,845</span>
+            <span class="lbl">שותפים לדרך<br />בתמיכה ובשליחות</span>
+          </span>
+        </a>
+
+        <a class="wide press-soft" href="05-events-campaigns.html">
+          <span class="ic">
+            <svg width="34.1" height="28.2" viewBox="0 0 69 57" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20 40 7v37L12 32z" />
+              <path d="M12 20H8.5a6 6 0 0 0 0 12H12" />
+              <path d="m19 33.5-2.5 20" />
+              <path d="M48 12.5 58 7M48 25.5h11.5M48 38.5l10 5.5" />
+            </svg>
+          </span>
+          <span class="txt">
+            <span class="num">87</span>
+            <span class="lbl">קמפיינים עולמיים<br />והשפעה רחבה</span>
+          </span>
+        </a>
+      </div>
+
+      <!-- ========================= מפה + סיום ========================= -->
+      <a href="07-network.html" class="press-soft" aria-label="רישות בתי חב״ד בעולם">
+        <img class="map" src="assets/img/06-map.png" alt="מפת העולם בלילה עם קווי חיבור בין בתי חב״ד" />
+      </a>
+
+      <div class="closing">
+        <p class="gold">כל מכפר הוא סיפור. כל סיפור הוא נשמה.</p>
+        <p class="sub">השליחות נמשכת. ההשפעה מתרחבת. העתיד נבנה — יחד.</p>
+        <button
+          class="heart press tap"
+          aria-pressed="false"
+          aria-label="שמירת הדוח"
+          data-action="toggle"
+          data-toast-on="הדוח נשמר במועדפים"
+          data-toast-off="הדוח הוסר מהמועדפים"
+        >
+          <svg width="15.3" height="13.3" viewBox="0 0 31 27" fill="currentColor" aria-hidden="true">
+            <path d="M15.5 26.5 3 14.2a8.1 8.1 0 0 1 0-11.4 8.1 8.1 0 0 1 11.4 0l1.1 1.1 1.1-1.1a8.1 8.1 0 0 1 11.4 0 8.1 8.1 0 0 1 0 11.4z" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- ============ סרגל תחתון — DOM הפוך בכוונה ============ -->
+
+<!-- ========================= גיליון ========================= -->
+      <div class="sheet" id="period-sheet" role="dialog" aria-label="תקופת הדוח">
+        <div class="sheet-grab"></div>
+        <h3 style="font-size: 16px; margin-bottom: 6px">תקופת הדוח</h3>
+        <button class="row press" data-action="close-sheet"><i data-icon="check-circle" data-size="16"></i> משנה לשנה — תשפ״ה</button>
+        <button class="row press" data-action="toast" data-toast="דוח רבעוני ייבנה בגרסה הבאה"><i data-icon="calendar-check" data-size="16"></i> רבעון אחרון</button>
+        <button class="row press" data-action="toast" data-toast="דוח מצטבר ייבנה בגרסה הבאה"><i data-icon="chart-line" data-size="16"></i> מצטבר מאז ההקמה</button>
+      </div>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

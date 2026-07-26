@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>הלימוד היומי — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      .screen { background: #faf7f2; }
+
+      .topbar { display: flex; align-items: flex-start; padding: 15px 14px 0; height: 54px; }
+      .topbar .burger { order: 3; color: #17130f; padding: 3px; margin-top: 2px; }
+      .topbar .burger span { display: block; width: 20px; height: 2.4px; border-radius: 2px; background: currentColor; }
+      .topbar .burger span + span { margin-top: 5px; }
+      .topbar .htxt { order: 1; flex: 1; text-align: center; }
+      .topbar .htxt b { font-size: 16px; font-weight: 700; }
+      .topbar .htxt span { display: block; font-size: 12px; color: #8b847c; margin-top: 1px; }
+      .topbar .brand { order: 2; text-align: center; color: #171310; }
+      .topbar .brand .bh { font-size: 10.5px; font-weight: 600; margin-bottom: 3px; }
+
+      .hero { height: 246px; background: url('assets/img/12-hero.png') center/cover no-repeat; margin-top: 6px; }
+
+      /* שלושת כרטיסי הלימוד */
+      .study { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 14px var(--pad-page) 0; }
+      .scard {
+        min-width: 0;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: var(--shadow-card);
+        padding: 15px 9px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .scard .si { display: flex; justify-content: center; margin-bottom: 9px; }
+      .scard .st { font-size: 12.5px; font-weight: 700; color: #16130f; }
+      .scard .ss { font-size: 9px; color: #8b847c; margin-top: 3px; line-height: 1.4; min-height: 30px; }
+      .scard .track { width: 100%; height: 5px; border-radius: 999px; background: #eee7dd; margin: 11px 0 9px; overflow: hidden; }
+      .scard .fill { height: 100%; border-radius: 999px; }
+      .scard .prog { font-size: 9px; color: #6b6763; }
+      .scard .prog b { font-weight: 700; color: #16130f; }
+      .scard .mins { display: flex; align-items: center; justify-content: center; gap: 3px; font-size: 9px; color: #8b847c; margin-top: 6px; padding-top: 9px; border-top: 1px solid var(--divider); width: 100%; }
+      .scard .go { width: 100%; margin-top: 11px; height: 34px; border-radius: 9px; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+      .c-blue .si { color: #1c4f7c; } .c-blue .fill { background: #1c4f7c; width: 18%; } .c-blue .go { background: #1c4f7c; }
+      .c-green .si { color: #2c6b2e; } .c-green .fill { background: #2c6b2e; width: 10%; } .c-green .go { background: #2c6b2e; }
+      .c-gold .si { color: var(--gold-deep); } .c-gold .fill { background: var(--gold); width: 4%; } .c-gold .go { background: var(--gold); }
+
+      /* שני כרטיסים תחתונים */
+      .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 18px var(--pad-page) 0; align-items: stretch; }
+      .panel { background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-card); padding: 18px 15px; }
+      .panel h3 { display: flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 700; margin-bottom: 14px; }
+
+      /* רצף */
+      .streak { text-align: center; }
+      .streak h3 { justify-content: center; }
+      .streak .fire { color: #d97a2b; }
+      .streak .big { font-size: 28.5px; font-weight: 800; color: var(--gold-deep); line-height: 1; }
+      .streak .biglbl { font-size: 10.5px; color: #8b847c; margin-top: 2px; }
+      .streak .days { display: flex; justify-content: space-between; gap: 3px; margin-top: 16px; }
+      .streak .day { flex: 1; text-align: center; }
+      .streak .day .c { width: 22px; height: 22px; margin: 0 auto; border-radius: 999px; border: 1px solid var(--border-strong); display: grid; place-items: center; font-size: 9.5px; font-weight: 700; color: #6b6763; }
+      .streak .day.done .c { background: #f4efe7; border-color: #e6dccd; }
+      .streak .day.today .c { background: var(--gold); border-color: var(--gold); color: #fff; }
+      .streak .day .chk { color: #2c6b2e; height: 12px; margin-top: 2px; }
+
+      /* מסלול */
+      .track-panel h3 { justify-content: flex-start; }
+      .track-panel .icons { display: flex; justify-content: space-around; padding: 4px 0 16px; }
+      .track-panel .ti { text-align: center; color: #6b6763; }
+      .track-panel .ti span { display: block; font-size: 9px; margin-top: 3px; }
+      .track-panel .mark-lbl { font-size: 10.5px; color: #8b847c; text-align: center; border-top: 1px solid var(--divider); padding-top: 9px; }
+      .track-panel .circles { display: flex; justify-content: center; gap: 14px; margin-top: 13px; }
+      .track-panel .circles span { width: 16px; height: 16px; border-radius: 999px; border: 1.5px solid #cfc8bf; }
+
+      /* ציטוט */
+      .quote { margin: 12px var(--pad-page) 0; background: #f7f1e8; border: 1px solid #ede0cd; border-radius: 14px; padding: 15px 18px; text-align: center; position: relative; }
+      .quote .mark { position: absolute; top: 8px; inset-inline-start: 16px; font-size: 36px; color: #d8cbb8; font-family: Georgia, serif; line-height: 1; }
+      .quote p { font-size: 12.5px; font-style: italic; line-height: 1.65; color: #3b3630; }
+      .quote .by { font-size: 10.5px; color: var(--gold-deep); font-weight: 600; margin-top: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="consumer" data-current="life">
+      <div class="topbar">
+        <button class="burger press tap" aria-label="תפריט" data-action="sheet" data-sheet="menu"><span></span><span></span><span></span></button>
+        <div class="htxt"><b>תלמוד תורה אישי</b><span>הדרך שלך להתחבר פנימה</span></div>
+        <div class="brand">
+          <div class="bh">ב״ה</div>
+          <svg width="30" height="24" viewBox="0 0 29 25" fill="none" aria-hidden="true">
+            <path d="M1.6 1.6h25.8L14.5 23Z" stroke="#171310" stroke-width="2.4" stroke-linejoin="round" />
+            <path d="M7 5.6h15L14.5 17.8Z" stroke="#171310" stroke-width="2.2" stroke-linejoin="round" />
+            <path d="M11.6 9.6h5.8L14.5 14Z" fill="#171310" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="hero"></div>
+
+      <!-- 3 כרטיסי לימוד — סדר עברי: חומש (הראשון) בימין, תניא בשמאל -->
+      <div class="study">
+        <div class="scard c-blue">
+          <span class="si"><i data-icon="book-open" data-size="20"></i></span>
+          <div class="st">חומש עם רש״י</div>
+          <div class="ss">פרשת חוקת<br />פסוקים י״ז-כ״ד</div>
+          <div class="track"><div class="fill"></div></div>
+          <div class="prog">התקדמות יומית <b>12 / 67</b> פסוקים</div>
+          <div class="mins"><i data-icon="clock" data-size="11"></i> כ-8 דקות</div>
+          <button class="go press" data-action="toast" data-toast="פותח חומש עם רש״י" data-toast-icon="book-open">המשך ללמוד</button>
+        </div>
+        <div class="scard c-green">
+          <span class="si"><i data-icon="book-open" data-size="20"></i></span>
+          <div class="st">תהילים</div>
+          <div class="ss">פרקים י״ד-ט״ז</div>
+          <div class="track"><div class="fill"></div></div>
+          <div class="prog">התקדמות יומית <b>3 / 150</b> פרקים</div>
+          <div class="mins"><i data-icon="clock" data-size="11"></i> כ-6 דקות</div>
+          <button class="go press" data-action="toast" data-toast="פותח תהילים" data-toast-icon="book-open">המשך ללמוד</button>
+        </div>
+        <div class="scard c-gold">
+          <span class="si"><i data-icon="book-open" data-size="20"></i></span>
+          <div class="st">תניא יומי</div>
+          <div class="ss">לקוטי אמרים<br />פרק ל״ב</div>
+          <div class="track"><div class="fill"></div></div>
+          <div class="prog">התקדמות יומית <b>2 / 52</b> פרקים</div>
+          <div class="mins"><i data-icon="clock" data-size="11"></i> כ-10 דקות</div>
+          <button class="go press" data-action="toast" data-toast="פותח תניא יומי" data-toast-icon="book-open">המשך ללמוד</button>
+        </div>
+      </div>
+
+      <!-- שני כרטיסים — DOM הפוך: רצף בימין, מסלול בשמאל -->
+      <div class="duo">
+        <div class="panel streak">
+          <h3><i data-icon="flame" data-size="16" class="fire"></i> רצף לימוד</h3>
+          <div class="big">7</div>
+          <div class="biglbl">ימים ברצף</div>
+          <div class="days">
+            <div class="day today"><div class="c">א</div></div>
+            <div class="day done"><div class="c">ב</div><div class="chk"><i data-icon="check" data-size="11" data-stroke="3"></i></div></div>
+            <div class="day done"><div class="c">ג</div><div class="chk"><i data-icon="check" data-size="11" data-stroke="3"></i></div></div>
+            <div class="day done"><div class="c">ד</div><div class="chk"><i data-icon="check" data-size="11" data-stroke="3"></i></div></div>
+            <div class="day done"><div class="c">ה</div><div class="chk"><i data-icon="check" data-size="11" data-stroke="3"></i></div></div>
+            <div class="day done"><div class="c">ו</div><div class="chk"><i data-icon="check" data-size="11" data-stroke="3"></i></div></div>
+            <div class="day done"><div class="c">ש</div><div class="chk"><i data-icon="check" data-size="11" data-stroke="3"></i></div></div>
+          </div>
+        </div>
+
+        <div class="panel track-panel">
+          <h3>מסלול חת״ת יומי</h3>
+          <div class="icons">
+            <div class="ti"><i data-icon="book-open" data-size="18"></i><span>חומש</span></div>
+            <div class="ti"><i data-icon="book-open" data-size="18"></i><span>תהילים</span></div>
+            <div class="ti"><i data-icon="book-open" data-size="18"></i><span>תניא</span></div>
+          </div>
+          <div class="mark-lbl">סמן לימוד שהושלם:</div>
+          <div class="circles">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="quote">
+        <span class="mark">”</span>
+        <p>תורה היא חיינו ואורך ימינו, ותשמור יום ולילה בה, מביאה לידי שמחה אמיתית ושלום נפשי.</p>
+        <div class="by">– הרבי מליובאוויטש</div>
+      </div>
+
+
+</div>
+
+    <div class="sheet" id="menu" role="dialog" aria-label="תפריט">
+      <div class="sheet-grab"></div>
+      <h3 style="font-size: 16px; margin-bottom: 4px">תפריט</h3>
+      <a class="press" href="08-consumer-home.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="home" data-size="17"></i> דף הבית</a>
+      <a class="press" href="13-letter-to-rebbe.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="pencil" data-size="17"></i> מכתב לרבי</a>
+      <a class="press" href="all.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px"><i data-icon="layout-grid" data-size="17"></i> כל המסכים</a>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

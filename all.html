@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>מקושרים — 15 המסכים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <style>
+      @font-face {
+        font-family: 'Heebo';
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: block;
+        src: url('assets/fonts/heebo-hebrew.woff2') format('woff2');
+        unicode-range: U+307-308, U+590-5FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+      }
+      @font-face {
+        font-family: 'Heebo';
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: block;
+        src: url('assets/fonts/heebo-latin.woff2') format('woff2');
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #fcf8f3, #fffdfc 340px);
+        font-family: 'Heebo', system-ui, sans-serif;
+        color: #16130f;
+        line-height: 1.6;
+        word-spacing: 0.05em;
+        min-height: 100vh;
+      }
+      .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 90px; }
+
+      header.top { padding: 54px 0 12px; }
+      .kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--gold-deep);
+        background: var(--gold-tint);
+        border: 1px solid #f0e0c4;
+        padding: 5px 13px;
+        border-radius: 999px;
+      }
+      h1 { font-size: 40px; font-weight: 800; margin: 18px 0 0; letter-spacing: normal; line-height: 1.15; }
+      .lede { font-size: 17px; color: #55504b; margin: 12px 0 0; max-width: 620px; }
+
+      .facts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+      .fact {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 11px 15px;
+        font-size: 13px;
+        color: #55504b;
+      }
+      .fact b { color: #16130f; font-weight: 700; }
+
+      .callouts { display: grid; gap: 12px; margin-top: 30px; }
+      .callout {
+        display: flex;
+        gap: 13px;
+        align-items: flex-start;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 15px 17px;
+      }
+      .callout .n {
+        flex: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        background: var(--gold-tint);
+        color: var(--gold-deep);
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .callout h3 { margin: 0 0 3px; font-size: 15px; font-weight: 700; }
+      .callout p { margin: 0; font-size: 13.5px; color: #55504b; }
+      .callout a { color: var(--gold-deep); font-weight: 600; text-decoration: none; border-bottom: 1px solid #e6d3ae; }
+
+      h2.sec {
+        font-size: 14px;
+        font-weight: 700;
+        color: #8a837c;
+        margin: 52px 0 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      h2.sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+        gap: 20px;
+      }
+      .card {
+        display: block;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 190ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 190ms cubic-bezier(0.23, 1, 0.32, 1),
+          border-color 190ms cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      @media (hover: hover) and (pointer: fine) {
+        .card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(60, 42, 24, 0.11); border-color: #e6dccf; }
+      }
+      .card:active { transform: scale(0.985); }
+      .shot {
+        aspect-ratio: 427 / 922;
+        background: #f7f3ee center top / 100% auto no-repeat;
+        border-bottom: 1px solid var(--border);
+        position: relative;
+        overflow: hidden;
+      }
+      .shot img { width: 100%; display: block; }
+      .shot .missing {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        color: #a9a29b;
+      }
+      .meta { padding: 12px 14px 14px; }
+      .meta .num { font-size: 11px; font-weight: 700; color: var(--gold-deep); letter-spacing: normal; }
+      .meta h3 { margin: 2px 0 0; font-size: 15px; font-weight: 700; }
+      .meta p { margin: 3px 0 0; font-size: 12.5px; color: #857e77; }
+
+      footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 13px; color: #857e77; }
+      footer a { color: var(--gold-deep); }
+      code { font-family: ui-monospace, monospace; font-size: 12.5px; background: #f6f1ea; padding: 1px 5px; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="top">
+        <span class="kicker">מקושרים · פרוטוטייפ</span>
+        <h1>15 המסכים</h1>
+        <p class="lede">
+          שכפול של המוקאפים ל-HTML חי. כל מסך נבנה ברוחב 427px, צולם ב-DPR&nbsp;2, והושווה
+          פיקסלית מול התמונה המקורית עד שקווי המבנה התלכדו. הכפתורים עובדים — לחץ עליהם.
+        </p>
+
+        <div class="facts">
+          <span class="fact">מסגרת <b>427 × 922</b></span>
+          <span class="fact">גופן <b>Heebo</b> מקומי</span>
+          <span class="fact">זהב <b>#CC933E</b> — נדגם מהתמונה</span>
+          <span class="fact">ניווט בין המסכים <b>עובד</b></span>
+          <a class="fact" href="compare.html" style="text-decoration:none;border-color:#e8d7b6;background:var(--gold-tint);color:var(--gold-deep);font-weight:700">מוקאפ מול רינדור, זה לצד זה ←</a>
+        </div>
+
+        <div class="callouts">
+          <div class="callout">
+            <span class="n">1</span>
+            <div>
+              <h3>המוקאפים מסדרים קבוצות אופקיות משמאל לימין</h3>
+              <p>
+                הסרגל התחתון, כרטיסי הסטטיסטיקה ומד ההתקדמות — כולם בסדר לטיני. שוכפלו כפי שהם.
+                <a href="../docs/DECISIONS-LOG.md">הפירוט ביומן ההכרעות</a>
+              </p>
+            </div>
+          </div>
+          <div class="callout">
+            <span class="n">2</span>
+            <div>
+              <h3>שלושה סרגלים תחתונים סותרים</h3>
+              <p>שלושה מוקאפים מציגים שלושה ניווטים שונים לגמרי. כל מסך קיבל את שלו — האיחוד ממתין להכרעתך.</p>
+            </div>
+          </div>
+          <div class="callout">
+            <span class="n">3</span>
+            <div>
+              <h3>הטיפוגרפיה במוקאפ קטנה מדי לשימוש אמיתי</h3>
+              <p>נמדד: 7.2px לטקסט משני, 10.35px לשם של איש קשר. שוכפל במדויק — וממתין להחלטה על הגדלה.</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <h2 class="sec">צד השליח</h2>
+      <div class="grid" id="g-shaliach"></div>
+
+      <h2 class="sec">צד הצרכן</h2>
+      <div class="grid" id="g-consumer"></div>
+
+      <footer>
+        נבנה בלילה שבין 22 ל-23 ביולי 2026 · השיטה המלאה ב-<code>docs/PROTOTYPE-GUIDE.md</code> ·
+        ההכרעות ב-<code>docs/DECISIONS-LOG.md</code> · תמונות ההשוואה ב-<code>artifacts/cmp/</code>
+      </footer>
+    </div>
+
+    <script>
+      const SHALIACH = [
+        ['01', '01-shaliach-home.html', 'מרכז השליח', 'תמונת מצב יומית ואנשים ליצירת קשר'],
+        ['02', '02-contact.html', 'איש קשר', 'הכרטיס האישי, ההיסטוריה והפעולות'],
+        ['03', '03-followup.html', 'המשך קשר חכם', 'מי כדאי שתדבר איתו היום, ולמה'],
+        ['04', '04-call-prep.html', 'הכנה אישית לשיחה', 'מה לזכור לפני שמרימים טלפון'],
+        ['05', '05-events-campaigns.html', 'אירועים וקמפיינים', 'מה מתוכנן ומה מצב ההרשמות'],
+        ['06', '06-rebbe-report.html', 'דוח לרבי', 'סיכום הפעילות בשפה של דין וחשבון'],
+        ['07', '07-network.html', 'רישות בתי חב״ד', 'הרשת סביבך ומה קורה אצל אחרים'],
+      ]
+      const CONSUMER = [
+        ['08', '08-consumer-home.html', 'דף הבית', 'נקודת הכניסה של המבקר'],
+        ['09', '09-find-chabad.html', 'מצא בית חב״ד', 'מפה וחיפוש לפי מיקום'],
+        ['10', '10-chabad-house.html', 'דף בית חב״ד', 'מי אנחנו, מתי, ואיך מגיעים'],
+        ['11', '11-my-jewish-life.html', 'החיים היהודיים שלי', 'המסע האישי והמצוות'],
+        ['12', '12-daily-study.html', 'הלימוד היומי', 'שיעור, תניא וחת״ת'],
+        ['13', '13-letter-to-rebbe.html', 'מכתב לרבי', 'כתיבה ושליחה לאגרות קודש'],
+        ['14', '14-shabbat-meal.html', 'סעודת שבת ואוכל כשר', 'הרשמה לסעודות ומידע על כשרות'],
+        ['15', '15-event.html', 'אירוע', 'עמוד אירוע בודד והרשמה'],
+      ]
+
+      function render(list, target) {
+        document.getElementById(target).innerHTML = list
+          .map(
+            ([id, href, title, sub]) => `
+          <a class="card" href="${href}">
+            <div class="shot">
+              <img src="assets/thumbs/${id}.png" alt="" loading="lazy"
+                   onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<span class=missing>עוד אין צילום</span>')" />
+            </div>
+            <div class="meta">
+              <div class="num">מסך ${id}</div>
+              <h3>${title}</h3>
+              <p>${sub}</p>
+            </div>
+          </a>`,
+          )
+          .join('')
+      }
+      render(SHALIACH, 'g-shaliach')
+      render(CONSUMER, 'g-consumer')
+    </script>
+  </body>
+</html>

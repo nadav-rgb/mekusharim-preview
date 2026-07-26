@@ -1,0 +1,558 @@
+/* ============================================================================
+   מקושרים — בסיס משותף ל-15 הפרוטוטייפים
+   RTL עברי · תכונות לוגיות בלבד · מצבי מגע · תנועה מכובדת
+   ============================================================================ */
+
+@font-face {
+  font-family: 'Heebo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url('fonts/heebo-hebrew.woff2') format('woff2');
+  unicode-range: U+307-308, U+590-5FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: 'Heebo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: block;
+  src: url('fonts/heebo-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Frank Ruhl Libre';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: block;
+  src: url('fonts/frank-hebrew.woff2') format('woff2');
+  unicode-range: U+307-308, U+590-5FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: 'Frank Ruhl Libre';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: block;
+  src: url('fonts/frank-latin.woff2') format('woff2');
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* בלי מתיחה/הקפצה בגלילה — מרגיש כמו אפליקציה נייטיב (#3) */
+  overscroll-behavior: none;
+}
+
+/* מסגרת המכשיר.
+   הרוחב חי על .screen ולא על body: body ברוחב קבוע ב-RTL גורם לגלילה אופקית
+   (פס הגלילה ב-RTL יושב משמאל ומקטין את רוחב הפריסה), והצילום יוצא מוסט.
+   .screen ממורכז, וכל מה שהיה fixed הפך ל-absolute בתוכו — כך העמוד נראה זהה
+   גם בחלון רחב של דפדפן וגם בצילום המדויק ברוחב 427. */
+body {
+  margin: 0;
+  min-height: 922px;
+  display: flex;
+  justify-content: center;
+  /* המוקאפים מרנדרים פינות מסך מעוגלות עם שחור מסביב — מסגרת מכשיר. נמדד: רדיוס ~20px */
+  background: #000;
+  font-family: var(--font);
+  /* עברית צפופה מלטינית — 1.55 ומעלה, ורווח-מילים קל */
+  line-height: var(--lh-body);
+  word-spacing: 0.05em;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  overscroll-behavior: none;
+}
+
+/* לעולם לא letter-spacing על עברית — הורס קריאוּת */
+h1, h2, h3, h4, p, span, div, button, a, li {
+  letter-spacing: normal;
+}
+
+h1, h2, h3, h4 {
+  margin: 0;
+  font-weight: 700;
+  line-height: var(--lh-tight);
+}
+p {
+  margin: 0;
+}
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+svg {
+  display: block;
+  flex: none;
+}
+
+/* מספרים, טלפונים, מיילים — נשארים LTR גם בתוך עברית */
+.ltr,
+[dir='ltr'] {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* ---------------------------------------------------------------------------
+   מסך
+   --------------------------------------------------------------------------- */
+
+.screen {
+  position: relative;
+  width: 427px;
+  flex: none;
+  min-height: 922px;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 55%, var(--bg-bottom) 100%);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.pad {
+  padding-inline: var(--pad-page);
+}
+
+/* ---------------------------------------------------------------------------
+   מצבי מגע — בלי זה כל כפתור מרגיש מת
+   --------------------------------------------------------------------------- */
+
+.press {
+  transition: transform var(--dur-press) var(--ease-out), background-color var(--dur-ui) var(--ease-out),
+    border-color var(--dur-ui) var(--ease-out), box-shadow var(--dur-ui) var(--ease-out);
+  transform-origin: center;
+}
+.press:active {
+  transform: scale(0.97);
+}
+.press-soft:active {
+  transform: scale(0.985);
+}
+
+/* יעד מגע: אף אלמנט לחיץ לא קטן מ-44x44 גם אם הוא נראה קטן */
+.tap {
+  position: relative;
+}
+.tap::after {
+  content: '';
+  position: absolute;
+  inset: 50% 50%;
+  width: var(--tap);
+  height: var(--tap);
+  transform: translate(50%, -50%);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .press:hover {
+    background-color: color-mix(in srgb, currentColor 4%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   כרטיס
+   --------------------------------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+}
+
+/* ---------------------------------------------------------------------------
+   סרגל תחתון
+   --------------------------------------------------------------------------- */
+
+.nav {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+  padding-top: 7px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: rgba(255, 253, 251, 0.94);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  box-shadow: var(--shadow-nav);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  transition: color var(--dur-ui) var(--ease-out), transform var(--dur-press) var(--ease-out);
+}
+.nav-item:active {
+  transform: scale(0.94);
+}
+.nav-item[aria-current='page'] {
+  color: var(--espresso);
+  font-weight: 600;
+}
+.nav-item span {
+  white-space: nowrap;
+}
+
+/* הפריט המרכזי — עיגול מוגבה */
+.nav-center {
+  position: relative;
+  flex: 1;
+}
+.nav-center .puck {
+  position: absolute;
+  /* מרכוז אמיתי — physical left בכוונה: inset-inline-start + translateX
+     מתהפכים זה מול זה ב-RTL ומזיזים את העיגול מהמרכז */
+  left: 50%;
+  transform: translateX(-50%);
+  top: -20px;
+  width: 54px;
+  height: 54px;
+  border-radius: var(--r-pill);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border: 4px solid #fffdfb;
+  transition: transform var(--dur-press) var(--ease-out), box-shadow var(--dur-ui) var(--ease-out);
+}
+.nav-center:active .puck {
+  transform: translateX(-50%) scale(0.94);
+}
+.nav-center .puck-dark {
+  background: var(--espresso);
+  box-shadow: 0 6px 16px rgba(59, 36, 22, 0.3);
+}
+.nav-center .puck-gold {
+  background: var(--gold);
+  box-shadow: 0 6px 16px rgba(204, 147, 62, 0.36);
+}
+
+/* ---------------------------------------------------------------------------
+   סרגל מאוחד — שני וריאנטים בלבד (הכרעת נדב 24.07). המבנה זהה; שוני עדין בהדגשה.
+   --------------------------------------------------------------------------- */
+.nav--shaliach .nav-item[aria-current='page'] { color: var(--espresso); }
+.nav--consumer .nav-item[aria-current='page'] { color: var(--gold-deep); }
+
+/* כפתור פעולה צף — פעולות (הוסף קשר / המשך קשר) יצאו מהסרגל לכאן */
+.fab {
+  position: absolute;
+  inset-inline-end: 18px;
+  bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  width: 54px;
+  height: 54px;
+  border-radius: var(--r-pill);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--gold);
+  box-shadow: 0 8px 20px rgba(204, 147, 62, 0.4);
+}
+.fab.fab-dark { background: var(--espresso); box-shadow: 0 8px 20px rgba(59, 36, 22, 0.34); }
+.nav-center .nav-label {
+  margin-top: 38px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--espresso);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   תגיות ופתקי־סיבה
+   --------------------------------------------------------------------------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------------------
+   טוסט — משוב על פעולה, נכנס ויוצא מאותו כיוון
+   --------------------------------------------------------------------------- */
+
+.toast {
+  position: absolute;
+  inset-inline: 22px;
+  bottom: calc(var(--nav-h) + 18px);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 15px;
+  border-radius: var(--r-md);
+  background: var(--espresso);
+  color: #fdf8f1;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  box-shadow: 0 10px 30px rgba(59, 36, 22, 0.3);
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: opacity var(--dur-ui) var(--ease-out), transform var(--dur-ui) var(--ease-out);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------------------------------------------------------------------------
+   גיליון תחתון (bottom sheet)
+   --------------------------------------------------------------------------- */
+
+.sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(35, 24, 15, 0.36);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-panel) var(--ease-out);
+}
+.sheet-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.sheet {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 51;
+  background: var(--surface);
+  border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+  padding: 10px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(100%);
+  /* עקומת המגירה של iOS */
+  transition: transform var(--dur-panel) cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -12px 40px rgba(59, 36, 22, 0.18);
+}
+.sheet.show {
+  transform: translateY(0);
+}
+.sheet-grab {
+  width: 38px;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--border-strong);
+  margin: 0 auto 14px;
+}
+
+/* ---------------------------------------------------------------------------
+   נגישות
+   --------------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================================
+   מעברי מסך — "מסך נכנס לתוך מסך" (חוצה-מסמכים, נתמך ב-Chrome). RTL: קדימה = שמאלה. (#8)
+   ============================================================================ */
+@view-transition { navigation: auto; }
+@keyframes vt-in  { from { opacity: 0; transform: translateX(-6%); } to { opacity: 1; transform: none; } }
+@keyframes vt-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateX(6%); } }
+::view-transition-old(root) { animation: vt-out 220ms var(--ease-out) both; }
+::view-transition-new(root) { animation: vt-in 250ms var(--ease-out) both; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+
+/* ============================================================================
+   כפתורי מסגרת צפים — חזרה (ימין ב-RTL) ותפריט (שמאל). מוזרקים ע"י nav.js. (#2/#5)
+   ============================================================================ */
+.navbtn {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 11px);
+  z-index: 46;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-pill);
+  display: grid;
+  place-items: center;
+  color: #23201d;
+  background: rgba(255, 253, 251, 0.88);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(60, 42, 24, 0.12);
+}
+.navbtn:active { transform: scale(0.94); }
+.navbtn-back { inset-inline-start: 12px; } /* RTL: start = ימין — חזרה */
+.navbtn-menu { inset-inline-end: 12px; }   /* RTL: end = שמאל — תפריט */
+
+/* ============================================================================
+   מגירת ניווט — נפתחת מימין (RTL). כל היעדים, כולל המסכים העמוקים. (#6)
+   ============================================================================ */
+.drawer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  /* physical בכוונה (כמו הפאק): מגירה נעוצה בשמאל, ליד כפתור התפריט.
+     תכונות לוגיות כאן בלבלו את המיקום ב-RTL. */
+  left: 0;
+  right: auto;
+  z-index: 55;
+  width: min(84%, 328px);
+  background: var(--surface);
+  box-shadow: 14px 0 44px rgba(35, 24, 15, 0.24);
+  transform: translateX(-100%); /* מוסתר אל מעבר לקצה השמאלי */
+  transition: transform var(--dur-panel) cubic-bezier(0.32, 0.72, 0, 1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.drawer.show { transform: translateX(0); }
+.drawer-head {
+  padding: calc(env(safe-area-inset-top, 0px) + 22px) 20px 16px;
+  background: linear-gradient(180deg, var(--gold-tint), var(--surface));
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+.drawer-head .bh { font-size: 12.5px; font-weight: 600; color: var(--gold-ink); margin-bottom: 6px; }
+.drawer-head h2 { font-size: 19px; font-weight: 800; color: var(--ink); line-height: 1.25; }
+.drawer-head p { font-size: 13.5px; color: var(--ink-3); margin-top: 3px; }
+.drawer-body { padding: 8px 10px calc(env(safe-area-inset-bottom, 0px) + 16px); }
+.drawer-group + .drawer-group { border-top: 1px solid var(--divider); margin-top: 6px; padding-top: 6px; }
+.drawer-group h3 { font-size: 11.5px; font-weight: 700; color: var(--ink-4); padding: 8px 12px 4px; }
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: var(--r-md);
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--ink);
+  text-align: start;
+}
+.drawer-item:active { background: var(--surface-sunken); }
+.drawer-item[aria-current='page'] { background: var(--gold-tint); color: var(--gold-ink); font-weight: 700; }
+.drawer-item .ic { color: var(--gold-deep); flex: none; display: grid; place-items: center; }
+.drawer-item[aria-current='page'] .ic { color: var(--gold-ink); }
+.drawer-item.is-exit { color: #a5382b; }
+.drawer-item.is-exit .ic { color: #a5382b; }
+
+/* ============================================================================
+   גיליון פנייה — 4 ערוצים, כל אחד בצבע ובלוגו משלו. (#7)
+   ============================================================================ */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0 4px; }
+.contact-tile {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 13px;
+  border-radius: var(--r-lg);
+  color: #fff;
+  font-size: 15.5px;
+  font-weight: 700;
+}
+.contact-tile .ci {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.22);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.contact-tile .ci svg { width: 21px; height: 21px; }
+.contact-tile.c-call { background: #1b7f45; }
+.contact-tile.c-sms { background: #2f6fed; }
+.contact-tile.c-wa { background: #25d366; }
+.contact-tile.c-app { background: var(--gold); }
+
+/* ============================================================================
+   חוויית אפליקציה אמיתית בטלפון: בלי מסגרת-מכשיר, מסך מלא, סרגל תחתון מוצמד.
+   בדסקטופ (חלון רחב) נשמרת תצוגת ה"מכשיר" הממורכזת — נוח לסקירה ולהשוואה.
+   הבלוק בסוף הקובץ בכוונה — כדי שיגבר על .nav absolute שמעליו.
+   ============================================================================ */
+@media (max-width: 520px) {
+  body {
+    display: block;
+    background: var(--bg-bottom);
+    overflow-x: hidden;
+  }
+  .screen {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100svh;
+    border-radius: 0;
+    /* מקום לסרגל התחתון המוצמד כדי שהתוכן האחרון לא ייחתך */
+    padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 4px);
+    overscroll-behavior-y: none;
+  }
+  /* הכול נעוץ לחלון התצוגה — לא לתחתית הדף הארוך. זה מה שהחזיר את המגירה
+     והגיליונות לחיים בטלפון (הבאג של "ההמבורגר לא נפתח"). */
+  .nav { position: fixed; }
+  .fab { position: fixed; }
+  .navbtn { position: fixed; }
+  .sheet { position: fixed; }
+  .sheet-backdrop { position: fixed; }
+  .toast { position: fixed; }
+  .drawer { position: fixed; }
+}

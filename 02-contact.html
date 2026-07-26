@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>איש קשר — דוד לוי — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      /* ======================================================================
+         מסך 02 — איש קשר.
+         המוקאפ "איש קשר.png" הוא 852x1846. מקדם ההמרה: 427/852 = 0.5011737,
+         כלומר CSS = פיקסל_מוקאפ × 0.5011737 (כמעט ÷2, אבל לא בדיוק).
+         כל מידה כאן נמדדה ב-measure.mjs --ink / --edges ולא הוערכה בעין.
+         גדלי הגופן חושבו ב-calibrate.mjs מרוחב הדיו של המחרוזת עצמה.
+         ====================================================================== */
+
+      /* המוקאפ מרנדר את מסגרת המכשיר: פינות שחורות מעוגלות סביב המסך */
+      body { background: #000; min-height: 925px; }
+      .screen {
+        min-height: 925px;
+        border-radius: 28px;
+        background: linear-gradient(
+          180deg,
+          #fbf2e7 0%,
+          #fcf8f3 16%,
+          #fdfcfb 33%,
+          #fefefe 58%,
+          #fefefe 100%
+        );
+      }
+
+      /* ===================== אזור הכותרת והפרופיל (0–241) ===================== */
+      .hero { position: relative; height: 292px; }
+
+      .back {
+        position: absolute;
+        inset-inline-end: 14px; /* ב-RTL: end = שמאל. במוקאפ החץ בשמאל */
+        top: 19px;
+        color: #17130f;
+      }
+      /* היפוך RTL של המוקאפ: כפתור "חזרה" בעברית שייך לימין ומצביע ימינה.
+         המוקאפ שם אותו בשמאל ומצביע שמאלה. משוכפל כפי שהוא. */
+
+      .h-title {
+        position: absolute;
+        top: 21.4px;
+        inset-inline: 0;
+        text-align: center;
+        padding-inline-end: 14.6px; /* המוקאפ ממרכז 7.3px שמאלה מהמרכז האמיתי */
+        font-size: 15.5px;
+        font-weight: 700;
+        line-height: 1;
+        color: #14110f;
+      }
+
+      .brand {
+        position: absolute;
+        inset-inline-start: 18px; /* ב-RTL: start = ימין */
+        top: 11px;
+        text-align: center;
+        color: #1b2438;
+      }
+      .brand .bh { font-size: 10.5px; font-weight: 600; line-height: 1; }
+      .brand svg { margin-top: 4.5px; }
+
+      .kebab {
+        position: absolute;
+        inset-inline-start: 25px;
+        top: 55px;
+        display: flex;
+        gap: 4px;
+        color: #1b2438;
+      }
+      .kebab i { display: block; width: 4.1px; height: 4.1px; border-radius: 50%; background: currentColor; }
+
+      .avatar {
+        position: absolute;
+        inset-inline-end: 27.1px; /* מהשמאל */
+        top: 60.1px;
+        width: 133.3px;
+        height: 133.3px;
+        border-radius: var(--r-pill);
+        border: 3.5px solid #fffdfb;
+        object-fit: cover;
+        background: var(--surface-sunken);
+        box-shadow: 0 3px 14px rgba(60, 42, 24, 0.13);
+      }
+      .fav {
+        position: absolute;
+        inset-inline-end: 124px;
+        top: 160.7px;
+        width: 32.6px;
+        height: 32.6px;
+        border-radius: var(--r-pill);
+        background: #ecd9c4;
+        color: #8c5f1c;
+        display: grid;
+        place-items: center;
+      }
+
+      /* שם + עיפרון. במוקאפ העיפרון בימין השם (סידור LTR שלא הוחזר) */
+      .namerow {
+        position: absolute;
+        inset-inline-start: 103.7px;
+        top: 84.5px;
+        display: flex;
+        align-items: center;
+        gap: 17.5px;
+      }
+      .namerow h1 { font-size: 24px; font-weight: 800; line-height: 1; color: #100d0b; }
+      .namerow .edit { color: #a9752a; }
+
+      /* עיר. במוקאפ סמל המיקום בשמאל הטקסט */
+      .locrow {
+        position: absolute;
+        inset-inline-start: 134.3px;
+        top: 115.6px;
+        display: flex;
+        align-items: center;
+        gap: 5.1px;
+      }
+      .locrow span { font-size: 14.5px; font-weight: 400; line-height: 1; color: #2d2a27; }
+      .locrow .pin { color: #a9752a; }
+
+      .meta {
+        position: absolute;
+        inset-inline-start: 30.6px;
+        top: 143.8px;
+        width: 188.9px;
+      }
+      .mrow {
+        display: flex;
+        direction: ltr; /* המוקאפ מציב את האייקון בשמאל והטקסט מיושר לשמאל */
+        align-items: flex-start;
+        gap: 4px;
+        padding-inline-start: 22.5px;
+        padding-block: 8.5px 7px;
+        border-top: 1px solid #eee5da;
+      }
+      .mrow .mi { color: #a9752a; margin-top: 1.5px; }
+      .mrow .mt { direction: rtl; text-align: left; min-width: 0; }
+      .mrow .mt b { display: block; font-weight: 400; color: #2b2825; }
+      .mrow .mt span { display: block; color: #4a4744; }
+      .m1 b { font-size: 10.5px; line-height: 1.72; }
+      .m1 span { font-size: 10.5px; line-height: 1.62; }
+      .m2 b { font-size: 11.5px; line-height: 1.56; }
+      .m2 span { font-size: 10.5px; line-height: 1.68; }
+
+      /* ===================== ארבעת כפתורי הפעולה (241–273) ===================== */
+      /* סדר התצוגה במוקאפ משמאל לימין: הוספת הערה · שליחת הודעה · התקשר · פעולה
+         מהירה. ב-RTL הילד הראשון הוא הימני, ולכן ה-DOM מתחיל ב"פעולה מהירה". */
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        padding-inline: 18.5px 18px;
+      }
+      .act {
+        height: 32px;
+        border-radius: var(--r-pill);
+        background: #fefefe;
+        border: 1px solid #f2ece5;
+        box-shadow: 0 1px 2px rgba(60, 42, 24, 0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #1e1a17;
+        flex: none;
+      }
+      .act svg { color: #17130f; }
+      .a-note { width: 89.8px; gap: 7.5px; font-size: 9.5px; font-weight: 500; }
+      .a-msg { width: 90.2px; gap: 6.5px; font-size: 8.5px; font-weight: 500; }
+      .a-call { width: 81.7px; gap: 6px; font-size: 9.5px; font-weight: 500; }
+      .a-quick {
+        width: 98.8px;
+        gap: 0;
+        font-size: 11px;
+        font-weight: 500;
+        background: #f4ebe1;
+        border-color: #f4ebe1;
+        color: #4a3316;
+        padding-inline: 2.6px 13.1px;
+        justify-content: flex-start;
+      }
+      /* במוקאפ החץ בימין הכפתור והברק בשמאל — היפוך מול הסדר הנכון ב-RTL */
+      .a-quick .chev { color: #6b563a; margin-inline-end: 5.5px; }
+      .a-quick .bolt { color: #cc933e; margin-inline-start: 2.5px; }
+
+      /* ===================== שתי העמודות (293.2–751.8) ===================== */
+      .cols {
+        display: flex;
+        align-items: flex-start;
+        gap: 10.5px;
+        padding-inline: 15.5px 11.5px;
+        margin-top: 20.1px;
+      }
+      .card {
+        background: #fdfcfb;
+        border: 1px solid #f3efeb;
+        border-radius: 12px;
+        box-shadow: 0 1px 2px rgba(60, 42, 24, 0.035);
+      }
+      .col-r { width: 193.1px; flex: none; display: flex; flex-direction: column; }
+      .col-l { width: 196.5px; flex: none; min-height: 458.6px; position: relative; }
+
+      /* ---- כותרת כרטיס: אייקון בימין, כותרת משמאלו ---- */
+      .chead {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        font-weight: 700;
+        color: #14110f;
+      }
+
+      /* ---- כרטיס "מה חשוב לדעת עליו" ---- */
+      .info { min-height: 161.8px; padding-bottom: 8px; }
+      .info .chead { padding-inline-start: 17.3px; gap: 19.1px; font-size: 11px; padding-top: 8.5px; }
+      .info .chead .ic { color: #c08a3d; }
+      .info-row {
+        display: flex;
+        align-items: center;
+        gap: 19.1px;
+        padding-inline-start: 17.3px;
+        height: 25.06px;
+        color: #26231f;
+        font-size: 10.5px;
+        line-height: 1.3;
+      }
+      .info-row:first-of-type { margin-top: 12.2px; }
+      .info-row svg { color: #33302c; }
+      .info-row span { white-space: nowrap; }
+
+      /* ---- ציטוט ---- */
+      .quote {
+        min-height: 71.3px;
+        padding-bottom: 10px;
+        margin-top: 13px;
+        background: #faf4ec;
+        border: 1px solid #f5eee5;
+        border-radius: 11px;
+        position: relative;
+        padding-inline-start: 55.2px;
+        text-align: start;
+      }
+      .quote .qmark {
+        position: absolute;
+        inset-inline-start: 35.6px;
+        top: 8.6px;
+        font-family: var(--font-serif);
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1;
+        color: #d9ac66;
+      }
+      .quote p { font-size: 10px; line-height: 1.4; color: #3a3733; padding-top: 20.4px; }
+      .quote .attr { font-size: 10px; color: #807d7b; margin-top: 6.6px; line-height: 1.3; }
+
+      /* ---- הצעד הבא המומלץ ---- */
+      .next {
+        min-height: 198.5px;
+        padding-bottom: 10px;
+        margin-top: 14px;
+        background: #fbf7f2;
+        border: 1px solid #f6efe7;
+        border-radius: 12px;
+      }
+      .next .chead { padding-inline-start: 13.1px; gap: 23.6px; font-size: 11px; padding-top: 9.5px; }
+      .next .chead .ic { color: #a9752a; }
+      .nbox {
+        background: #fff;
+        border: 1px solid #f4eee8;
+        border-radius: 10px;
+        margin: 11.5px 8.6px 0 9.6px;
+        height: 159.3px;
+        padding-inline-start: 9.7px;
+        text-align: start;
+      }
+      .nbox .lead { font-size: 10.5px; line-height: 1.6; color: #26231f; padding-top: 8.7px; }
+      .nbox .sep { height: 1px; background: #efe8e0; margin: 8.9px 13.5px 0 13.4px; }
+      .nbox .lbl { font-size: 10px; font-weight: 500; color: #26231f; margin-top: 8.8px; padding-inline-end: 24.4px; }
+      .nbox .rec { font-size: 10px; line-height: 1.55; color: #26231f; margin-top: 4.4px; }
+      .nbtn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5.5px;
+        width: 157.4px;
+        height: 25px;
+        margin: 12.3px auto 0;
+        border-radius: var(--r-pill);
+        background: #ead7ba;
+        color: #552a00;
+        font-size: 10px;
+        font-weight: 500;
+      }
+
+      /* ---- ציר הזמן ---- */
+      .tl .chead { padding-inline-start: 19.1px; gap: 11px; font-size: 10.5px; padding-top: 9px; }
+      .tl .chead .ic { color: #33302c; }
+      .tl-list { position: relative; padding-top: 15.5px; }
+      .tl-rail {
+        position: absolute;
+        inset-inline-start: 44.6px;
+        top: 5.9px;
+        width: 1.1px;
+        height: 362.3px;
+        background: #ded3c8;
+      }
+      .tl-item { position: relative; height: 35.1px; }
+      .tl-item + .tl-item { margin-top: 26.1px; }
+      .tl-item:nth-child(6) { margin-top: 29.1px; }
+      .tl-item:nth-child(7) { margin-top: 29.6px; }
+      .tl-badge {
+        position: absolute;
+        inset-inline-start: 8.5px;
+        top: 4px;
+        width: 26.6px;
+        height: 26.6px;
+        border-radius: var(--r-pill);
+        display: grid;
+        place-items: center;
+        color: #fff;
+      }
+      .tl-dot {
+        position: absolute;
+        inset-inline-start: 41.9px;
+        top: 14px;
+        width: 6.5px;
+        height: 6.5px;
+        border-radius: var(--r-pill);
+      }
+      .tl-txt { padding-inline-start: 57.1px; text-align: start; }
+      .tl-txt .d { font-size: 8.5px; line-height: 1; color: #86817c; }
+      .tl-txt b { display: block; font-size: 9px; font-weight: 700; line-height: 1; color: #100d0b; margin-top: 6.4px; }
+      .tl-txt .s { display: block; font-size: 9px; line-height: 1; color: #6f6a66; margin-top: 8.6px; }
+
+      .c-green { background: #2f6533; }
+      .c-purple { background: #543f86; }
+      .c-orange { background: #c95d18; }
+      .c-blue { background: #3c6690; }
+      .c-gold { background: #af7932; }
+      .c-sage { background: #6b8f5e; }
+      .d-green { background: #2f6533; }
+      .d-purple { background: #543f86; }
+      .d-orange { background: #c95d18; }
+      .d-blue { background: #3c6690; }
+      .d-gold { background: #af7932; }
+      .d-sage { background: #6b8f5e; }
+
+      .tl-more {
+        position: absolute;
+        inset-inline: 10px 12.3px;
+        top: 419.5px;
+        height: 30px;
+        border: 1px solid #f1ebe3;
+        border-radius: 14px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8.5px;
+        padding-inline-start: 14px;
+        font-size: 11px;
+        font-weight: 500;
+        color: #33302c;
+      }
+      .tl-more svg { color: #6f6a66; }
+
+      /* ===================== הערות אחרונות ===================== */
+      .notes {
+        margin: 13.6px 11.5px 0;
+        height: 86.6px;
+        background: #fcf9f6;
+        border: 1px solid #f6f0ea;
+        border-radius: 12px;
+      }
+      .notes .chead { padding-inline-start: 20.1px; gap: 10px; font-size: 10.5px; padding-top: 12.5px; }
+      .notes .chead .ic { color: #a9752a; }
+      .notes .body {
+        font-size: 10px;
+        line-height: 1.57;
+        color: #2b2825;
+        padding-inline-start: 54.7px;
+        text-align: start;
+        margin-top: 6.5px;
+      }
+      .notes .foot { font-size: 8.5px; color: #7e7a76; text-align: center; margin-top: 12.4px; }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="shaliach" data-current="contacts" data-fab-icon="user-plus" data-fab-label="הוסף איש קשר" data-fab-toast="פותח הוספת איש קשר">
+      <!-- ============================ כותרת ופרופיל ============================ -->
+      <div class="hero">
+        <a class="back press tap" href="01-shaliach-home.html" aria-label="חזרה">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+        </a>
+
+        <div class="h-title">איש קשר</div>
+
+        <div class="brand">
+          <div class="bh">ב״ה</div>
+          <svg width="29.5" height="16" viewBox="0 0 59 32" fill="none" aria-hidden="true">
+            <path d="M1.6 1.5h55.8L29.5 30.5Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+            <path d="M11 1.5h37L29.5 22Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+            <path d="M20 1.5h19L29.5 13.5Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+          </svg>
+        </div>
+
+        <button class="kebab press tap" aria-label="עוד פעולות" data-action="sheet" data-sheet="more-sheet">
+          <i></i><i></i><i></i>
+        </button>
+
+        <img class="avatar" src="assets/img/02-david.png" alt="דוד לוי" />
+        <button class="fav press tap" aria-label="סימון כמועדף" aria-pressed="false" data-action="toggle" data-toast-on="דוד לוי סומן כאיש קשר מועדף" data-toast-off="הסימון הוסר">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
+        </button>
+
+        <div class="namerow">
+          <!-- סדר ה-DOM הפוך בכוונה: משחזר את סדר התצוגה של המוקאפ (עיפרון בימין) -->
+          <button class="edit press tap" aria-label="עריכת פרטי איש הקשר" data-action="toast" data-toast="עריכת פרטי דוד לוי" data-toast-icon="square-pen">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /></svg>
+          </button>
+          <h1>דוד לוי</h1>
+        </div>
+
+        <div class="locrow">
+          <!-- סדר ה-DOM הפוך בכוונה: במוקאפ סמל המיקום נמצא בשמאל הטקסט -->
+          <span>תל אביב</span>
+          <span class="pin"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" /><circle cx="12" cy="10" r="3" /></svg></span>
+        </div>
+
+        <div class="meta">
+          <div class="mrow m1">
+            <span class="mi"><svg width="12.5" height="12.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></svg></span>
+            <span class="mt">
+              <b>מפגש ראשון: כ״א כסלו תשפ״ד</b>
+              <span dir="rtl">4 דצמבר 2023</span>
+            </span>
+          </div>
+          <div class="mrow m2">
+            <span class="mi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0" /><circle cx="10" cy="8" r="5" /><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" /></svg></span>
+            <span class="mt">
+              <b>היכן הכיר את בית חב״ד:</b>
+              <span>סעודת שבת אצל חבר</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ כפתורי פעולה ============================ -->
+      <div class="actions">
+        <button class="act a-quick press" data-action="sheet" data-sheet="quick-sheet">
+          <span class="chev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg></span>
+          <span>פעולה מהירה</span>
+          <span class="bolt"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg></span>
+        </button>
+
+        <button class="act a-call press" data-action="contact" data-name="דוד לוי">
+          <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.2.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1z" /></svg>
+          <span>התקשר</span>
+        </button>
+
+        <button class="act a-msg press" data-action="contact" data-name="דוד לוי">
+          <svg width="15.6" height="15.6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0-7.7-4.4L3 21l4.6-1.2A9 9 0 0 0 12 21Z" /><path d="M8.9 9c0 3.3 2.8 6.1 6.1 6.1.6 0 1.2-.9 1.2-1.5l-1.6-.8-1 1a6 6 0 0 1-2.3-2.3l1-1-.8-1.6c-.6 0-1.6.5-1.6 1.1Z" fill="currentColor" stroke="none" /></svg>
+          <span>שליחת הודעה</span>
+        </button>
+
+        <button class="act a-note press" data-action="sheet" data-sheet="note-sheet">
+          <svg width="14.5" height="14.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3H3v18h13l5-5z" /><path d="M8 15.5 15.5 8" /></svg>
+          <span>הוספת הערה</span>
+        </button>
+      </div>
+
+      <!-- ============================ שתי העמודות ============================ -->
+      <div class="cols">
+        <!-- ה-DOM מתחיל בעמודה הימנית — כך היא מוצגת בימין ב-RTL -->
+        <div class="col-r">
+          <section class="card info">
+            <div class="chead">
+              <span class="ic"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg></span>
+              <span>מה חשוב לדעת עליו</span>
+            </div>
+            <div class="info-row">
+              <svg width="13.3" height="13.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
+              <span>בתהליך של חזרה בתשובה</span>
+            </div>
+            <div class="info-row">
+              <svg width="13.3" height="13.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0" /><circle cx="10" cy="8" r="5" /><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" /></svg>
+              <span>נשוי + 2 ילדים (בן 6, בת 3)</span>
+            </div>
+            <div class="info-row">
+              <svg width="13.3" height="13.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /><rect width="20" height="14" x="2" y="6" rx="2" /></svg>
+              <span>עובד בהיי־טק, שעות עמוסות</span>
+            </div>
+            <div class="info-row">
+              <svg width="13.3" height="13.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14" /><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></svg>
+              <span>מתעניין ביהדות ובחינוך ילדים</span>
+            </div>
+            <div class="info-row">
+              <svg width="13.3" height="13.3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 21a8 8 0 0 0-16 0" /><circle cx="10" cy="8" r="5" /><path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3" /></svg>
+              <span>אוהב לבוא עם חברים לאירועים</span>
+            </div>
+          </section>
+
+          <section class="quote">
+            <div class="qmark">”</div>
+            <p>צריך רק מישהו שיאמין בו<br />וייתן לו מקום.</p>
+            <p class="attr">(דוד אמר בפגישה שלנו)</p>
+          </section>
+
+          <section class="next">
+            <div class="chead">
+              <span class="ic"><svg width="12.5" height="12.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg></span>
+              <span>הצעד הבא המומלץ</span>
+            </div>
+            <div class="nbox">
+              <p class="lead">לקראת יום ההולדת שלו<br />בי״ח אייר (בעוד 12 ימים)</p>
+              <div class="sep"></div>
+              <p class="lbl">מומלץ:</p>
+              <p class="rec">לשלוח ברכה אישית ולזמן<br />אותו לאירוע ל״ג בעומר<br />המיועד למשפחות.</p>
+              <button class="nbtn press" data-action="toast" data-toast="נפתחה טיוטת ברכה והזמנה לל״ג בעומר" data-toast-icon="calendar-check">
+                <svg width="12.5" height="12.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></svg>
+                <span>שלח ברכה והזמן לאירוע</span>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <section class="card col-l tl">
+          <div class="chead">
+            <span class="ic"><svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H3" /><path d="M12 19H3" /><path d="M14 3v4" /><path d="M16 17v4" /><path d="M21 12h-9" /><path d="M21 19h-5" /><path d="M21 5h-7" /><path d="M8 10v4" /><path d="M8 12H3" /></svg></span>
+            <span>ציר הזמן של הקשר</span>
+          </div>
+
+          <div class="tl-list">
+            <div class="tl-rail"></div>
+
+            <div class="tl-item">
+              <span class="tl-badge c-green"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm-2.6 5.4c.2-.5 1.3-1 1.9-.9l.9 1.9-1.1 1.1a6.7 6.7 0 0 0 2.6 2.6l1.1-1.1 1.9.9c0 .7-.6 1.7-1.4 1.7A7 7 0 0 1 9.4 7.4Z" /></svg></span>
+              <span class="tl-dot d-green"></span>
+              <span class="tl-txt">
+                <span class="d">היום</span>
+                <b>שליחת הודעה לחג הפסח</b>
+                <span class="s">ברכת חג ושמירה על קשר</span>
+              </span>
+            </div>
+
+            <div class="tl-item">
+              <span class="tl-badge c-purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13" /><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" /><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5" /></svg></span>
+              <span class="tl-dot d-purple"></span>
+              <span class="tl-txt">
+                <span class="d">י״ד ניסן תשפ״ד</span>
+                <b>תרם לקמפיין פסח</b>
+                <span class="s">תמך בקמפיין ״מצה שמורה״</span>
+              </span>
+            </div>
+
+            <div class="tl-item">
+              <span class="tl-badge c-orange"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg></span>
+              <span class="tl-dot d-orange"></span>
+              <span class="tl-txt">
+                <span class="d">כ״ו אדר א׳ תשפ״ד</span>
+                <b>ביקש ברכה</b>
+                <span class="s">לקראת ניתוח שעבר בהצלחה</span>
+              </span>
+            </div>
+
+            <div class="tl-item">
+              <span class="tl-badge c-blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg></span>
+              <span class="tl-dot d-blue"></span>
+              <span class="tl-txt">
+                <span class="d">י׳ שבט תשפ״ד</span>
+                <b>שיחה אישית עם השליח</b>
+                <span class="s">שיחה על חיבור לילדים</span>
+              </span>
+            </div>
+
+            <div class="tl-item">
+              <span class="tl-badge c-gold"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14" /><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></svg></span>
+              <span class="tl-dot d-gold"></span>
+              <span class="tl-txt">
+                <span class="d">כ״ב טבת תשפ״ד</span>
+                <b>השתתף בשיעור</b>
+                <span class="s">שיעור על פרשת השבוע</span>
+              </span>
+            </div>
+
+            <div class="tl-item">
+              <span class="tl-badge c-sage"><svg width="14.5" height="14.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg></span>
+              <span class="tl-dot d-sage"></span>
+              <span class="tl-txt">
+                <span class="d">ט׳ כסלו תשפ״ד</span>
+                <b>הגיע לסעודת שבת</b>
+                <span class="s">הגיע עם חבר, ישב ואכל איתנו</span>
+              </span>
+            </div>
+          </div>
+
+          <button class="tl-more press" data-action="toast" data-toast="נטענו עוד אירועים מציר הזמן" data-toast-icon="refresh-cw">
+            <span>הצג עוד</span>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+        </section>
+      </div>
+
+      <!-- ============================ הערות אחרונות ============================ -->
+      <section class="notes">
+        <div class="chead">
+          <span class="ic"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /></svg></span>
+          <span>הערות אחרונות</span>
+        </div>
+        <p class="body">דוד אדם לבבי ומחפש. חשוב לשמור על קשר אישי וחם, להזמין לאירועים<br />שהוא יוכל להגיע עם המשפחה.</p>
+        <p class="foot">נכתב ע״י: משה השליח&nbsp; |&nbsp; 21 ניסן תשפ״ד</p>
+      </section>
+
+      <!-- ============================ סרגל תחתון ============================ -->
+
+<!-- ============================ גיליונות ============================ -->
+      <div class="sheet" id="quick-sheet" role="dialog" aria-label="פעולה מהירה">
+        <div class="sheet-grab"></div>
+        <h3 style="font-size: 16px; margin-bottom: 6px">פעולה מהירה</h3>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px" data-action="toast" data-toast="נפתחה טיוטת ברכה אישית" data-toast-icon="sparkles"><i data-icon="sparkles" data-size="17"></i> ברכה אישית מותאמת</button>
+        <a class="press" href="04-call-prep.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="phone" data-size="17"></i> הכנה אישית לשיחה</a>
+        <a class="press" href="15-event.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="calendar-plus" data-size="17"></i> הזמנה לאירוע</a>
+        <a class="press" href="03-followup.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px"><i data-icon="clipboard-list" data-size="17"></i> הוספה למעקב השבוע</a>
+      </div>
+
+      <div class="sheet" id="note-sheet" role="dialog" aria-label="הוספת הערה">
+        <div class="sheet-grab"></div>
+        <h3 style="font-size: 16px; margin-bottom: 8px">הוספת הערה על דוד</h3>
+        <form data-toast="ההערה נשמרה בכרטיס של דוד לוי">
+          <textarea rows="3" placeholder="מה כדאי לזכור לפעם הבאה?" style="width:100%;border:1px solid var(--border);border-radius:12px;padding:10px;font:inherit;font-size: 14px;resize:none"></textarea>
+          <button class="press" type="submit" style="margin-top:10px;width:100%;height:42px;border-radius:12px;background:var(--espresso);color:#fff;font-size: 15px;font-weight:600">שמירת ההערה</button>
+        </form>
+      </div>
+
+      <div class="sheet" id="more-sheet" role="dialog" aria-label="עוד פעולות">
+        <div class="sheet-grab"></div>
+        <h3 style="font-size: 16px; margin-bottom: 4px">עוד</h3>
+        <a class="press" href="04-call-prep.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="sparkles" data-size="17"></i> הכנה אישית לשיחה</a>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px" data-action="toast" data-toast="הכרטיס שותף עם צוות בית חב״ד" data-toast-icon="share-2"><i data-icon="share-2" data-size="17"></i> שיתוף הכרטיס</button>
+        <a class="press" href="all.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px"><i data-icon="layout-grid" data-size="17"></i> כל המסכים</a>
+      </div>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

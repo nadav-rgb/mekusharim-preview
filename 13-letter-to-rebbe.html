@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>מכתב לרבי — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      :root { --ink-brown: #322923; }
+      .screen { background: #faf6f1; }
+
+      .topbar { display: flex; align-items: flex-start; padding: 16px 14px 0; height: 56px; }
+      .topbar .burger { order: 3; color: #17130f; padding: 3px; margin-top: 2px; }
+      .topbar .burger span { display: block; width: 20px; height: 2.4px; border-radius: 2px; background: currentColor; }
+      .topbar .burger span + span { margin-top: 5px; }
+      .topbar .ttl { order: 1; flex: 1; text-align: center; font-size: 19.5px; font-weight: 700; margin-top: 2px; }
+      .topbar .brand { order: 2; text-align: center; color: #171310; }
+      .topbar .brand .bh { font-size: 10.5px; font-weight: 600; margin-bottom: 3px; }
+
+      .hero { height: 196px; background: url('assets/img/13-hero.png') center/cover no-repeat; margin-top: 4px; }
+
+      .quote { text-align: center; padding: 12px 34px 6px; position: relative; }
+      .quote .mark { position: absolute; top: 6px; inset-inline-start: 26px; font-size: 42.5px; line-height: 1; color: #d8cbb8; font-family: Georgia, serif; }
+      .quote p { font-size: 14px; font-weight: 600; line-height: 1.65; color: #2b2622; }
+      .quote .sub { font-size: 12.5px; font-weight: 400; color: #8b847c; margin-top: 8px; }
+      .quote .heart {
+        width: 38px;
+        height: 38px;
+        margin: 9px auto 0;
+        border-radius: 999px;
+        border: 1px solid var(--border-strong);
+        background: #fff;
+        color: var(--gold-deep);
+        display: grid;
+        place-items: center;
+      }
+
+      .form { padding: 6px var(--pad-page) 0; }
+      .textarea {
+        position: relative;
+        background: #fff;
+        border: 1px solid var(--border-strong);
+        border-radius: 14px;
+        padding: 14px;
+        min-height: 205px;
+      }
+      .textarea .ph { font-size: 13.5px; color: #a9a29a; }
+      .textarea .feather { position: absolute; bottom: 12px; inset-inline-start: 14px; color: #b9b1a7; }
+
+      .names { display: flex; gap: 10px; margin-top: 12px; }
+      .field { flex: 1; min-width: 0; }
+      .field label { display: block; font-size: 12px; color: #6b6763; margin-bottom: 6px; text-align: center; }
+      .field .box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid var(--border-strong);
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .field .box input { flex: 1; min-width: 0; border: 0; background: none; font: inherit; font-size: 13.5px; outline: none; }
+      .field .box svg { color: #b9b1a7; }
+
+      .privacy {
+        display: flex;
+        gap: 9px;
+        align-items: flex-start;
+        margin: 12px var(--pad-page) 0;
+        background: #f7f1e8;
+        border: 1px solid #ede0cd;
+        border-radius: 12px;
+        padding: 12px 14px;
+        text-align: center;
+        justify-content: center;
+      }
+      .privacy .pi { color: var(--gold-deep); margin-top: 1px; }
+      .privacy b { display: block; font-size: 12.5px; font-weight: 700; color: #16130f; }
+      .privacy p { font-size: 11px; color: #6b6763; margin-top: 2px; line-height: 1.5; }
+
+      .submit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        margin: 14px var(--pad-page) 0;
+        height: 50px;
+        background: var(--ink-brown);
+        color: #fff;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        width: calc(100% - 2 * var(--pad-page));
+      }
+      .submit svg { color: #cdbd9e; }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="consumer" data-current="life">
+      <div class="topbar">
+        <button class="burger press tap" aria-label="תפריט" data-action="sheet" data-sheet="menu"><span></span><span></span><span></span></button>
+        <div class="ttl">מכתב לרבי</div>
+        <div class="brand">
+          <div class="bh">ב״ה</div>
+          <svg width="30" height="24" viewBox="0 0 29 25" fill="none" aria-hidden="true">
+            <path d="M1.6 1.6h25.8L14.5 23Z" stroke="#171310" stroke-width="2.4" stroke-linejoin="round" />
+            <path d="M7 5.6h15L14.5 17.8Z" stroke="#171310" stroke-width="2.2" stroke-linejoin="round" />
+            <path d="M11.6 9.6h5.8L14.5 14Z" fill="#171310" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="hero"></div>
+
+      <div class="quote">
+        <span class="mark">”</span>
+        <p>כאן תוכלו לכתוב מכתב אישי לרבי, לבקש ברכה, להתייעץ, לשתף או להודות.</p>
+        <p class="sub">הרבי קורא כל מכתב.</p>
+        <button class="heart press" data-action="toggle" aria-pressed="false" data-toast-on="נשמר במועדפים" data-toast-off="הוסר מהמועדפים"><i data-icon="heart" data-size="18"></i></button>
+      </div>
+
+      <form class="form" data-toast="המכתב נשלח. הרבי קורא כל מכתב">
+        <div class="textarea">
+          <div class="ph">כתוב כאן את המכתב שלך...</div>
+          <span class="feather"><i data-icon="pencil" data-size="17"></i></span>
+        </div>
+
+        <div class="names">
+          <div class="field">
+            <label>שם פרטי (באותיות עבריות)</label>
+            <div class="box"><input type="text" placeholder="" /><i data-icon="user" data-size="16"></i></div>
+          </div>
+          <div class="field">
+            <label>שם האם (באותיות עבריות)</label>
+            <div class="box"><input type="text" placeholder="" /><i data-icon="user-round" data-size="16"></i></div>
+          </div>
+        </div>
+      </form>
+
+      <div class="privacy">
+        <span class="pi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span>
+        <div>
+          <b>פרטיות וביטחון</b>
+          <p>המכתב נשמר באפליקציה ונשאר פרטי ומכובד.</p>
+        </div>
+      </div>
+
+      <button class="submit press" data-action="toast" data-toast="המכתב נשלח. הרבי קורא כל מכתב" data-toast-icon="check-circle">
+        המשך
+        <i data-icon="chevron-left" data-size="18" data-stroke="2.2"></i>
+      </button>
+
+
+</div>
+
+    <div class="sheet" id="menu" role="dialog" aria-label="תפריט">
+      <div class="sheet-grab"></div>
+      <h3 style="font-size: 16px; margin-bottom: 4px">תפריט</h3>
+      <a class="press" href="08-consumer-home.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="home" data-size="17"></i> דף הבית</a>
+      <a class="press" href="11-my-jewish-life.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="heart" data-size="17"></i> החיים היהודיים שלי</a>
+      <a class="press" href="all.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px"><i data-icon="layout-grid" data-size="17"></i> כל המסכים</a>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

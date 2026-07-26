@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>סעודת שבת ואוכל כשר — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      :root { --ink-brown: #35281c; }
+      .screen { background: #faf6f0; }
+
+      /* הירו (כולל הסרגל העליון והכותרת — אפוי בתמונה) */
+      .hero { position: relative; height: 252px; background: url('assets/img/14-hero.png') center/cover no-repeat, #211812; }
+      .hero .burger-hit { position: absolute; top: 10px; inset-inline-end: 8px; width: 46px; height: 46px; }
+
+      /* כרטיס הסעודה */
+      .meal {
+        position: relative;
+        margin: -34px var(--pad-page) 0;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: var(--shadow-raised);
+        padding: 14px;
+        display: flex;
+        gap: 12px;
+        align-items: stretch;
+      }
+      .meal .body { flex: 1; min-width: 0; }
+      .meal .chip { display: inline-flex; align-items: center; gap: 5px; background: var(--gold-tint); color: var(--gold-deep); font-size: 10.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+      .meal h2 { font-size: 22.5px; font-weight: 800; margin: 8px 0 10px; }
+      .meal .row { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; color: #46433f; margin-top: 6px; }
+      .meal .row svg { color: var(--gold-deep); margin-top: 1px; }
+      .meal .row b { font-weight: 700; color: #16130f; }
+      .meal .row span { color: #8b847c; }
+      .meal .count { font-weight: 700; color: #16130f; }
+      .meal .cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 12px;
+        height: 42px;
+        background: var(--ink-brown);
+        color: #fff;
+        border-radius: 11px;
+        font-size: 14.5px;
+        font-weight: 700;
+      }
+      .meal .cta svg { color: #cdbd9e; }
+      .meal .photo { order: -1; flex: none; width: 124px; border-radius: 14px; object-fit: cover; background: var(--surface-sunken); align-self: stretch; }
+
+      /* מה תרצו לעשות */
+      .sechead { text-align: center; font-size: 16px; font-weight: 700; margin: 18px 0 12px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+      .sechead::before, .sechead::after { content: ''; width: 26px; height: 1px; background: var(--border-strong); }
+
+      .cats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 var(--pad-page); }
+      .cat {
+        min-width: 0;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .cat .pw { position: relative; }
+      .cat .pw img { width: 100%; height: 82px; object-fit: cover; display: block; background: var(--surface-sunken); }
+      .cat .pw .badge {
+        position: absolute;
+        top: -13px;
+        inset-inline-start: 50%;
+        transform: translateX(-50%);
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        border: 3px solid #fff;
+      }
+      .cat .info { padding: 22px 9px 14px; text-align: center; display: flex; flex-direction: column; flex: 1; }
+      .cat .info h3 { font-size: 13.5px; font-weight: 700; }
+      .cat .info p { font-size: 9.5px; color: #8b847c; margin-top: 4px; line-height: 1.45; flex: 1; }
+      .cat .info .go { margin-top: 10px; height: 30px; border-radius: 8px; color: #fff; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 4px; }
+      .cat .info .go svg { width: 12px; height: 12px; }
+
+      .c-green .badge { background: #2c6b2e; } .c-green .go { background: #2c6b2e; }
+      .c-blue .badge { background: #1c4f7c; } .c-blue .go { background: #1c4f7c; }
+      .c-purple .badge { background: #5b3f8f; } .c-purple .go { background: #5b3f8f; }
+
+      /* 4 קישורים מהירים */
+      .quick {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        margin: 14px var(--pad-page) 0;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: var(--shadow-card);
+        padding: 8px 6px;
+      }
+      .ql { text-align: center; }
+      .ql .qi { display: flex; justify-content: center; margin-bottom: 3px; }
+      .ql b { display: block; font-size: 10.5px; font-weight: 700; color: #16130f; }
+      .ql span { display: block; font-size: 8.5px; color: #8b847c; line-height: 1.25; margin-top: 2px; }
+      .ql-people .qi { color: #1c4f7c; }
+      .ql-heart .qi { color: #b4483c; }
+      .ql-help .qi { color: var(--gold-deep); }
+      .ql-wa .qi { color: #25a05a; }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="consumer" data-current="calendar">
+      <div class="hero">
+        <button class="burger-hit press tap" aria-label="תפריט" data-action="sheet" data-sheet="menu"></button>
+      </div>
+
+      <!-- כרטיס הסעודה -->
+      <div class="meal">
+        <div class="body">
+          <span class="chip"><i data-icon="calendar" data-size="11"></i> סעודת ליל שבת קרובה</span>
+          <h2>סעודת ליל שבת</h2>
+          <div class="row"><i data-icon="clock" data-size="15"></i> <b dir="ltr">19:15</b></div>
+          <div class="row"><i data-icon="map-pin" data-size="15"></i> <div><b>בית חב״ד מרכז העיר</b><br /><span>רח׳ המלך 18</span></div></div>
+          <div class="row"><i data-icon="users" data-size="15"></i> <span class="count">18 מקומות נותרו</span></div>
+          <button class="cta press" data-action="toast" data-toast="נרשמת לסעודת ליל שבת!" data-toast-icon="check-circle">
+            להרשמה עכשיו
+            <i data-icon="chevron-left" data-size="16" data-stroke="2.2"></i>
+          </button>
+        </div>
+        <img class="photo" src="assets/img/14-meal.png" alt="" />
+      </div>
+
+      <!-- מה תרצו לעשות -->
+      <h2 class="sechead">מה תרצו לעשות?</h2>
+      <!-- סדר עברי: אוכל כשר (הימני) ← חנות חב״ד (השמאלי) -->
+      <div class="cats">
+        <div class="cat c-green">
+          <div class="pw"><span class="badge"><i data-icon="utensils" data-size="17"></i></span><img src="assets/img/14-cat-food.png" alt="" /></div>
+          <div class="info">
+            <h3>אוכל כשר</h3>
+            <p>הזמינו אוכל כשר משלוחים או איסוף</p>
+            <button class="go press" data-action="toast" data-toast="פותח הזמנת אוכל כשר" data-toast-icon="utensils">להזמנה <i data-icon="chevron-left" data-stroke="2.4"></i></button>
+          </div>
+        </div>
+        <div class="cat c-blue">
+          <div class="pw"><span class="badge"><i data-icon="building" data-size="17"></i></span><img src="assets/img/14-cat-rest.png" alt="" /></div>
+          <div class="info">
+            <h3>איפה לאכול?</h3>
+            <p>מסעדות כשרות ומטבח בית חב״ד</p>
+            <button class="go press" data-action="toast" data-toast="מציג מסעדות כשרות בסביבה" data-toast-icon="map-pin">לפרטים <i data-icon="chevron-left" data-stroke="2.4"></i></button>
+          </div>
+        </div>
+        <div class="cat c-purple">
+          <div class="pw"><span class="badge"><i data-icon="gift" data-size="17"></i></span><img src="assets/img/14-cat-shop.png" alt="" /></div>
+          <div class="info">
+            <h3>חנות חב״ד</h3>
+            <p>מוצרים יהודיים לפי הצורך</p>
+            <button class="go press" data-action="toast" data-toast="פותח את חנות חב״ד" data-toast-icon="gift">לחנות <i data-icon="chevron-left" data-stroke="2.4"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 קישורים מהירים — סדר עברי: קהילה (הימני) ← WhatsApp (השמאלי) -->
+      <div class="quick">
+        <a class="ql ql-people press" href="#" data-action="toast" data-toast="הצטרפו לקהילה">
+          <span class="qi"><i data-icon="users" data-size="20"></i></span><b>קהילה</b><span>אנשים טובים מתחברים יחד</span>
+        </a>
+        <a class="ql ql-heart press" href="#" data-action="toast" data-toast="בית כנסת, מקווה ועזרה בשעת הצורך">
+          <span class="qi"><i data-icon="heart" data-size="20"></i></span><b>שירותים</b><span>בית כנסת, מקווה ועזרה בשעת הצורך</span>
+        </a>
+        <a class="ql ql-help press" href="#" data-action="toast" data-toast="אנחנו כאן בשבילכם">
+          <span class="qi"><i data-icon="help-circle" data-size="20"></i></span><b>צריכים משהו?</b><span>אנחנו כאן בשבילכם</span>
+        </a>
+        <a class="ql ql-wa press" href="#" data-action="toast" data-toast="פותח שיחת WhatsApp" data-toast-icon="message-circle">
+          <span class="qi"><i data-icon="message-circle" data-size="20"></i></span><b>דברו איתנו</b><span>WhatsApp · לחצו כאן</span>
+        </a>
+      </div>
+
+
+</div>
+
+    <div class="sheet" id="menu" role="dialog" aria-label="תפריט">
+      <div class="sheet-grab"></div>
+      <h3 style="font-size: 16px; margin-bottom: 4px">תפריט</h3>
+      <a class="press" href="08-consumer-home.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="home" data-size="17"></i> דף הבית</a>
+      <a class="press" href="12-daily-study.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="book-open" data-size="17"></i> הלימוד היומי</a>
+      <a class="press" href="all.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px"><i data-icon="layout-grid" data-size="17"></i> כל המסכים</a>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

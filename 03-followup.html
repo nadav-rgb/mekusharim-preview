@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>המשך קשר חכם — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      /* כל מידה כאן נמדדה מ"המשך קשר חכם.png" (853x1844 = @2x) וחולקה ב-2.
+         גדלי הגופן חושבו ב-scripts/calibrate.mjs מרוחב הדיו שנמדד ב---bbox.
+         שים לב: ריפוד העמוד במסך הזה הוא 18px (ולא 14 כמו במסך 01) —
+         קצוות הכרטיסים נמדדו ב-x=35 ו-x=817 מתוך 853. */
+
+      /* גובה קבוע: הכרטיס החמישי גולש מעבר ל-922 והסרגל התחתון חייב
+         להישאר על תחתית המסך, כמו במוקאפ (הכרטיס נחתך מאחוריו). */
+      .screen { --pad: 18px; height: 922px; }
+
+      /* ===== כותרת המסך (0–79.5) ===== */
+      .top { position: relative; height: 79.5px; }
+
+      .burger {
+        position: absolute;
+        inset-inline-end: 18.5px; /* ב-RTL: end = שמאל. במוקאפ ההמבורגר בשמאל */
+        top: 23.5px;
+        padding: 0;
+        color: #14181f;
+      }
+      .burger span {
+        display: block;
+        width: 19.5px;
+        height: 2.5px;
+        border-radius: 2px;
+        background: currentColor;
+      }
+      .burger span + span { margin-top: 4.3px; }
+
+      .ttl { position: absolute; inset-inline: 0; top: 20px; text-align: center; }
+      .ttl h1 {
+        font-size: 18px;
+        font-weight: 800;
+        line-height: 1.18;
+        color: #0f1319;
+      }
+      .ttl p {
+        margin-top: 5px;
+        font-size: 12.5px;
+        font-weight: 400;
+        line-height: 1.25;
+        color: #3b4046;
+        white-space: nowrap;
+      }
+
+      .brand {
+        position: absolute;
+        inset-inline-start: 10.5px; /* ב-RTL: start = ימין */
+        top: 10.5px;
+        text-align: center;
+        color: #141a24;
+      }
+      .brand .bh { font-size: 10.5px; font-weight: 600; line-height: 1; margin-bottom: 2px; }
+
+      /* ===== כרטיס ההזדמנויות (79.5–138.5) ===== */
+      .hint {
+        position: relative;
+        display: block;
+        margin-inline: var(--pad);
+        height: 59px;
+        border-radius: 14px;
+        background: linear-gradient(to left, #faf5ef, #fcf9f6 60%, #fbf7f3);
+        overflow: hidden;
+      }
+      .hint-orb {
+        position: absolute;
+        inset-inline-end: 14.5px; /* שמאל — במוקאפ העיגול בשמאל, הטקסט ממורכז */
+        top: 9.5px;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--r-pill);
+        background: linear-gradient(150deg, #d3a054, #c0862b);
+        color: #fffdf8;
+        display: grid;
+        place-items: center;
+      }
+      .hint-txt { position: absolute; inset-inline: 0; top: 14px; text-align: center; }
+      .hint-txt b {
+        display: block;
+        font-size: 10.5px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #101216;
+      }
+      .hint-txt span {
+        display: block;
+        margin-top: 3.5px;
+        font-size: 10.5px;
+        font-weight: 400;
+        line-height: 1.3;
+        color: #3a3d41;
+      }
+
+      /* ===== שורת הסינון (157–184) =====
+         סדר ה-DOM הפוך בכוונה: במוקאפ הקבוצה מסודרת משמאל לימין
+         (סינון · הכל · יותר מ-30 יום · אירועים קרובים · בעלי עניין),
+         כלומר הפריט הראשון בסדר הקריאה יושב בשמאל. ב-RTL הילד הראשון
+         יושב בימין, ולכן ה-DOM נכתב הפוך כדי לשחזר את התצוגה במדויק.
+         מתועד ביומן ההכרעות כחשד לבאג RTL במוקאפ המקורי. -->  */
+      .filters {
+        display: flex;
+        gap: 9.5px;
+        padding-inline: var(--pad);
+        margin-top: 18.5px;
+      }
+      .fchip {
+        flex: none;
+        height: 27px;
+        border-radius: var(--r-pill);
+        border: 1px solid #efeceb;
+        background: #fefdfd;
+        color: #34363a;
+        font-size: 10px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        min-width: 0;
+      }
+      .fchip[aria-pressed='true'] {
+        background: #f4e9de;
+        border-color: transparent;
+        color: #7a4e12;
+        font-weight: 600;
+        font-size: 10.5px;
+      }
+      .f-interest { width: 67px; }
+      .f-events { width: 84px; }
+      .f-old { width: 75.5px; }
+      .f-all { width: 49px; }
+      .f-tool { width: 70px; gap: 9px; color: #2f2f30; }
+
+      /* ===== כרטיסי הקשר ===== */
+      .cards { padding-inline: var(--pad); margin-top: 16.5px; }
+
+      .pcard {
+        position: relative;
+        display: block;
+        height: 137.5px;
+        border-radius: 13px;
+        background: #fefefe;
+        border: 1px solid #f3efee;
+        box-shadow: 0 1px 2px rgba(60, 42, 24, 0.035);
+        transition: transform var(--dur-press) var(--ease-out), box-shadow var(--dur-ui) var(--ease-out);
+      }
+      .pcard + .pcard { margin-top: 10px; }
+      .pcard:active { transform: scale(0.992); }
+
+      .pcard .face {
+        position: absolute;
+        inset-inline-start: 34.5px;
+        top: 16.5px;
+        width: 71px;
+        height: 71px;
+        border-radius: var(--r-pill);
+        object-fit: cover;
+        background: #f4efe9;
+      }
+      /* השברון בימין ומצביע ימינה — כך במוקאפ. ב-RTL הוא היה אמור לשבת
+         בשמאל ולהצביע שמאלה. שוחזר כפי שהוא ומדווח כהיפוך RTL. */
+      .pcard .chev { position: absolute; inset-inline-start: 10px; top: 45.5px; color: #5b5b5c; }
+
+      .pcard .who {
+        position: absolute;
+        inset-inline-start: 122.5px;
+        top: 16px;
+        width: 152px;
+        text-align: start;
+      }
+      .pcard .who b {
+        display: block;
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.2;
+        color: #0a0d12;
+      }
+      .pcard .who .city {
+        display: block;
+        margin-top: 6.5px;
+        font-size: 10px;
+        font-weight: 400;
+        line-height: 1.25;
+        color: #4a4b4d;
+      }
+      .pcard .who p {
+        margin-top: 7.5px;
+        font-size: 9.5px;
+        font-weight: 400;
+        line-height: 1.48;
+        color: #474849;
+      }
+
+      .pcard .side {
+        position: absolute;
+        inset-inline-end: 15.5px; /* שמאל */
+        top: 10.5px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end; /* ב-RTL: flex-end = שמאל */
+        text-align: end;
+      }
+      /* התגית: האייקון בשמאל והטקסט מימינו — סדר ה-DOM הפוך בכוונה,
+         משחזר את סדר התצוגה של המוקאפ (ב-RTL אייקון מוביל יושב בימין). */
+      .tagline {
+        display: flex;
+        align-items: center;
+        gap: 11.5px;
+        height: 24.5px;
+        padding-inline: 12.5px 9px;
+        border-radius: 7px;
+        font-size: 9.5px;
+        font-weight: 500;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .pcard .sub {
+        display: block;
+        margin-top: 8px;
+        font-size: 9.5px;
+        font-weight: 400;
+        line-height: 1.25;
+        color: #4d4d4f;
+        white-space: nowrap;
+      }
+
+      .t-rose { background: #fdeced; color: #ae151b; }
+      .t-rose .ic { color: #be1115; }
+      .t-amber { background: #fbf3e6; color: #94651d; }
+      .t-amber .ic { color: #c0832f; }
+      .t-blue { background: #f0f5fc; color: #1c4f82; }
+      .t-blue .ic { color: #376ba2; }
+      .t-green { background: #ecf2e9; color: #30612f; }
+      .t-green .ic { color: #416f3a; }
+      .t-purple { background: #f5f1fa; color: #4a2a75; }
+      .t-purple .ic { color: #663f8c; }
+
+      /* ארבעת כפתורי הפעולה — סדר התצוגה במוקאפ:
+         תזכורת · פרופיל · התקשר · שלח הודעה (משמאל לימין), כלומר
+         "שלח הודעה" ראשון בימין. זה סדר RTL תקין ולכן ה-DOM רגיל. */
+      .acts {
+        position: absolute;
+        inset-inline-end: 16px;
+        top: 86.5px;
+        display: flex;
+        gap: 9.5px;
+      }
+      .abtn {
+        width: 56px;
+        height: 39px;
+        border-radius: 9px;
+        background: #ffffff;
+        border: 1px solid #f2f0ed;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 7px;
+        transition: transform var(--dur-press) var(--ease-out), background-color var(--dur-ui) var(--ease-out);
+      }
+      .abtn:active { transform: scale(0.95); background: #fbf9f6; }
+      .abtn span {
+        margin-top: 3.5px;
+        font-size: 8px;
+        font-weight: 500;
+        line-height: 1.2;
+        color: #454647;
+      }
+      .a-bell { color: #7b4a96; }
+      .a-user { color: #c08b33; }
+      .a-phone { color: #2f7233; }
+      .a-msg { color: #4a7ba6; }
+
+      .pcard[hidden] { display: none; }
+
+      /* גיליון סגור לא מטיל צל: הצל של base.css מופנה כלפי מעלה ונשפך
+         על תחתית המסך גם כשהגיליון מחוץ למסך */
+      .sheet:not(.show) { box-shadow: none; }
+      .sheet h3 { font-size: 16px; margin-bottom: 8px; }
+      .sheet .srow {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--divider);
+        font-size: 14.5px;
+      }
+      .sheet .srow:last-child { border-bottom: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="shaliach" data-current="contacts" data-fab-icon="zap" data-fab-label="המשך קשר חכם" data-fab-toast="פותח המשך קשר חכם">
+      <!-- ============ כותרת ============ -->
+      <header class="top">
+        <button class="burger press tap" aria-label="תפריט" data-action="sheet" data-sheet="menu-sheet">
+          <span></span><span></span><span></span>
+        </button>
+
+        <div class="ttl">
+          <h1>המשך קשר חכם</h1>
+          <p>מי עלול להיחלש – הזדמנויות שלא לפספס</p>
+        </div>
+
+        <div class="brand">
+          <div class="bh">ב״ה</div>
+          <svg width="37" height="21" viewBox="0 0 29 25" fill="none" aria-hidden="true">
+            <path d="M1.6 1.6h25.8L14.5 23Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" />
+            <path d="M7 5.6h15L14.5 17.8Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+            <path d="M11.6 9.6h5.8L14.5 14Z" fill="currentColor" />
+          </svg>
+        </div>
+      </header>
+
+      <!-- ============ כרטיס ההזדמנויות ============ -->
+      <a class="hint press-soft" href="#" data-action="toast" data-toast="7 ההזדמנויות מוצגות למטה לפי סדר עדיפות" data-toast-icon="sparkles">
+        <span class="hint-orb">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 18h6" /><path d="M10 22h4" />
+            <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" />
+          </svg>
+        </span>
+        <span class="hint-txt">
+          <b>7 הזדמנויות מומלצות ליצור קשר</b>
+          <span>אנשים שהקשר איתם עלול להיחלש בקרוב</span>
+        </span>
+      </a>
+
+      <!-- ============ סינון ============ -->
+      <!-- סדר ה-DOM הפוך בכוונה: משחזר את סדר התצוגה של המוקאפ. מתועד ביומן ההכרעות -->
+      <div class="filters" role="group" aria-label="סינון רשימת הקשרים">
+        <button class="f-interest fchip press" data-action="filter" data-filter="interest" aria-pressed="false">בעלי עניין</button>
+        <button class="f-events fchip press" data-action="filter" data-filter="events" aria-pressed="false">אירועים קרובים</button>
+        <button class="f-old fchip press" data-action="filter" data-filter="old" aria-pressed="false">יותר מ-30 יום</button>
+        <button class="f-all fchip press" data-action="filter" data-filter="all" aria-pressed="true">הכל</button>
+        <button class="f-tool fchip press" data-action="sheet" data-sheet="sort-sheet">
+          סינון
+          <svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 6h11" /><path d="M19 6h1" /><circle cx="17" cy="6" r="2" />
+            <path d="M4 12h3" /><path d="M11 12h9" /><circle cx="9" cy="12" r="2" />
+            <path d="M4 18h9" /><path d="M17 18h3" /><circle cx="15" cy="18" r="2" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- ============ הכרטיסים ============ -->
+      <div class="cards" id="cards">
+        <!-- 1 -->
+        <a class="pcard" href="02-contact.html" data-tags="old interest">
+          <i class="chev" data-icon="chevron-right" data-size="17" data-stroke="1.6"></i>
+          <img class="face" src="assets/img/03-face-1.png" alt="" />
+          <span class="who">
+            <b>יונתן כהן</b>
+            <span class="city">תל אביב</span>
+            <p>השתתף בסעודת שבת<br />ובשיעור חסידות</p>
+          </span>
+          <span class="side">
+            <span class="tagline t-rose">
+              <span>עברו 45 יום מהשיחה האחרונה</span>
+              <i class="ic" data-icon="calendar" data-size="16"></i>
+            </span>
+            <span class="sub">שיחת טלפון אחרונה: 5 באייר תשפ״ד</span>
+          </span>
+          <span class="acts">
+            <button class="abtn" aria-label="שלח הודעה ליונתן" data-action="toast" data-toast="נפתחה טיוטת הודעה ליונתן כהן" data-toast-icon="message-circle">
+              <svg class="a-msg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg><span>שלח הודעה</span>
+            </button>
+            <button class="abtn" aria-label="פנייה ליונתן כהן" data-action="contact" data-name="יונתן כהן">
+              <i class="a-phone" data-icon="phone" data-size="19"></i><span>התקשר</span>
+            </button>
+            <button class="abtn" aria-label="פרופיל יונתן" data-action="toast" data-toast="נפתח הפרופיל של יונתן כהן" data-toast-icon="user-round">
+              <i class="a-user" data-icon="user-round" data-size="19"></i><span>פרופיל</span>
+            </button>
+            <button class="abtn" aria-label="תזכורת ליונתן" data-action="toast" data-toast="נקבעה תזכורת ליצירת קשר עם יונתן" data-toast-icon="bell">
+              <i class="a-bell" data-icon="bell" data-size="19"></i><span>תזכורת</span>
+            </button>
+          </span>
+        </a>
+
+        <!-- 2 -->
+        <a class="pcard" href="02-contact.html" data-tags="events interest">
+          <i class="chev" data-icon="chevron-right" data-size="17" data-stroke="1.6"></i>
+          <img class="face" src="assets/img/03-face-2.png" alt="" />
+          <span class="who">
+            <b>שירה לוי</b>
+            <span class="city">רמת גן</span>
+            <p>הגיעה לשתי פעילויות<br />ומאוד התחברה</p>
+          </span>
+          <span class="side">
+            <span class="tagline t-amber">
+              <span>יום ההולדת העברי בעוד 7 ימים</span>
+              <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8" /><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1" /><path d="M2 21h20" /><path d="M7 8v3" /><path d="M12 8v3" /><path d="M17 8v3" /><path d="M7 4h.01" /><path d="M12 4h.01" /><path d="M17 4h.01" />
+              </svg>
+            </span>
+            <span class="sub">כ״ח אייר תשפ״ד</span>
+          </span>
+          <span class="acts">
+            <button class="abtn" aria-label="שלח הודעה לשירה" data-action="toast" data-toast="נפתחה טיוטת ברכה לשירה לוי" data-toast-icon="message-circle">
+              <svg class="a-msg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg><span>שלח הודעה</span>
+            </button>
+            <button class="abtn" aria-label="פנייה לשירה לוי" data-action="contact" data-name="שירה לוי">
+              <i class="a-phone" data-icon="phone" data-size="19"></i><span>התקשר</span>
+            </button>
+            <button class="abtn" aria-label="פרופיל שירה" data-action="toast" data-toast="נפתח הפרופיל של שירה לוי" data-toast-icon="user-round">
+              <i class="a-user" data-icon="user-round" data-size="19"></i><span>פרופיל</span>
+            </button>
+            <button class="abtn" aria-label="תזכורת לשירה" data-action="toast" data-toast="נקבעה תזכורת ליום ההולדת של שירה" data-toast-icon="bell">
+              <i class="a-bell" data-icon="bell" data-size="19"></i><span>תזכורת</span>
+            </button>
+          </span>
+        </a>
+
+        <!-- 3 -->
+        <a class="pcard" href="02-contact.html" data-tags="interest">
+          <i class="chev" data-icon="chevron-right" data-size="17" data-stroke="1.6"></i>
+          <img class="face" src="assets/img/03-face-3.png" alt="" />
+          <span class="who">
+            <b>אבי פרידמן</b>
+            <span class="city">חולון</span>
+            <p>שאל על הנחת תפילין<br />ורוצה ללמוד</p>
+          </span>
+          <span class="side">
+            <span class="tagline t-blue">
+              <span>הביע עניין בהנחת תפילין</span>
+              <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z" /><path d="M12 12 4 7.5" /><path d="m12 12 8-4.5" /><path d="M12 12v9" />
+              </svg>
+            </span>
+            <span class="sub">שיחה אחרונה: לפני 18 יום</span>
+          </span>
+          <span class="acts">
+            <button class="abtn" aria-label="שלח הודעה לאבי" data-action="toast" data-toast="נפתחה טיוטת הודעה לאבי פרידמן" data-toast-icon="message-circle">
+              <svg class="a-msg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg><span>שלח הודעה</span>
+            </button>
+            <button class="abtn" aria-label="פנייה לאבי פרידמן" data-action="contact" data-name="אבי פרידמן">
+              <i class="a-phone" data-icon="phone" data-size="19"></i><span>התקשר</span>
+            </button>
+            <button class="abtn" aria-label="פרופיל אבי" data-action="toast" data-toast="נפתח הפרופיל של אבי פרידמן" data-toast-icon="user-round">
+              <i class="a-user" data-icon="user-round" data-size="19"></i><span>פרופיל</span>
+            </button>
+            <button class="abtn" aria-label="תזכורת לאבי" data-action="toast" data-toast="נקבעה תזכורת לשיעור הנחת תפילין" data-toast-icon="bell">
+              <i class="a-bell" data-icon="bell" data-size="19"></i><span>תזכורת</span>
+            </button>
+          </span>
+        </a>
+
+        <!-- 4 -->
+        <a class="pcard" href="02-contact.html" data-tags="old events">
+          <i class="chev" data-icon="chevron-right" data-size="17" data-stroke="1.6"></i>
+          <img class="face" src="assets/img/03-face-4.png" alt="" />
+          <span class="who">
+            <b>דניאל ששון</b>
+            <span class="city">בת ים</span>
+            <p>הגיע לשיעור ובהמשך<br />לא שמרנו על קשר</p>
+          </span>
+          <span class="side">
+            <span class="tagline t-green">
+              <span>השתתף בפעילות ולא הוזמן שוב</span>
+              <i class="ic" data-icon="users-round" data-size="16"></i>
+            </span>
+            <span class="sub">השתתף לפני 32 יום</span>
+          </span>
+          <span class="acts">
+            <button class="abtn" aria-label="שלח הודעה לדניאל" data-action="toast" data-toast="נפתחה טיוטת הזמנה לדניאל ששון" data-toast-icon="message-circle">
+              <svg class="a-msg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg><span>שלח הודעה</span>
+            </button>
+            <button class="abtn" aria-label="פנייה לדניאל ששון" data-action="contact" data-name="דניאל ששון">
+              <i class="a-phone" data-icon="phone" data-size="19"></i><span>התקשר</span>
+            </button>
+            <button class="abtn" aria-label="פרופיל דניאל" data-action="toast" data-toast="נפתח הפרופיל של דניאל ששון" data-toast-icon="user-round">
+              <i class="a-user" data-icon="user-round" data-size="19"></i><span>פרופיל</span>
+            </button>
+            <button class="abtn" aria-label="תזכורת לדניאל" data-action="toast" data-toast="נקבעה תזכורת להזמין את דניאל לשיעור" data-toast-icon="bell">
+              <i class="a-bell" data-icon="bell" data-size="19"></i><span>תזכורת</span>
+            </button>
+          </span>
+        </a>
+
+        <!-- 5 -->
+        <a class="pcard" href="02-contact.html" data-tags="old">
+          <i class="chev" data-icon="chevron-right" data-size="17" data-stroke="1.6"></i>
+          <img class="face" src="assets/img/03-face-5.png" alt="" />
+          <span class="who">
+            <b>משה אדרי</b>
+            <span class="city">ראשון לציון</span>
+            <p>היה פעיל בעבר,<br />וכדאי לחדש את הקשר</p>
+          </span>
+          <span class="side">
+            <span class="tagline t-purple">
+              <span>לא השתתף לאחרונה</span>
+              <i class="ic" data-icon="users" data-size="16"></i>
+            </span>
+            <span class="sub">לא היה פעיל 60+ יום</span>
+          </span>
+          <span class="acts">
+            <button class="abtn" aria-label="שלח הודעה למשה" data-action="toast" data-toast="נפתחה טיוטת הודעה למשה אדרי" data-toast-icon="message-circle">
+              <svg class="a-msg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg><span>שלח הודעה</span>
+            </button>
+            <button class="abtn" aria-label="פנייה למשה אדרי" data-action="contact" data-name="משה אדרי">
+              <i class="a-phone" data-icon="phone" data-size="19"></i><span>התקשר</span>
+            </button>
+            <button class="abtn" aria-label="פרופיל משה" data-action="toast" data-toast="נפתח הפרופיל של משה אדרי" data-toast-icon="user-round">
+              <i class="a-user" data-icon="user-round" data-size="19"></i><span>פרופיל</span>
+            </button>
+            <button class="abtn" aria-label="תזכורת למשה" data-action="toast" data-toast="נקבעה תזכורת לחדש את הקשר עם משה" data-toast-icon="bell">
+              <i class="a-bell" data-icon="bell" data-size="19"></i><span>תזכורת</span>
+            </button>
+          </span>
+        </a>
+      </div>
+
+      <!-- ============ סרגל תחתון ============ -->
+      <!-- סדר ה-DOM הפוך בכוונה: משחזר את סדר התצוגה של המוקאפ. מתועד ביומן ההכרעות -->
+
+<!-- ============ גיליונות ============ -->
+      <div class="sheet" id="sort-sheet" role="dialog" aria-label="סינון ומיון">
+        <div class="sheet-grab"></div>
+        <h3>סינון ומיון</h3>
+        <button class="srow press" data-action="close-sheet"><i data-icon="check" data-size="16"></i> לפי דחיפות הקשר</button>
+        <button class="srow press" data-action="toast" data-toast="המיון שונה: לפי תאריך השיחה האחרונה"><i data-icon="clock" data-size="16"></i> לפי תאריך השיחה האחרונה</button>
+        <button class="srow press" data-action="toast" data-toast="המיון שונה: לפי אירוע קרוב"><i data-icon="calendar" data-size="16"></i> לפי אירוע קרוב</button>
+        <button class="srow press" data-action="toast" data-toast="המיון שונה: לפי שם"><i data-icon="user-round" data-size="16"></i> לפי שם</button>
+      </div>
+
+      <div class="sheet" id="menu-sheet" role="dialog" aria-label="תפריט">
+        <div class="sheet-grab"></div>
+        <h3>תפריט</h3>
+        <a class="srow press" href="01-shaliach-home.html"><i data-icon="home" data-size="17"></i> מרכז השליח</a>
+        <a class="srow press" href="04-call-prep.html"><i data-icon="sparkles" data-size="17"></i> הכנה אישית לשיחה</a>
+        <a class="srow press" href="06-rebbe-report.html"><i data-icon="scroll-text" data-size="17"></i> דוח לרבי</a>
+        <a class="srow press" href="07-network.html"><i data-icon="globe" data-size="17"></i> רישות בתי חב״ד</a>
+      </div>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+    <script>
+      /* סינון הכרטיסים — התנהגות ייחודית למסך הזה בלבד (app.js לא נגעתי בו) */
+      ;(function () {
+        var chips = document.querySelectorAll('[data-action="filter"]')
+        var cards = document.querySelectorAll('#cards .pcard')
+        var names = { all: 'הכל', old: 'יותר מ-30 יום', events: 'אירועים קרובים', interest: 'בעלי עניין' }
+        document.addEventListener('click', function (e) {
+          var chip = e.target.closest('[data-action="filter"]')
+          if (!chip) return
+          var key = chip.dataset.filter
+          chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c === chip)) })
+          var shown = 0
+          cards.forEach(function (card) {
+            var match = key === 'all' || (' ' + card.dataset.tags + ' ').indexOf(' ' + key + ' ') > -1
+            card.hidden = !match
+            if (match) shown++
+          })
+          if (window.App) window.App.toast(names[key] + ' — ' + shown + ' הזדמנויות', 'filter')
+        })
+      })()
+    </script>
+  </body>
+</html>

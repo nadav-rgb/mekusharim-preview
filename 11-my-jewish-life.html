@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>החיים היהודיים שלי — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      /* כל מידה בקובץ נמדדה מ"החיים היהודיים שלי.png" (863x1823).
+         מקדם ההמרה: CSS = פיקסל_מוקאפ × 427/863 = ×0.494785  (לא ÷2!)
+         גדלי הגופן חושבו בכיול רוחב-דיו (artifacts/c11/cal.mjs). */
+
+      .screen {
+        background: #fcf8f4;
+      }
+
+      /* ===== אזור הכותרת: תצלום + כיתוב (מוקאפ y 0..506) ===== */
+      .hero {
+        position: relative;
+        height: 250.4px;
+      }
+      .hero-img {
+        position: absolute;
+        inset: 0;
+        width: 427px;
+        height: 250.4px;
+        object-fit: cover;
+      }
+
+      .burger {
+        position: absolute;
+        inset-inline-end: 15.8px; /* ב-RTL: end = שמאל */
+        top: 21.5px;
+        padding: 2px;
+        color: #0a1226;
+      }
+      .burger span {
+        display: block;
+        width: 19.8px;
+        height: 2.3px;
+        border-radius: 2px;
+        background: currentColor;
+      }
+      .burger span + span {
+        margin-top: 4.5px;
+      }
+
+      .brand {
+        position: absolute;
+        inset-inline-start: 14.4px; /* ב-RTL: start = ימין */
+        top: 9px;
+        text-align: center;
+        color: #061632;
+      }
+      .brand .bh {
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1;
+        margin-bottom: 3px;
+      }
+
+      .h-title {
+        position: absolute;
+        inset-inline: 0;
+        top: 24px;
+        text-align: center;
+        font-family: var(--font-serif);
+        font-size: 30.5px;
+        font-weight: 500;
+        line-height: 1;
+        color: #071a33;
+      }
+      .h-sub {
+        position: absolute;
+        inset-inline: 0;
+        top: 71px;
+        text-align: center;
+        font-size: 14.5px;
+        font-weight: 400;
+        line-height: 1;
+        color: #565655;
+      }
+
+      /* ===== כרטיס "היום / אירוע חב״די קרוב" (מוקאפ 91..746 × 307..496) =====
+         הכרטיס אינו ממורכז במוקאפ: 45.0px משמאל, 57.4px מימין. משוחזר כפי שהוא. */
+      .today {
+        position: absolute;
+        top: 151.9px;
+        inset-inline-start: 57.4px;
+        inset-inline-end: 45.0px;
+        height: 93.5px;
+        display: flex;
+        align-items: stretch;
+        background: #fdfcfb;
+        border-radius: 14px;
+        box-shadow: 0 2px 6px rgba(60, 42, 24, 0.05), 0 10px 26px rgba(60, 42, 24, 0.06);
+      }
+      .t-half {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+      }
+      .t-half + .t-half {
+        border-inline-start: 1px solid #efe8df; /* המפריד האנכי, x=211.8 */
+      }
+      .t-txt {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+      }
+      .t-today .t-txt { padding-inline-start: 20px; position: relative; top: -2.8px; }
+      .t-event .t-txt { padding-inline-end: 15px; position: relative; top: 1.5px; }
+      .t-lbl {
+        display: block;
+        font-size: 9px;
+        font-weight: 500;
+        line-height: 1;
+        color: #5c5751;
+      }
+      .t-big {
+        display: block;
+        margin-top: 8px;
+        font-weight: 700;
+        line-height: 1;
+        color: #0a0a0a;
+        white-space: nowrap;
+      }
+      .t-today .t-big { font-size: 12.5px; margin-top: 12.8px; }
+      .t-event .t-big { font-size: 10px; margin-top: 9.3px; }
+      .t-sub {
+        display: block;
+        margin-top: 8px;
+        font-weight: 400;
+        line-height: 1;
+        color: #666566;
+      }
+      .t-today .t-sub { font-size: 10.5px; margin-top: 9.3px; }
+      .t-event .t-sub { font-size: 9.5px; margin-top: 9.3px; }
+      .t-mid {
+        display: block;
+        margin-top: 8.4px;
+        font-size: 9px;
+        font-weight: 600;
+        line-height: 1;
+        color: #141926;
+      }
+      .t-bubble {
+        flex: none;
+        width: 31px;
+        height: 31px;
+        border-radius: var(--r-pill);
+        background: #f8f1e6;
+        display: grid;
+        place-items: center;
+        color: #a9752a;
+      }
+      /* העיגול של "היום" יושב בשמאל החצי, והעיגול של האירוע בימין —
+         כך במוקאפ; מתועד בדוח כהיפוך RTL בתוך החצי הימני. */
+      .t-today .t-bubble { margin-inline-end: 15px; }
+      .t-event .t-bubble { margin-inline-start: 8px; background: transparent; }
+
+      /* ===== מעטפת כרטיס משותפת ===== */
+      .sec {
+        position: absolute;
+        inset-inline: 11.0px;
+        background: #fefdfc;
+        border: 1px solid #f3ece3;
+        border-radius: 18px;
+        box-shadow: 0 1px 2px rgba(60, 42, 24, 0.03), 0 6px 18px rgba(60, 42, 24, 0.035);
+      }
+      .sec > header {
+        display: flex; /* RTL: הילד הראשון בימין → האייקון בימין, הכותרת לשמאלו */
+        align-items: center;
+        justify-content: flex-start;
+        gap: 5px;
+        padding-inline: 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #08142f;
+      }
+
+      /* ===== ימי הולדת במשפחה (מוקאפ y 538..986) ===== */
+      .sec-bday {
+        top: 266.2px;
+        height: 221.7px;
+      }
+      .sec-bday > header {
+        height: 38px;
+        padding-top: 6px;
+      }
+      .sec-bday > header .ico { color: #c08b34; }
+
+      .bdays {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 7.9px;
+        padding-inline: 9.4px;
+        margin-top: 0.5px;
+      }
+      .bd {
+        min-width: 0;
+        height: 137.1px;
+        background: #fdfcfb;
+        border: 1px solid #f4ece2;
+        border-radius: 7px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 7.9px;
+        text-align: center;
+      }
+      .bd .face {
+        width: 47.5px;
+        height: 47.5px;
+        border-radius: var(--r-pill);
+        object-fit: cover;
+        background: var(--surface-sunken);
+      }
+      .bd .nm {
+        margin-top: 8.6px;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        color: #010101;
+      }
+      .bd .hd {
+        margin-top: 7.8px;
+        font-size: 10px;
+        font-weight: 400;
+        line-height: 1;
+        color: #6f6f70;
+        white-space: nowrap;
+      }
+      .bd .dy {
+        margin-top: 7.5px;
+        font-size: 9.5px;
+        font-weight: 400;
+        line-height: 1;
+        color: #606061;
+        white-space: nowrap;
+      }
+      .bd .gf {
+        margin-top: 8.5px;
+        color: #4c4a48;
+      }
+      .bd-add {
+        justify-content: flex-start;
+        padding-top: 34.6px;
+      }
+      .bd-add .plus {
+        width: 31.6px;
+        height: 31.6px;
+        border-radius: var(--r-pill);
+        background: #f7efe4;
+        display: grid;
+        place-items: center;
+        color: #6b6560;
+      }
+      .bd-add .a1 {
+        margin-top: 17.3px;
+        font-size: 10px;
+        line-height: 1;
+        color: #6f6f70;
+      }
+      .bd-add .a2 {
+        margin-top: 5.4px;
+        font-size: 10px;
+        line-height: 1;
+        color: #6f6f70;
+        white-space: nowrap;
+      }
+
+      /* כפתור רחב תחתון בתוך כרטיס */
+      .wide-btn {
+        position: absolute;
+        inset-inline: 0;
+        margin-inline: auto;
+        width: 173.7px;
+        height: 21.3px;
+        display: flex; /* RTL: האייקון (ילד ראשון) בימין, הטקסט לשמאלו — כמו במוקאפ */
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        background: #fdf9f2;
+        border: 1px solid #f2e8d8;
+        border-radius: 10px;
+        font-size: 10.5px;
+        font-weight: 500;
+        color: #16233f;
+      }
+      .wide-btn .ico { color: #b78a3d; }
+
+      .sec-bday .wide-btn { top: 189.2px; }
+
+      /* ===== מה מחכה לנו? (מוקאפ y 1011..1445) ===== */
+      .sec-await {
+        top: 500.2px;
+        height: 214.8px;
+      }
+      .sec-await > header {
+        height: 32px;
+        padding-top: 2px;
+        font-size: 12.5px;
+      }
+      .sec-await > header .ico { color: #c08b34; }
+
+      .rows {
+        padding-inline: 10.4px;
+        margin-top: 2px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        height: 46px;
+        padding-block: 4.4px 0;
+        padding-inline: 3px 8px;
+        border-radius: 11px;
+        background: #fdfcfb;
+        transition: background-color var(--dur-ui) var(--ease-out);
+      }
+      .row + .row { margin-top: 0; border-top: 1px solid #f4eee6; }
+      .row:active { background: #f9f4ee; }
+      .row .orb {
+        flex: none;
+        width: 34.6px;
+        height: 34.6px;
+        border-radius: var(--r-pill);
+        display: grid;
+        place-items: center;
+        color: #fff;
+      }
+      .orb-brown { background: #8c5220; }
+      .orb-navy { background: #3a5878; }
+      .orb-gold { background: #bd8e3f; }
+      .row .txt {
+        flex: 1;
+        min-width: 0;
+        margin-inline-start: 21.5px;
+        text-align: start;
+      }
+      .row .txt b {
+        display: block;
+        font-size: 10.5px;
+        font-weight: 700;
+        line-height: 1;
+        color: #1d1d1c;
+        white-space: nowrap;
+      }
+      .row .txt span {
+        display: block;
+        margin-top: 8px;
+        font-size: 10px;
+        font-weight: 400;
+        line-height: 1;
+        color: #717172;
+        white-space: nowrap;
+      }
+      .row .when {
+        flex: none;
+        font-size: 10px;
+        font-weight: 500;
+        line-height: 1;
+        color: #474748;
+        white-space: nowrap;
+      }
+      .row .chev {
+        flex: none;
+        margin-inline-start: 14px;
+        color: #6f6b67;
+      }
+
+      .sec-await .wide-btn { top: 183.4px; height: 22.8px; }
+
+      /* ===== הצעה יומית (מוקאפ y 1466..1687) ===== */
+      .sec-daily {
+        top: 725.4px;
+        height: 109.3px;
+        overflow: hidden;
+      }
+      /* עיגול הלב בשמאל הכרטיס — כך במוקאפ. מתועד בדוח כהיפוך RTL. */
+      .heart-orb {
+        position: absolute;
+        inset-inline-end: 14.3px;
+        top: 16.8px;
+        width: 47px;
+        height: 47px;
+        border-radius: var(--r-pill);
+        background: linear-gradient(150deg, #d3a057, #c0872f);
+        display: grid;
+        place-items: center;
+        color: #fff;
+        box-shadow: 0 3px 10px rgba(180, 130, 50, 0.22);
+      }
+      .d-lbl {
+        position: absolute;
+        top: 6.5px;
+        inset-inline-start: 21.2px;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1;
+        color: #b17615;
+      }
+      .d-title {
+        position: absolute;
+        top: 28.2px;
+        inset-inline-start: 51.5px;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        color: #0a0a0a;
+        white-space: nowrap;
+      }
+      .d-body {
+        position: absolute;
+        top: 46.3px;
+        inset-inline-start: 51.5px;
+        font-size: 10.5px;
+        font-weight: 400;
+        line-height: 1.4;
+        color: #69696b;
+        text-align: start;
+        white-space: nowrap;
+      }
+      .gold-btn {
+        position: absolute;
+        top: 82px;
+        inset-inline: 0;
+        margin-inline: auto;
+        width: 120.7px;
+        height: 19.3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #bf8c38;
+        border-radius: 8px;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #fffdf8;
+        box-shadow: 0 2px 6px rgba(170, 120, 40, 0.22);
+      }
+
+      /* ===== גיליונות ===== */
+      .sheet h3 { font-size: 16px; margin-bottom: 8px; }
+      .sheet .srow {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--divider);
+        font-size: 14.5px;
+        text-align: start;
+      }
+      .sheet .srow:last-child { border-bottom: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="consumer" data-current="life">
+      <!-- ============ כותרת ============ -->
+      <div class="hero">
+        <img class="hero-img" src="assets/img/11-hero.png" alt="" />
+
+        <button class="burger press tap" aria-label="תפריט" data-action="sheet" data-sheet="menu-sheet">
+          <span></span><span></span><span></span>
+        </button>
+
+        <div class="brand">
+          <div class="bh">ב״ה</div>
+          <svg width="34" height="18.5" viewBox="0 0 29 25" fill="none" aria-hidden="true">
+            <path d="M1.6 1.6h25.8L14.5 23Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" />
+            <path d="M7 5.6h15L14.5 17.8Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+            <path d="M11.6 9.6h5.8L14.5 14Z" fill="currentColor" />
+          </svg>
+        </div>
+
+        <h1 class="h-title">החיים היהודיים שלי</h1>
+        <p class="h-sub">כל מה שחשוב – במקום אחד</p>
+
+        <!-- סדר ה-DOM הפוך בכוונה: במוקאפ "היום" בשמאל ו"אירוע חב״די קרוב" בימין,
+             כלומר סדר תצוגה LTR. משחזר את המוקאפ; מתועד ביומן ההכרעות -->
+        <div class="today">
+          <a class="t-half t-event press-soft" href="15-event.html">
+            <span class="t-bubble" aria-hidden="true">
+              <svg width="30" height="34" viewBox="0 0 30 34" fill="none">
+                <circle cx="15" cy="17" r="14.5" fill="#f8f1e6" />
+                <path d="M15 3.2c2.6 2.4 3.9 4.3 3.9 6.1 0 2.2-1.7 3.7-3.9 3.7s-3.9-1.5-3.9-3.7c0-1.8 1.3-3.7 3.9-6.1Z" fill="#f0b429" />
+                <path d="M15 5.6c1.5 1.5 2.2 2.6 2.2 3.7 0 1.3-1 2.2-2.2 2.2s-2.2-.9-2.2-2.2c0-1.1.7-2.2 2.2-3.7Z" fill="#fde8b0" />
+                <rect x="11.6" y="13.6" width="6.8" height="12.4" rx="1.6" fill="#fffdf7" stroke="#c9a06a" stroke-width="1" />
+                <path d="M15 12.6v1.4" stroke="#5c4326" stroke-width="1.1" stroke-linecap="round" />
+                <path d="M6.5 27.6c0-1.4 3.8-2.2 8.5-2.2s8.5.8 8.5 2.2-3.8 2.3-8.5 2.3-8.5-.9-8.5-2.3Z" fill="#fffdf7" stroke="#a9752a" stroke-width="1.3" />
+              </svg>
+            </span>
+            <span class="t-txt">
+              <span class="t-lbl">אירוע חב״די קרוב</span>
+              <span class="t-big">י״ב תמוז</span>
+              <span class="t-mid">הילולת הרבי</span>
+              <span class="t-sub">בעוד 8 ימים</span>
+            </span>
+          </a>
+
+          <button class="t-half t-today press-soft" data-action="sheet" data-sheet="date-sheet">
+            <span class="t-txt">
+              <span class="t-lbl">היום</span>
+              <span class="t-big">ד׳ תמוז תשפ״ה</span>
+              <span class="t-sub">30 ביוני 2025</span>
+            </span>
+            <span class="t-bubble" aria-hidden="true"><i data-icon="calendar" data-size="16"></i></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ ימי הולדת במשפחה ============ -->
+      <section class="sec sec-bday">
+        <header>
+          <span class="ico" aria-hidden="true">
+            <svg width="17.8" height="17.8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2.5v2" />
+              <path d="M8.4 4.2 8 5.6" /><path d="m15.6 4.2.4 1.4" />
+              <path d="M4.5 20.5v-7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7" />
+              <path d="M4.5 16.4c1.9 0 1.9 1.5 3.8 1.5s1.9-1.5 3.7-1.5 1.9 1.5 3.8 1.5 1.9-1.5 3.7-1.5" />
+              <path d="M3.2 20.5h17.6" />
+              <path d="M12 6.2v5.3" />
+            </svg>
+          </span>
+          <span>ימי הולדת במשפחה</span>
+        </header>
+
+        <!-- סדר ה-DOM הפוך בכוונה: במוקאפ כרטיס "הוסף בן משפחה" יושב בימין
+             (המקום הראשון ב-RTL) ואברהם בשמאל. משחזר את סדר התצוגה של המוקאפ -->
+        <div class="bdays">
+          <button class="bd bd-add press" data-action="toast" data-toast="הוספת בן משפחה תיפתח כאן" data-toast-icon="user-plus">
+            <span class="plus"><i data-icon="plus" data-size="15"></i></span>
+            <span class="a1">הוסף</span>
+            <span class="a2">בן משפחה</span>
+          </button>
+          <button class="bd press" data-action="toast" data-toast="ברכה ליוסף — א׳ תשרי" data-toast-icon="gift">
+            <img class="face" src="assets/img/11-face-3.png" alt="יוסף" />
+            <span class="nm">יוסף</span>
+            <span class="hd">א׳ תשרי</span>
+            <span class="dy">בעוד 62 ימים</span>
+            <span class="gf"><i data-icon="gift" data-size="13.9"></i></span>
+          </button>
+          <button class="bd press" data-action="toast" data-toast="ברכה לבת-שבע — ה׳ אלול" data-toast-icon="gift">
+            <img class="face" src="assets/img/11-face-2.png" alt="בת-שבע" />
+            <span class="nm">בת–שבע</span>
+            <span class="hd">ה׳ אלול</span>
+            <span class="dy">בעוד 45 ימים</span>
+            <span class="gf"><i data-icon="gift" data-size="13.9"></i></span>
+          </button>
+          <button class="bd press" data-action="toast" data-toast="ברכה לשירה — כ״ב תמוז" data-toast-icon="gift">
+            <img class="face" src="assets/img/11-face-1.png" alt="שירה" />
+            <span class="nm">שירה</span>
+            <span class="hd">כ״ב תמוז</span>
+            <span class="dy">בעוד 9 ימים</span>
+            <span class="gf"><i data-icon="gift" data-size="13.9"></i></span>
+          </button>
+          <button class="bd press" data-action="toast" data-toast="ברכה לאברהם — י׳ אב" data-toast-icon="gift">
+            <img class="face" src="assets/img/11-face-0.png" alt="אברהם" />
+            <span class="nm">אברהם</span>
+            <span class="hd">י׳ אב</span>
+            <span class="dy">בעוד 18 ימים</span>
+            <span class="gf"><i data-icon="gift" data-size="13.9"></i></span>
+          </button>
+        </div>
+
+        <a class="wide-btn press" href="#">
+          <span class="ico"><i data-icon="calendar" data-size="14"></i></span>
+          <span>צפה בכל ימי ההולדת</span>
+        </a>
+      </section>
+
+      <!-- ============ מה מחכה לנו? ============ -->
+      <section class="sec sec-await">
+        <header>
+          <span class="ico" aria-hidden="true"><i data-icon="calendar" data-size="16.5"></i></span>
+          <span>מה מחכה לנו?</span>
+        </header>
+
+        <div class="rows">
+          <a class="row" href="15-event.html">
+            <span class="orb orb-brown" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M8.2 4.2v2.2M15.8 4.2v2.2" stroke="#f6d99a" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M2.6 9.4c2.6-1.4 6-1.2 8.4.6v9.6c-2.4-1.8-5.8-2-8.4-.6V9.4Z" fill="#fff" />
+                <path d="M21.4 9.4c-2.6-1.4-6-1.2-8.4.6v9.6c2.4-1.8 5.8-2 8.4-.6V9.4Z" fill="#fff" />
+              </svg>
+            </span>
+            <span class="txt">
+              <b>י״ב תמוז – הילולת הרבי</b>
+              <span>חג הגאולה של הרבי</span>
+            </span>
+            <span class="when">עוד 8 ימים</span>
+            <span class="chev"><i data-icon="chevron-left" data-size="14"></i></span>
+          </a>
+
+          <a class="row" href="15-event.html">
+            <span class="orb orb-navy" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M15.6 3.2A9 9 0 1 0 19 16.4 7.2 7.2 0 0 1 15.6 3.2Z" fill="#f2c14e" />
+                <path d="m18.6 5.4.9 1.9 2 .3-1.5 1.5.4 2-1.8-1-1.8 1 .4-2-1.5-1.5 2-.3.9-1.9Z" fill="#f2c14e" />
+                <path d="m19.6 15.2.55 1.15 1.25.2-.9.9.2 1.25-1.1-.6-1.1.6.2-1.25-.9-.9 1.25-.2.55-1.15Z" fill="#f2c14e" />
+              </svg>
+            </span>
+            <span class="txt">
+              <b>כ״ט אב – ראש חודש אלול</b>
+              <span>הכנה לימים הנוראים</span>
+            </span>
+            <span class="when">עוד 17 ימים</span>
+            <span class="chev"><i data-icon="chevron-left" data-size="14"></i></span>
+          </a>
+
+          <a class="row" href="15-event.html">
+            <span class="orb orb-gold" aria-hidden="true"><i data-icon="gift" data-size="20"></i></span>
+            <span class="txt">
+              <b>י׳ אלול – יום הולדת הרבי</b>
+              <span>יום שמחה והודאה</span>
+            </span>
+            <span class="when">עוד 34 ימים</span>
+            <span class="chev"><i data-icon="chevron-left" data-size="14"></i></span>
+          </a>
+        </div>
+
+        <a class="wide-btn press" href="#">
+          <span class="ico"><i data-icon="calendar" data-size="14"></i></span>
+          <span>לוח השנה החב״די המלא</span>
+        </a>
+      </section>
+
+      <!-- ============ הצעה יומית ============ -->
+      <section class="sec sec-daily">
+        <!-- עיגול הלב יושב בשמאל הכרטיס במוקאפ (ב-RTL מקומו הטבעי בימין) -->
+        <span class="heart-orb" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 5.6a5 5 0 0 0-7 0l-.9.9-.9-.9a5 5 0 1 0-7 7l7.9 8 7.9-8a5 5 0 0 0 0-7Z" />
+          </svg>
+        </span>
+        <div class="d-lbl">הצעה יומית עבורך</div>
+        <div class="d-title">היום יום ד׳ תמוז – זמן של חיות והתעלות</div>
+        <div class="d-body">הקדש כמה דקות היום ללימוד חסידות.<br />כל מילה היא נר קטן שמאיר את הנשמה.</div>
+        <button class="gold-btn press" data-action="sheet" data-sheet="mitzvah-sheet">בחר מצווה / החלטה טובה</button>
+      </section>
+
+      <!-- ============ סרגל תחתון ============
+           סדר ה-DOM הפוך בכוונה: במוקאפ "עוד" יושב בימין (המקום הראשון ב-RTL)
+           ו"מפה" בשמאל — כלומר סדר תצוגה LTR. משחזר את המוקאפ -->
+
+<!-- ============ גיליונות ============ -->
+      <div class="sheet" id="menu-sheet" role="dialog" aria-label="תפריט">
+        <div class="sheet-grab"></div>
+        <h3>תפריט</h3>
+        <a class="srow press" href="09-find-chabad.html"><i data-icon="map-pin" data-size="17"></i> מצא בית חב״ד קרוב</a>
+        <a class="srow press" href="13-letter-to-rebbe.html"><i data-icon="scroll-text" data-size="17"></i> מכתב לרבי</a>
+        <a class="srow press" href="14-shabbat-meal.html"><i data-icon="utensils" data-size="17"></i> סעודת שבת ואוכל כשר</a>
+        <a class="srow press" href="all.html"><i data-icon="layout-grid" data-size="17"></i> כל המסכים</a>
+      </div>
+
+      <div class="sheet" id="date-sheet" role="dialog" aria-label="התאריך היום">
+        <div class="sheet-grab"></div>
+        <h3>ד׳ תמוז תשפ״ה</h3>
+        <p class="srow">30 ביוני 2025 · יום שני</p>
+        <p class="srow">פרשת השבוע: קרח</p>
+        <button class="srow press" data-action="toast" data-toast="לוח השנה החב״די ייפתח כאן" data-toast-icon="calendar"><i data-icon="calendar" data-size="17"></i> ללוח השנה המלא</button>
+      </div>
+
+      <div class="sheet" id="mitzvah-sheet" role="dialog" aria-label="בחירת מצווה">
+        <div class="sheet-grab"></div>
+        <h3>בחר מצווה / החלטה טובה</h3>
+        <div data-checkrow>
+          <button class="srow press" role="checkbox" aria-checked="false" data-action="check" data-toast="נבחר: פרק תניא ביום"><i data-icon="check" data-size="15"></i> פרק תניא ביום</button>
+        </div>
+        <div data-checkrow>
+          <button class="srow press" role="checkbox" aria-checked="false" data-action="check" data-toast="נבחר: צדקה לפני התפילה"><i data-icon="check" data-size="15"></i> צדקה לפני התפילה</button>
+        </div>
+        <div data-checkrow>
+          <button class="srow press" role="checkbox" aria-checked="false" data-action="check" data-toast="נבחר: שיחה טובה עם חבר"><i data-icon="check" data-size="15"></i> שיחה טובה עם חבר</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

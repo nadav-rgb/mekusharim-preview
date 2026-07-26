@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>בתי חב״ד — דף הבית</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      /* כל מידה כאן נמדדה מ"דף הבית.png" (853x1844 = @2x) וחולקה ב-2.
+         גדלי הגופן חושבו ב-scripts/calibrate.mjs מרוחב הדיו שנמדד ב---bbox. */
+
+      /* ===== פלטה מקומית (נדגמה מהמוקאפ) ===== */
+      .screen {
+        --nv: #0b0b2b;      /* כותרות + סרגל תחתון */
+        --nv-2: #1b1d42;
+        --mut: #63667c;     /* טקסט משני */
+        --gld: #d5a03f;
+        --gld-2: #c08f2e;
+        --grn: #2b8f4e;
+        --bd: #f0ece6;
+        background: #fefefe;
+        font-family: var(--font);
+        color: var(--nv);
+      }
+
+      /* ===================== סרגל מצב ===================== */
+      .sb { position: absolute; inset-inline: 0; top: 0; height: 40px; color: var(--nv); }
+      .sb .sb-l { position: absolute; inset-inline-end: 14.5px; top: 13px; } /* end = שמאל ב-RTL */
+      /* היפוך RTL של המוקאפ: סרגל המצב מסודר משמאל לימין (100% · סוללה · Wi-Fi · קליטה) */
+      .sb .sb-l > span { display: flex; align-items: center; gap: 6px; direction: ltr; }
+      .sb .pct { font-size: 12.5px; font-weight: 700; line-height: 1; }
+      .sb .time { position: absolute; inset-inline-start: 25px; top: 12px; font-size: 14px; font-weight: 600; line-height: 1; }
+
+      /* ===================== כותרת עליונה ===================== */
+      /* היפוך RTL של המוקאפ: קבוצת האווטאר+ברכה יושבת בשמאל המסך והלוגו בימין. */
+      .ava { position: absolute; inset-inline-end: 18px; top: 41px; width: 47px; height: 47px; }
+      .ava img { width: 100%; height: 100%; border-radius: var(--r-pill); object-fit: cover; border: 2px solid #dfae55; }
+      .ava .bdg {
+        position: absolute; top: -1.5px; inset-inline-end: 1.5px;
+        width: 11.5px; height: 11.5px; border-radius: var(--r-pill); background: #d0453c;
+      }
+
+      .greet { position: absolute; inset-inline-start: 244.5px; top: 43px; text-align: right; }
+      .greet h1 {
+        font-size: 15px; font-weight: 800; line-height: 1.25; color: var(--nv);
+        margin-inline-start: 32px; white-space: nowrap;
+      }
+      .greet .gsub {
+        display: flex; align-items: center; gap: 5px; margin-top: 4px;
+        font-size: 10.5px; font-weight: 400; line-height: 1.3; color: #34364f; white-space: nowrap;
+      }
+      .greet .gsub svg { color: var(--gld); }
+
+      .brand { position: absolute; inset-inline-start: 22px; top: 40px; display: flex; align-items: center; gap: 1px; }
+      .brand .btxt { text-align: left; }
+      .brand b { display: block; font-size: 13.5px; font-weight: 700; line-height: 1.25; color: var(--nv); }
+      .brand span { display: block; font-size: 9.5px; font-weight: 400; line-height: 1.3; color: #4b4d64; margin-top: 2px; }
+
+      /* ===================== גיבור ===================== */
+      .hero { position: absolute; inset-inline: 0; top: 99.5px; height: 153px; }
+      .hero > img { width: 427px; height: 153px; object-fit: cover; }
+      .hero h2 {
+        position: absolute; inset-inline: 0; top: 20px;
+        text-align: center; font-size: 20.5px; font-weight: 800; line-height: 1.24; color: #08091f;
+      }
+      .hero p {
+        position: absolute; inset-inline: 0; top: 49.5px;
+        text-align: center; font-size: 15.5px; font-weight: 500; line-height: 1.3; color: #16183a;
+      }
+
+      /* ===================== שורת חיפוש ===================== */
+      .srch {
+        position: absolute; inset-inline: 22px 19.5px; top: 181px; height: 45px;
+        display: flex; align-items: center; border-radius: var(--r-pill);
+        background: #fffefe; padding-inline: 22.5px 17.5px;
+        box-shadow: 0 3px 14px rgba(30, 24, 12, 0.1), 0 1px 2px rgba(30, 24, 12, 0.05);
+      }
+      .srch .fld { flex: 1; min-width: 0; display: flex; align-items: center; gap: 14px; }
+      .srch .fld svg { color: #0f1130; }
+      .srch .fld input {
+        flex: 1; min-width: 0; border: 0; background: none; outline: none; padding: 0;
+        font-family: var(--font); font-size: 11px; font-weight: 400; color: var(--nv);
+      }
+      .srch .fld input::placeholder { color: #8e8f9f; }
+      /* היפוך RTL של המוקאפ: הסמל יושב משמאל לתווית במקום מימין לה */
+      .srch .loc {
+        flex: none; display: flex; align-items: center; gap: 8px;
+        font-size: 11px; font-weight: 700; color: var(--gld-2);
+      }
+      .srch .loc svg { color: var(--gld); }
+
+      /* ===================== גיליון התוכן ===================== */
+      .sheet-main {
+        position: absolute; inset-inline: 0; top: 249.5px; bottom: 0;
+        background: #fefefe; border-radius: 16px 16px 0 0; z-index: 2;
+        padding-top: 13px;
+      }
+
+      .sec {
+        display: flex; align-items: center; justify-content: space-between;
+        padding-inline: 27px 22px; height: 20px;
+      }
+      .sec h3 { font-size: 14px; font-weight: 700; line-height: 1.25; color: var(--nv); }
+      .sec a { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: #3c3e57; }
+      .sec a svg { color: #3c3e57; }
+
+      /* ===================== מסילות אופקיות =====================
+         סדר עברי: הכרטיס הראשון (הקרוב ביותר) בימין, והמסילה גולשת שמאלה. */
+      .rail {
+        direction: rtl; display: flex; overflow-x: auto;
+        -ms-overflow-style: none; scrollbar-width: none;
+      }
+      .rail::-webkit-scrollbar { display: none; }
+      .rail > * { flex: none; }
+
+      /* ---- כרטיס בית חב״ד ---- */
+      .rail-houses { gap: 9.5px; padding-inline: 16px 14px; margin-top: 14px; }
+      .hcard {
+        width: 104px; height: 145px; background: #fff; border: 1px solid var(--bd);
+        border-radius: 11px; padding: 2.5px; position: relative;
+        box-shadow: 0 1px 3px rgba(30, 24, 12, 0.05), 0 6px 14px rgba(30, 24, 12, 0.035);
+        display: flex; flex-direction: column; align-items: center;
+      }
+      .hcard .ph { width: 99px; height: 79px; border-radius: 9px; object-fit: cover; }
+      /* הכרטיס הרביעי נחתך בקצה המסך — התמונה שנחתכה מהמוקאפ קיימת רק עד שם */
+      .hcard:last-child .ph { width: 67px; align-self: flex-end; }
+      /* היפוך RTL: תג המרחק במוקאפ יושב בפינה השמאלית של התמונה */
+      .hcard .km {
+        position: absolute; top: 4px; inset-inline-end: 6px;
+        height: 15px; padding-inline: 8px; border-radius: var(--r-pill);
+        background: rgba(255, 255, 255, 0.95); color: var(--nv);
+        display: flex; align-items: center; font-size: 10.5px; font-weight: 600; line-height: 1;
+        box-shadow: 0 1px 3px rgba(20, 16, 8, 0.16);
+      }
+      .hcard b { margin-top: 12px; font-size: 11.5px; font-weight: 700; line-height: 1.25; color: var(--nv); }
+      .hcard .loc2 { margin-top: 2.5px; font-size: 9.5px; font-weight: 400; line-height: 1.3; color: var(--mut); }
+      .hcard .st {
+        margin-top: auto; margin-bottom: 9px;
+        display: flex; align-items: center; gap: 5px; font-size: 9px; font-weight: 600;
+      }
+      .hcard .st i { width: 5.5px; height: 5.5px; border-radius: var(--r-pill); background: currentColor; flex: none; }
+      .st-open { color: var(--grn); }
+      .st-soon { color: var(--gld-2); }
+
+      .dots { display: flex; align-items: center; justify-content: center; gap: 4.5px; margin-top: 8.5px; }
+      .dots span { width: 4.5px; height: 4.5px; border-radius: var(--r-pill); background: #dedbd6; }
+      .dots span.on { width: 11px; background: var(--gld); }
+
+      /* ---- כרטיס משפט הרבי ---- */
+      .quote {
+        display: block; position: relative; margin-inline: 24px 16.5px; margin-top: 12.5px;
+        height: 117.5px; border-radius: 13px;
+        border: 1px solid #eddfc4;
+        background: linear-gradient(115deg, #fdf8ef 0%, #fbf3e4 45%, #fdf9f2 100%);
+        box-shadow: 0 1px 3px rgba(60, 42, 24, 0.05);
+      }
+      /* התמונה גולשת מעל שפת הכרטיס — כך זה במוקאפ (הכובע חורג מעל המסגרת) */
+      .quote .qimg {
+        position: absolute; inset-inline-start: -1px; top: -17px; width: 168px; height: 134px;
+        border-end-start-radius: 13px;
+      }
+      .quote .qchip {
+        position: absolute; top: 3.5px; inset-inline-end: 15.5px;
+        display: flex; align-items: center; gap: 7.5px; height: 17.5px;
+        padding-inline: 0 8px; border-radius: var(--r-pill); background: #f1e5d4;
+      }
+      .quote .qchip .bk {
+        width: 19px; height: 19px; border-radius: var(--r-pill); background: #14163c;
+        display: grid; place-items: center; color: var(--gld); flex: none;
+      }
+      .quote .qchip span { font-size: 10px; font-weight: 600; color: #3d3524; }
+      .quote .qmark {
+        position: absolute; top: 18px; inset-inline-start: 135px;
+        font-family: var(--font-serif); font-size: 36px; font-weight: 700; line-height: 1; color: #dfb463;
+      }
+      .quote .qtx {
+        position: absolute; top: 27px; inset-inline-start: 168.5px; width: 200px;
+        text-align: right; font-size: 14.5px; font-weight: 700; line-height: 1.29; color: #0d0f2e;
+      }
+      .quote .qby {
+        position: absolute; bottom: 10px; inset-inline-end: 15.5px;
+        font-size: 11px; font-weight: 600; color: var(--gld-2);
+      }
+
+      /* ---- מסילת הלוח החב״די ---- */
+      .rail-cal { gap: 6.5px; padding-inline: 17.5px 14px; margin-top: 7.5px; }
+      .ccard {
+        width: 113.5px; min-height: 113px; border-radius: 12px; position: relative; overflow: hidden;
+        border: 1px solid #f2eee8; box-shadow: 0 1px 3px rgba(30, 24, 12, 0.045);
+        background: linear-gradient(150deg, #fdfaf5 0%, #faf4ea 100%);
+        display: flex; flex-direction: column;
+      }
+      .ccard.c-blue { background: linear-gradient(150deg, #eef2f8 0%, #dbe3ef 100%); }
+      .ccard .chead { display: flex; align-items: flex-start; gap: 6px; padding: 8px 6px 0 6px; }
+      .ccard .cicon {
+        width: 23.5px; height: 23.5px; border-radius: var(--r-pill); background: #fffdfa;
+        display: grid; place-items: center; color: var(--nv); flex: none;
+        box-shadow: 0 1px 3px rgba(30, 24, 12, 0.08);
+      }
+      .ccard .chead b { flex: 1; min-width: 0; text-align: center; font-size: 16.5px; font-weight: 800; line-height: 1.15; color: var(--nv); }
+      .ccard .cwhen { text-align: center; font-size: 11.5px; font-weight: 500; color: #3f4159; margin-top: 4px; }
+      .ccard .cdiv { height: 1px; background: #eae4da; margin: 12px 12.5px 0; }
+      .ccard .cbody { text-align: center; font-size: 12px; font-weight: 400; line-height: 1.36; color: #23253f; padding: 10px 8px 0; }
+
+      /* כרטיס זמני שבת — תמונה ברקע וטקסט מיושר לימין */
+      .ccard.c-shab { background: #23201f; }
+      .ccard.c-shab .bgim { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .ccard.c-shab .sk { display: block; position: relative; z-index: 1; padding: 11px 14px 0; text-align: right; }
+      .ccard.c-shab .sk b { font-size: 11.5px; font-weight: 700; color: #17193b; display: block; line-height: 1.2; }
+      .ccard.c-shab .row {
+        display: flex; align-items: baseline; justify-content: flex-start; gap: 9.5px;
+        margin-top: 6px; font-size: 10.5px; font-weight: 500; color: #22243f; line-height: 1.3;
+      }
+      .ccard.c-shab .row:first-of-type { margin-top: 15px; }
+      .ccard.c-shab .row .t { font-weight: 600; font-size: 10.5px; }
+      /* היפוך RTL של המוקאפ: הצ׳ברון יושב מימין לתווית ומצביע ימינה */
+      .ccard.c-shab .all {
+        position: absolute; z-index: 1; bottom: 8px; inset-inline: 13.5px 0;
+        display: flex; align-items: center; justify-content: flex-start; gap: 5px;
+        font-size: 10.5px; font-weight: 600; color: #1c1e3c;
+      }
+
+      /* ---- כרטיס אירוע ---- */
+      .ev {
+        position: relative; margin-inline: 17.5px 17px; margin-top: 6.5px;
+        height: 62px; border-radius: 14px; overflow: hidden; background: #fff;
+        border: 1px solid var(--bd); box-shadow: 0 1px 3px rgba(30, 24, 12, 0.05);
+        display: flex; align-items: center;
+      }
+      /* היפוך RTL: במוקאפ התמונה בשמאל וכפתור הפעולה בימין */
+      .ev .evim { position: absolute; inset-inline-end: 0; top: 0; width: 190px; height: 62px; object-fit: cover; }
+      .ev .date {
+        position: absolute; inset-inline-end: 6.5px; top: 5px;
+        width: 39px; height: 39px; border-radius: var(--r-pill); background: #fffdfb;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;
+        box-shadow: 0 2px 7px rgba(20, 16, 8, 0.18);
+      }
+      .ev .date b { font-size: 12px; font-weight: 800; color: var(--nv); }
+      .ev .date small { font-size: 9px; font-weight: 600; color: #34364f; margin-top: 2.5px; }
+      .ev .act {
+        position: relative; z-index: 1; flex: none; margin-inline-start: 9.5px;
+        width: 41.5px; height: 42.5px; border-radius: 10px; border: 1px solid #f0dfbe;
+        background: #fdf8ee; color: var(--gld); display: grid; place-items: center;
+      }
+      .ev .evtx { position: relative; z-index: 1; flex: 1; min-width: 0; text-align: right; padding-inline-start: 19.5px; }
+      .ev .evtx b { display: block; font-size: 12.5px; font-weight: 700; line-height: 1.25; color: var(--nv); }
+      .ev .evtx span { display: block; font-size: 10.5px; font-weight: 400; line-height: 1.35; color: var(--mut); margin-top: 2px; }
+      .ev .evtx .tm { color: #3f4159; margin-top: 3px; }
+      .home-ind {
+        position: absolute; bottom: 8.5px; left: 50%; transform: translateX(-50%);
+        width: 154px; height: 4.5px; border-radius: var(--r-pill); background: #fff;
+      }
+
+      /* גיליונות */
+      .sheet h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+      .sheet .srow {
+        display: flex; width: 100%; align-items: center; gap: 10px; padding: 11px 0;
+        border-bottom: 1px solid var(--divider); font-size: 14.5px; text-align: right;
+      }
+      .sheet .srow:last-child { border-bottom: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="consumer" data-current="home">
+      <!-- ============ סרגל מצב ============ -->
+      <div class="sb" aria-hidden="true">
+        <div class="sb-l"><span>
+          <span class="pct">100%</span>
+          <svg width="21" height="11" viewBox="0 0 42 22" fill="none">
+            <rect x="1" y="1" width="35" height="20" rx="5" stroke="currentColor" stroke-width="2" />
+            <rect x="4" y="4" width="29" height="14" rx="3" fill="currentColor" />
+            <path d="M39 8v6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+          </svg>
+          <svg width="15" height="11" viewBox="0 0 30 22" fill="none">
+            <path d="M2 8.2C5.6 5 10.1 3.2 15 3.2S24.4 5 28 8.2" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" />
+            <path d="M7 13.4c2.2-2 5-3.1 8-3.1s5.8 1.1 8 3.1" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" />
+            <circle cx="15" cy="18.2" r="2.4" fill="currentColor" />
+          </svg>
+          <svg width="13" height="11" viewBox="0 0 26 22" fill="none">
+            <rect x="0" y="15" width="4" height="7" rx="1.4" fill="currentColor" />
+            <rect x="7" y="11" width="4" height="11" rx="1.4" fill="currentColor" />
+            <rect x="14" y="6" width="4" height="16" rx="1.4" fill="currentColor" />
+            <rect x="21" y="0" width="4" height="22" rx="1.4" fill="currentColor" />
+          </svg>
+        </span></div>
+        <div class="time">9:41</div>
+      </div>
+
+      <!-- ============ כותרת ============ -->
+      <a class="ava press" href="11-my-jewish-life.html" aria-label="הפרופיל שלי">
+        <img src="assets/img/08-avatar.png" alt="" />
+        <span class="bdg"></span>
+      </a>
+
+      <div class="greet">
+        <h1>שלום יוסף!</h1>
+        <div class="gsub">
+          <svg width="12" height="11" viewBox="0 0 24 22" fill="none" aria-hidden="true">
+            <path d="M19 13c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 2c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 7.5c0 2.3 1.5 4.05 3 5.5l7 7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+          </svg>
+          <span>איזה טוב לראות אותך</span>
+        </div>
+      </div>
+
+      <div class="brand">
+        <svg width="42.5" height="39" viewBox="0 0 85 78" fill="none" aria-hidden="true">
+          <path d="M6 36 42.5 6 79 36" stroke="#d5a03f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M13 33v39h59V33" stroke="#d5a03f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="42.5" cy="49" r="18.5" fill="#1b3f77" />
+          <path d="M24 49h37M42.5 30.5c5.6 5.6 5.6 31.4 0 37M42.5 30.5c-5.6 5.6-5.6 31.4 0 37" stroke="#d9ab52" stroke-width="2.2" />
+          <circle cx="42.5" cy="49" r="18.5" stroke="#d5a03f" stroke-width="2.6" />
+        </svg>
+        <div class="btxt">
+          <b>בתי חב״ד</b>
+          <span>הבית של כל יהודי</span>
+        </div>
+      </div>
+
+      <!-- ============ גיבור ============ -->
+      <div class="hero">
+        <img src="assets/img/08-hero.png" alt="" />
+        <h2>כל בית חב״ד. בכל מקום.</h2>
+        <p>מצא את הבית הקרוב אליך</p>
+      </div>
+
+      <!-- ============ חיפוש ============ -->
+      <form class="srch" data-toast="מחפש בתי חב״ד באזור שלך">
+        <label class="fld">
+          <i data-icon="search" data-size="17" data-stroke="2.2"></i>
+          <input type="search" placeholder="חפש עיר, מדינה או בית חב״ד..." aria-label="חיפוש בית חב״ד" />
+        </label>
+        <button type="button" class="loc press" data-action="toast" data-toast="מאתר בתי חב״ד סביב המיקום הנוכחי" data-toast-icon="map-pin">
+          <span>מיקום נוכחי</span>
+          <i data-icon="map-pin" data-size="14"></i>
+        </button>
+      </form>
+
+      <!-- ============ גיליון תוכן ============ -->
+      <div class="sheet-main">
+        <!-- ---- בתי חב״ד קרובים ---- -->
+        <div class="sec">
+          <h3>בתי חב״ד קרובים אליך</h3>
+          <a class="press" href="09-find-chabad.html">הצג במפה <i data-icon="chevron-left" data-size="13" data-stroke="2.2"></i></a>
+        </div>
+
+        <div class="rail rail-houses">
+          <a class="hcard press-soft" href="10-chabad-house.html">
+            <img class="ph" src="assets/img/08-house-1.png" alt="" />
+            <span class="km">0.3 ק״מ</span>
+            <b>בית חב״ד צ׳אגי</b>
+            <span class="loc2">בנגקוק, תאילנד</span>
+            <span class="st st-open"><i></i>פתוח כעת</span>
+          </a>
+          <a class="hcard press-soft" href="10-chabad-house.html">
+            <img class="ph" src="assets/img/08-house-2.png" alt="" />
+            <span class="km">1.2 ק״מ</span>
+            <b>בית חב״ד סילום</b>
+            <span class="loc2">בנגקוק, תאילנד</span>
+            <span class="st st-open"><i></i>פתוח כעת</span>
+          </a>
+          <a class="hcard press-soft" href="10-chabad-house.html">
+            <img class="ph" src="assets/img/08-house-3.png" alt="" />
+            <span class="km">2.7 ק״מ</span>
+            <b>בית חב״ד אקמאי</b>
+            <span class="loc2">בנגקוק, תאילנד</span>
+            <span class="st st-soon"><i data-icon="clock" data-size="9"></i>נסגר ב- 20:00</span>
+          </a>
+          <a class="hcard press-soft" href="10-chabad-house.html">
+            <img class="ph" src="assets/img/08-house-4.png" alt="" />
+            <span class="km">4.1 ק״מ</span>
+            <b>חב״ד פאנט</b>
+            <span class="loc2">בנגקוק, תאילנד</span>
+            <span class="st st-open"><i></i>פתוח</span>
+          </a>
+        </div>
+
+        <div class="dots" aria-hidden="true">
+          <span></span><span></span><span class="on"></span><span></span><span></span>
+        </div>
+
+        <!-- ---- משפט הרבי היומי ---- -->
+        <a class="quote press-soft" href="12-daily-study.html">
+          <img class="qimg" src="assets/img/08-rebbe.png" alt="" />
+          <span class="qchip">
+            <span class="bk"><i data-icon="book-open" data-size="11" data-stroke="2"></i></span>
+            <span>משפט הרבי היומי</span>
+          </span>
+          <span class="qmark">”</span>
+          <span class="qtx">כל יהודי הוא שליח, וכל מקום שבו הוא נמצא – הוא המקום ממנו יכול ומחוייב להביא את הגאולה.</span>
+          <span class="qby">הרבי מלובאוויטש</span>
+        </a>
+
+        <!-- ---- היום בלוח החב״די ---- -->
+        <div class="sec" style="margin-top: 15px">
+          <h3>היום בלוח החב״די</h3>
+          <a class="press" href="12-daily-study.html">לוח מלא <i data-icon="chevron-left" data-size="13" data-stroke="2.2"></i></a>
+        </div>
+
+        <div class="rail rail-cal">
+          <a class="ccard c-shab press-soft" href="14-shabbat-meal.html">
+            <img class="bgim" src="assets/img/08-shabbat.png" alt="" />
+            <span class="sk">
+              <b>זמני שבת</b>
+              <span class="row"><span>כניסה</span><span class="t" dir="ltr">18:24</span></span>
+              <span class="row"><span>יציאה</span><span class="t" dir="ltr">19:32</span></span>
+            </span>
+            <span class="all"><i data-icon="chevron-right" data-size="11" data-stroke="2.2"></i>כל הזמנים</span>
+          </a>
+
+          <div class="ccard">
+            <div class="chead">
+              <span class="cicon"><i data-icon="calendar" data-size="14"></i></span>
+              <b>י״ב תמוז</b>
+            </div>
+            <div class="cwhen">היום</div>
+            <div class="cdiv"></div>
+            <div class="cbody">הילולת הרה״ק ר׳ מנחם מענדל מויטבסק</div>
+          </div>
+
+          <div class="ccard">
+            <div class="chead">
+              <span class="cicon"><i data-icon="calendar" data-size="14"></i></span>
+              <b>ג׳ תמוז</b>
+            </div>
+            <div class="cwhen">בעוד 4 ימים</div>
+            <div class="cdiv"></div>
+            <div class="cbody">יום ההילולא של הרבי מליובאוויטש</div>
+          </div>
+
+          <div class="ccard c-blue">
+            <div class="chead">
+              <span class="cicon"><i data-icon="calendar" data-size="14"></i></span>
+              <b>י״ז בתמוז</b>
+            </div>
+            <div class="cwhen">בעוד 5 ימים</div>
+            <div class="cdiv"></div>
+            <div class="cbody">צום שבעה עשר בתמוז תשפ״ד</div>
+          </div>
+        </div>
+
+        <!-- ---- אירועים קרובים ---- -->
+        <div class="sec" style="margin-top: 17px">
+          <h3>אירועים קרובים</h3>
+          <a class="press" href="05-events-campaigns.html">לכל האירועים <i data-icon="chevron-left" data-size="13" data-stroke="2.2"></i></a>
+        </div>
+
+        <a class="ev press-soft" href="15-event.html">
+          <img class="evim" src="assets/img/08-event.png" alt="" />
+          <span class="date"><b>18</b><small>יוני</small></span>
+          <span class="act" role="button" tabindex="0" data-action="toast" data-toast="האירוע נוסף ליומן שלך" data-toast-icon="calendar-plus">
+            <i data-icon="calendar-plus" data-size="21"></i>
+          </span>
+          <span class="evtx">
+            <b>התוועדות ג׳ תמוז המרכזית</b>
+            <span>בית חב״ד סילום, בנגקוק</span>
+            <span class="tm">יום שלישי | 20:30</span>
+          </span>
+        </a>
+      </div>
+
+      <!-- ============ סרגל תחתון ============ -->
+
+<!-- ============ גיליון "עוד" ============ -->
+      <div class="sheet" id="more-sheet" role="dialog" aria-label="עוד">
+        <div class="sheet-grab"></div>
+        <h4>עוד</h4>
+        <a class="srow press" href="11-my-jewish-life.html"><i data-icon="sparkles" data-size="17"></i> החיים היהודיים שלי</a>
+        <a class="srow press" href="13-letter-to-rebbe.html"><i data-icon="scroll-text" data-size="17"></i> מכתב לרבי</a>
+        <a class="srow press" href="14-shabbat-meal.html"><i data-icon="utensils" data-size="17"></i> סעודת שבת ואוכל כשר</a>
+        <a class="srow press" href="12-daily-study.html"><i data-icon="book-open" data-size="17"></i> הלימוד היומי</a>
+        <button class="srow press" data-action="close-sheet"><i data-icon="x" data-size="17"></i> סגירה</button>
+      </div>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>אירוע — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      :root { --navy-deep: #0a0c2b; --navy-2: #12143a; }
+      .screen { background: #fbf9f7; }
+
+      /* ===== סרגל עליון ===== */
+      .topnav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px 10px;
+        height: 55px;
+      }
+      .topnav .back { display: flex; align-items: center; gap: 5px; font-size: 13.5px; font-weight: 600; color: #2b2724; }
+      .topnav .ttl { font-size: 16px; font-weight: 700; }
+      .topnav .house {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #6b6763;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 5px 9px;
+      }
+      .topnav .house .ico { width: 22px; height: 22px; border-radius: 999px; background: var(--gold-tint); color: var(--gold-deep); display: grid; place-items: center; }
+
+      /* ===== הירו ===== */
+      .hero {
+        position: relative;
+        height: 178px;
+        background: url('assets/img/15-hero.png') center/cover no-repeat, var(--navy-deep);
+      }
+      .hero .chip-top {
+        position: absolute;
+        top: 13px;
+        inset-inline-end: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(18, 22, 60, 0.9);
+        color: #eef0ff;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+        backdrop-filter: blur(4px);
+      }
+      .hero .chip-house {
+        position: absolute;
+        top: 13px;
+        inset-inline-start: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255, 255, 255, 0.94);
+        color: #2b2724;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 5px 11px;
+        border-radius: 999px;
+      }
+      .hero .chip-house .dot { color: var(--gold-deep); }
+
+      /* ===== כרטיס מידע ===== */
+      .infocard {
+        margin: 12px var(--pad-page) 0;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow-card);
+        padding: 10px 8px 10px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .infocard .col {
+        text-align: center;
+        padding: 0 4px;
+        border-inline-start: 1px solid var(--divider);
+      }
+      .infocard .col:last-child { border-inline-start: 0; }
+      .infocard .col .ci { color: var(--gold-deep); display: flex; justify-content: center; margin-bottom: 6px; }
+      .infocard .col b { display: block; font-size: 16px; font-weight: 800; color: #16130f; line-height: 1.1; }
+      .infocard .col .lbl { font-size: 10.5px; color: #46433f; margin-top: 4px; font-weight: 600; }
+      .infocard .col .sub { font-size: 9px; color: #8b847c; margin-top: 2px; line-height: 1.35; }
+
+      /* ===== כפתור ראשי ===== */
+      .cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 6px var(--pad-page) 0;
+        height: 38px;
+        background: var(--navy-deep);
+        color: #fff;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .cta svg { color: #cbb994; }
+
+      /* ===== 4 כפתורי פעולה ===== */
+      .actions {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin: 6px var(--pad-page) 0;
+      }
+      .actions button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 3px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #46433f;
+      }
+      .actions button svg { color: var(--gold-deep); }
+
+      /* ===== כרטיסים כלליים ===== */
+      .sec { margin: 6px var(--pad-page) 0; background: #fff; border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-card); padding: 8px 14px; }
+      .sec > h2 { display: flex; align-items: center; justify-content: flex-start; gap: 7px; font-size: 15.5px; font-weight: 700; margin-bottom: 9px; }
+      .sec > h2 svg { color: var(--gold-deep); }
+
+      /* על האירוע — במוקאפ התמונה בשמאל לאורך כל הכרטיס, הכותרת+טקסט בעמודה מימינה */
+      .about-sec { padding: 9px 12px; }
+      .about { display: flex; gap: 11px; align-items: stretch; }
+      .about img { flex: none; width: 80px; border-radius: 12px; object-fit: cover; background: var(--surface-sunken); align-self: stretch; }
+      .about .col { flex: 1; min-width: 0; }
+      .about .col > h2 { display: flex; align-items: center; justify-content: flex-start; gap: 7px; font-size: 15.5px; font-weight: 700; margin-bottom: 6px; }
+      .about .col > h2 svg { color: var(--gold-deep); }
+      .about .txt p { font-size: 12px; line-height: 1.45; color: #46433f; }
+      .about .txt .em { font-weight: 700; color: #16130f; margin-top: 6px; }
+      .about .txt .host { display: flex; align-items: center; gap: 6px; margin-top: 7px; font-size: 11px; color: #6b6763; }
+      .about .txt .host svg { color: var(--gold-deep); }
+      .about .txt .host b { color: #16130f; font-weight: 700; }
+
+      /* מה מחכה */
+      .perks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      .perk { text-align: center; }
+      .perk .pi { color: var(--gold-deep); display: flex; justify-content: center; margin-bottom: 4px; }
+      .perk b { display: block; font-size: 12px; font-weight: 700; color: #16130f; }
+      .perk span { display: block; font-size: 9.5px; color: #8b847c; line-height: 1.35; margin-top: 2px; }
+
+      /* מי מארגן */
+      .org { display: flex; gap: 12px; align-items: center; }
+      .org { flex-direction: row; }
+      .org img { flex: none; order: 2; width: 84px; height: 50px; border-radius: 12px; object-fit: cover; background: var(--surface-sunken); }
+      .org .oinfo { flex: 1; }
+      .org .oinfo .oline { display: flex; align-items: center; gap: 8px; }
+      .org .oinfo .logo { flex: none; width: 40px; height: 40px; border-radius: 999px; background: var(--navy-deep); color: #d8c39a; display: grid; place-items: center; font-size: 8.5px; font-weight: 800; letter-spacing: normal; border: 2px solid #d8c39a; }
+      .org .oinfo b { font-size: 13.5px; font-weight: 700; color: #16130f; }
+      .org .oinfo span { display: block; font-size: 10.5px; color: #6b6763; line-height: 1.45; margin-top: 2px; }
+
+      /* באנר הצלחה */
+      .saved {
+        margin: 7px var(--pad-page) 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 6px 14px;
+        background: #eef5ec;
+        border: 1px solid #d3e6cd;
+        border-radius: var(--r-lg);
+      }
+      .saved .txt b { font-size: 13.5px; font-weight: 700; color: #2c6b2e; line-height: 1.3; }
+      .saved .txt p { font-size: 10.5px; color: #4d6b47; margin-top: 1px; line-height: 1.3; }
+      .saved .check { flex: none; width: 30px; height: 30px; border-radius: 999px; background: #2c6b2e; color: #fff; display: grid; place-items: center; }
+      .saved .view { font-size: 11px; font-weight: 600; color: #2c6b2e; border: 1px solid #bcd7b4; border-radius: 999px; padding: 6px 11px; }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="consumer" data-current="calendar">
+      <!-- סרגל עליון -->
+      <div class="topnav">
+        <a class="back press" href="08-consumer-home.html"><i data-icon="chevron-right" data-size="18" data-stroke="2"></i>חזרה</a>
+        <div class="ttl">אירוע</div>
+        <button class="house press" data-action="toast" data-toast="בית חב״ד במרסיי">
+          <span>בית חב״ד במרסיי</span>
+          <span class="ico"><i data-icon="map-pin" data-size="13"></i></span>
+        </button>
+      </div>
+
+      <!-- הירו -->
+      <div class="hero">
+        <span class="chip-house"><i data-icon="map-pin" data-size="12" class="dot"></i> בית חב״ד במרסיי</span>
+        <button class="chip-top press" data-action="toast" data-toast="עוד אירועים קרובים בקרוב" data-toast-icon="calendar"><i data-icon="calendar" data-size="12"></i> אירוע קרוב</button>
+      </div>
+
+      <!-- כרטיס מידע — סדר עברי: נרשמו (הימני) ← תאריך (השמאלי) -->
+      <div class="infocard">
+        <div class="col">
+          <span class="ci"><i data-icon="users" data-size="17"></i></span>
+          <b>86</b>
+          <div class="lbl">נרשמו עד כה</div>
+          <div class="sub">מקומות מוגבלים</div>
+        </div>
+        <div class="col">
+          <span class="ci"><i data-icon="map-pin" data-size="17"></i></span>
+          <b style="font-size: 12px">בית חב״ד</b>
+          <div class="lbl">מיקום</div>
+          <div class="sub" dir="ltr">12 Rue d'Italie, 13006 Marseille</div>
+        </div>
+        <div class="col">
+          <span class="ci"><i data-icon="clock" data-size="17"></i></span>
+          <b dir="ltr">21:00</b>
+          <div class="lbl">שעה</div>
+          <div class="sub">פתיחת דלתות 20:30</div>
+        </div>
+        <div class="col">
+          <span class="ci"><i data-icon="calendar" data-size="17"></i></span>
+          <b style="font-size: 12.5px" dir="ltr">20/07/2024</b>
+          <div class="lbl">תאריך</div>
+          <div class="sub">י״ד תמוז תשפ״ד</div>
+        </div>
+      </div>
+
+      <!-- כפתור ראשי -->
+      <button class="cta press" data-action="toast" data-toast="נרשמת לאירוע! נשמח לראותך" data-toast-icon="check-circle">
+        <i data-icon="calendar-check" data-size="18"></i>
+        הירשמו עכשיו
+      </button>
+
+      <!-- 4 פעולות — סדר עברי: הזמנת חבר (הימני) ← הוסף ליומן (השמאלי) -->
+      <div class="actions">
+        <button class="press" data-action="toast" data-toast="נפתחה הזמנת חבר" data-toast-icon="user-plus"><i data-icon="user-plus" data-size="18"></i>הזמנת חבר</button>
+        <button class="press" data-action="toast" data-toast="נפתחו אפשרויות שיתוף" data-toast-icon="share-2"><i data-icon="share-2" data-size="18"></i>שתפו אירוע</button>
+        <button class="press" data-action="toggle" aria-pressed="false" data-toast-on="תזכורת נקבעה" data-toast-off="התזכורת בוטלה"><i data-icon="bell" data-size="18"></i>קבל תזכורת</button>
+        <button class="press" data-action="toast" data-toast="האירוע נוסף ליומן" data-toast-icon="calendar-plus"><i data-icon="calendar-plus" data-size="18"></i>הוסף ליומן</button>
+      </div>
+
+      <!-- על האירוע — התמונה בשמאל (סדר DOM: img אחרון → נופל שמאל ב-RTL) -->
+      <section class="sec about-sec">
+        <div class="about">
+          <div class="col">
+            <h2>על האירוע <i data-icon="book-open" data-size="17"></i></h2>
+            <div class="txt">
+              <p>בליל י״ג תמוז נתכנס יחד, נשמע סיפורים מעוררי השראה על ניסי חב״ד, ונקבל כוחות להוסיף באהבת ישראל ובהתקשרות לרבי.</p>
+              <p class="em">כל יהודי הוא שליח, ובכל מקום — אורו של הרבי מאיר!</p>
+              <div class="host"><i data-icon="user" data-size="14"></i> מנחה: <b>הרב שניאור זלמן לויטין</b>, שליח הרבי במרסיי</div>
+            </div>
+          </div>
+          <img src="assets/img/15-rabbi.png" alt="" />
+        </div>
+      </section>
+
+      <!-- מה מחכה -->
+      <section class="sec">
+        <h2>מה מחכה לכם? <i data-icon="star" data-size="17"></i></h2>
+        <!-- סדר עברי: ניגונים (הימני) ← כיבוד קל (השמאלי) -->
+        <div class="perks">
+          <div class="perk"><span class="pi"><i data-icon="play" data-size="20"></i></span><b>ניגונים</b><span>ניגוני רגש והתעוררות</span></div>
+          <div class="perk"><span class="pi"><i data-icon="book-open" data-size="20"></i></span><b>סיפורים</b><span>סיפורים נפלאים ומאירים מהרבי</span></div>
+          <div class="perk"><span class="pi"><i data-icon="users" data-size="20"></i></span><b>אווירה יהודית</b><span>קהילה יהודית אחת גדולה</span></div>
+          <div class="perk"><span class="pi"><i data-icon="utensils" data-size="20"></i></span><b>כיבוד קל</b><span>כיבוד עשיר ומשובח</span></div>
+        </div>
+      </section>
+
+      <!-- מי מארגן -->
+      <section class="sec">
+        <h2>מי מארגן? <i data-icon="home" data-size="17"></i></h2>
+        <div class="org">
+          <img src="assets/img/15-building.png" alt="" />
+          <div class="oinfo">
+            <div class="oline">
+              <span class="logo">CHABAD</span>
+              <div>
+                <b>בית חב״ד במרסיי</b>
+                <span>שליח הרבי במרסיי: הרב שניאור זלמן לויטין ומשפחתו</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- באנר הצלחה -->
+      <div class="saved">
+        <span class="check"><i data-icon="check" data-size="17" data-stroke="3"></i></span>
+        <div class="txt" style="flex: 1">
+          <b>ההרשמה שלך נשמרה!</b>
+          <p>מצפים לראותך! פרטים נשלחו אליך.</p>
+        </div>
+        <button class="view press" data-action="toast" data-toast="הכרטיס שלך יוצג כאן">צפה בכרטיס שלי</button>
+      </div>
+
+      <!-- סרגל תחתון -->
+
+</div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

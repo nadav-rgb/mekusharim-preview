@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>אירועים וקמפיינים — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      /* כל מידה נמדדה מ"אירועים וקמפיינים.png" (853x1844 = @2x) וחולקה ב-2.
+         גדלי הגופן חושבו ב-scripts/calibrate.mjs מרוחב הדיו שנמדד ב---bbox. */
+
+      /* ===== צבעים ייחודיים למסך ===== */
+      .screen {
+        --c-green: #246527;
+        --c-navy: #1a4672;
+        --c-purple: #4d3180;
+        --c-orange: #9b4c09;
+        --c-blue: #105389;
+        --c-purple-btn: #684996;
+        --c-green-btn: #2e652e;
+        --c-gold-ink: #a06a22;
+        --panel-1: #fbf9f8;
+        --panel-2: #fafaf7;
+        --hair: #f0ece7;
+      }
+
+      /* ===== כותרת המסך (0–71) ===== */
+      .head {
+        position: relative;
+        height: 71px;
+        padding-top: 14px;
+        text-align: center;
+      }
+      .head h1 {
+        font-size: 17.5px;
+        font-weight: 700;
+        line-height: 1.22;
+        color: #100d0b;
+      }
+      .head .sub {
+        margin-top: 2.5px;
+        font-size: 11.5px;
+        font-weight: 400;
+        line-height: 1.25;
+        color: #5f5b57;
+      }
+
+      .burger {
+        position: absolute;
+        inset-inline-end: 20.5px; /* ב-RTL: end = שמאל */
+        top: 22.5px;
+        color: #17130f;
+      }
+      .burger span {
+        display: block;
+        width: 18.5px;
+        height: 2.3px;
+        border-radius: 2px;
+        background: currentColor;
+      }
+      .burger span + span { margin-top: 3.9px; }
+
+      .brand {
+        position: absolute;
+        inset-inline-start: 12px; /* ב-RTL: start = ימין */
+        top: 8px;
+        width: 40px;
+        text-align: center;
+        color: #17130f;
+      }
+      .brand .bh { font-size: 9.5px; font-weight: 600; line-height: 1; margin-bottom: 3px; }
+      .brand svg { margin: 0 auto; }
+
+      .funnel {
+        position: absolute;
+        inset-inline-start: 22px;
+        top: 51px;
+        color: #2b2724;
+      }
+
+      /* ===== לשוניות (71–97) ===== */
+      .tabs {
+        display: flex;
+        margin-inline: 20.5px;
+        height: 26px;
+        border: 1px solid #f0e9e0;
+        border-radius: 12px;
+        background: #fefcfb;
+        overflow: hidden;
+        box-shadow: 0 1px 2px rgba(60, 42, 24, 0.03);
+      }
+      .tab {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        font-size: 10.5px;
+        font-weight: 500;
+        color: #4c4844;
+        height: 100%;
+        border-radius: 11px;
+        transition: background-color var(--dur-ui) var(--ease-out), color var(--dur-ui) var(--ease-out);
+      }
+      .tab[aria-selected='true'] {
+        background: #f5ebdf;
+        color: var(--c-gold-ink);
+        font-weight: 600;
+      }
+
+      /* ===== כרטיס ===== */
+      .card {
+        margin-inline: 20.5px;
+        background: #fefefe;
+        border: 1px solid #f2ece5;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(60, 42, 24, 0.035);
+        overflow: hidden;
+      }
+      .card-1 { padding-bottom: 8.5px; }
+      .card-2 { padding-bottom: 9.5px; }
+      .card-1 { margin-top: 10px; }
+      .card-2 { margin-top: 10.5px; }
+
+      /* ---- ראש הכרטיס: תמונה · כותרת · תגית ---- */
+      .chead {
+        display: flex;
+        align-items: flex-start;
+        gap: 0;
+        padding: 7px 12px 0;
+      }
+      .chead .thumb {
+        flex: none;
+        width: 78.5px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: var(--surface-sunken);
+      }
+      .chead .thumb.round { width: 53px; height: 53px; border-radius: var(--r-pill); }
+      .chead .txt {
+        flex: 1;
+        min-width: 0;
+        text-align: left; /* הכותרת נצמדת לתמונה שבימין */
+        padding-inline-end: 16px;
+        padding-top: 3px;
+      }
+      .card-2 .chead .txt { padding-top: 7.5px; padding-inline-end: 12.5px; }
+      .card-2 .chead .txt h2 { display: flex; align-items: center; justify-content: flex-end; gap: 5px; }
+      .chead .txt h2 {
+        font-size: 13.5px;
+        font-weight: 700;
+        line-height: 1.25;
+        color: #0f0d0c;
+        white-space: nowrap;
+      }
+      .chead .txt p {
+        margin-top: 5.5px;
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 1.2;
+        color: #5c5854;
+        white-space: nowrap;
+      }
+      .chead .tag { flex: none; align-self: flex-start; margin-top: 2px; }
+      .card-2 .chead .tag { height: 21px; margin-top: 3.5px; }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        height: 24px;
+        padding: 0 9px;
+        border-radius: 8px;
+        font-size: 10.5px;
+        font-weight: 500;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .tag-purple { background: #f5f0f7; color: #5b3f8c; }
+      .tag-green { background: #ecf1e9; color: #35682f; }
+
+      /* ---- ארבע הסטטיסטיקות ----
+         סדר ה-DOM הפוך בכוונה: משחזר את סדר התצוגה של המוקאפ (LTR).
+         מתועד ביומן ההכרעות כחשד לבאג RTL במוקאפ המקורי. */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .stats-1 { margin-top: 8.5px; height: 70.5px; }
+      .stats-2 { margin-top: 4px; height: 66px; }
+      .stat {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-inline: 2px;
+      }
+      .stat:not(:last-child) { border-inline-end: 1px solid #f1eeea; }
+      .stat .ic { height: 15px; display: grid; place-items: center; }
+      .stat .num {
+        font-size: 16.5px;
+        font-weight: 800;
+        line-height: 1;
+        margin-top: 8.5px;
+        white-space: nowrap;
+      }
+      .stat .num .cur { font-size: 12.5px; font-weight: 700; }
+      .stat .lb {
+        font-size: 9.5px;
+        font-weight: 500;
+        line-height: 1;
+        margin-top: 7.5px;
+        color: #2c2a28;
+      }
+      .stat .cp {
+        font-size: 9px;
+        font-weight: 400;
+        line-height: 1;
+        margin-top: 5.5px;
+        color: #6f6b67;
+      }
+      .s-green .num, .s-green .ic, .s-green .cp { color: var(--c-green); }
+      .s-navy .num, .s-navy .ic { color: var(--c-navy); }
+      .s-purple .num, .s-purple .ic, .s-purple .cp { color: var(--c-purple); }
+      .s-orange .num, .s-orange .ic { color: var(--c-orange); }
+      .s-blue .num, .s-blue .ic { color: var(--c-blue); }
+
+      /* ---- באנר ההזדמנות ---- */
+      .banner {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 11.5px 11.5px 0;
+        height: 30px;
+        padding-inline: 8px 7px;
+        border-radius: 10px;
+        background: #f4f2f7;
+        font-size: 9.5px;
+        font-weight: 400;
+        color: #4a3378;
+      }
+      .banner .txt { flex: 1; min-width: 0; text-align: center; white-space: nowrap; }
+      .banner .sp { color: #7b5bb5; flex: none; }
+      .banner .ch { color: #6f5a95; flex: none; }
+
+      /* ---- פאנל ההצעות ---- */
+      .panel {
+        margin: 9px 11.5px 0;
+        border-radius: 12px;
+        padding: 4px 2px 5.5px;
+      }
+      .panel-2 { margin-top: 14px; padding: 3px 6px 6px; }
+      .panel-1 { background: var(--panel-1); }
+      .panel-2 { background: var(--panel-2); padding-inline: 6px; }
+      .panel h3 {
+        font-size: 10.5px;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #14120f;
+        padding-inline-end: 2px;
+      }
+      .panel-2 h3 { color: #1f4a22; padding-inline-end: 8px; }
+      .panel .psub {
+        margin-top: 1.5px;
+        font-size: 9px;
+        font-weight: 400;
+        line-height: 1.2;
+        color: #6f6b67;
+        padding-inline-end: 2px;
+      }
+      .panel-2 .psub { padding-inline-end: 8px; }
+
+      /* ---- כרטיסי אנשים ---- */
+      .ppl {
+        display: grid;
+        gap: 7px;
+        margin-top: 6.8px;
+      }
+      .ppl-5 { margin-top: 5.8px; }
+      .ppl-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .ppl-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+      .pc {
+        min-width: 0;
+        background: #fefefe;
+        border: 1px solid #f0ece6;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: transform var(--dur-press) var(--ease-out), box-shadow var(--dur-ui) var(--ease-out);
+      }
+      .pc:active { transform: scale(0.975); }
+      .ppl-4 .pc { height: 110px; padding: 4.5px 3px 3.5px; }
+      .ppl-5 .pc { height: 103px; padding: 5px 2px 6px; }
+      .pc img {
+        border-radius: var(--r-pill);
+        object-fit: cover;
+        background: #efeae4;
+        flex: none;
+      }
+      .ppl-4 .pc img { width: 38.5px; height: 38.5px; }
+      .ppl-5 .pc img { width: 35px; height: 35px; }
+      .pc b {
+        display: block;
+        font-size: 9.5px;
+        font-weight: 700;
+        line-height: 1;
+        color: #100d0b;
+        white-space: nowrap;
+      }
+      .ppl-4 .pc b { margin-top: 5.5px; }
+      .ppl-5 .pc b { margin-top: 4px; }
+      .pc .why {
+        font-size: 8px;
+        font-weight: 400;
+        line-height: 1.42;
+        color: #5c5854;
+        margin-top: 4px;
+      }
+      .pc .mini {
+        margin-top: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        height: 16px;
+        padding: 0 9px;
+        border-radius: var(--r-pill);
+        font-size: 9px;
+        font-weight: 600;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .ppl-5 .mini { height: 15.5px; padding: 0 8px; }
+      .mini-green { background: #eef3ec; color: #2f6631; }
+      .mini-wa { background: #eef3ec; color: #1f7a3c; }
+
+      /* ---- הצג עוד ---- */
+      .more {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 15px;
+        font-size: 9px;
+        font-weight: 500;
+        line-height: 1;
+        color: #4a3378;
+      }
+      .panel-2 .more { color: #2f6631; margin-top: 8px; }
+
+      /* ---- שורת הפעולות ----
+         סדר ה-DOM הפוך בכוונה: במוקאפ הכפתור הראשי בשמאל והמשני בימין. */
+      .acts {
+        display: flex;
+        gap: 7px;
+        margin-top: 7.5px;
+      }
+      .panel-2 .acts { margin-top: 6px; }
+      .acts .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 25px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .acts .ghost {
+        flex: none;
+        width: 121px;
+        background: #fefefe;
+        border: 1px solid #efe9e2;
+        color: #3c3835;
+      }
+      .acts .solid { flex: 1; min-width: 0; color: #fff; font-weight: 600; }
+      .solid-purple { background: var(--c-purple-btn); box-shadow: 0 2px 6px rgba(104, 73, 150, 0.22); }
+      .solid-green { background: var(--c-green-btn); box-shadow: 0 2px 6px rgba(46, 101, 46, 0.2); }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="shaliach" data-current="events">
+      <!-- ================= כותרת ================= -->
+      <header class="head">
+        <button class="burger press tap" aria-label="תפריט" data-action="sheet" data-sheet="menu-sheet">
+          <span></span><span></span><span></span>
+        </button>
+
+        <div class="brand">
+          <div class="bh">ב״ה</div>
+          <svg width="29" height="19.5" viewBox="0 0 29 20" fill="none" aria-hidden="true">
+            <path d="M1.5 1.5h26L14.5 18.5Z" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" />
+            <path d="M6.6 4.9h15.8L14.5 15.2Z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" />
+            <path d="M11.4 8.3h6.2L14.5 12.4Z" fill="currentColor" />
+          </svg>
+        </div>
+
+        <h1>אירועים וקמפיינים</h1>
+        <div class="sub">מהפוטנציאל לפעולה</div>
+
+        <button class="funnel press tap" aria-label="סינון" data-action="sheet" data-sheet="filter-sheet">
+          <i data-icon="filter" data-size="13"></i>
+        </button>
+      </header>
+
+      <!-- ================= לשוניות ================= -->
+      <div class="tabs" data-tabs=".screen" role="tablist" aria-label="תצוגה">
+        <button class="tab press" role="tab" aria-selected="true" data-action="tab" data-tab="events">
+          <i data-icon="calendar" data-size="12.5"></i><span>אירועים</span>
+        </button>
+        <button class="tab press" role="tab" aria-selected="false" data-action="tab" data-tab="camps">
+          <i data-icon="target" data-size="12.5"></i><span>קמפיינים</span>
+        </button>
+      </div>
+
+      <!-- ================= כרטיס האירוע ================= -->
+      <section class="card card-1">
+        <div class="chead">
+          <img class="thumb" src="assets/img/05-event.png" alt="סעודת שבת קהילתית" />
+          <div class="txt">
+            <h2>סעודת שבת קהילתית</h2>
+            <p>פרשת בא • כ״ט שבט</p>
+          </div>
+          <span class="tag tag-purple"><i data-icon="calendar" data-size="12"></i><span>בעוד 5 ימים</span></span>
+        </div>
+
+        <!-- סדר ה-DOM הפוך בכוונה: משחזר את סדר התצוגה של המוקאפ -->
+        <div class="stats stats-1">
+          <a class="stat s-orange press" href="03-followup.html">
+            <span class="ic"><i data-icon="user-plus" data-size="15"></i></span>
+            <span class="num">12</span>
+            <span class="lb">הצטרפו לאחרונה</span>
+            <span class="cp">בשבוע האחרון</span>
+          </a>
+          <a class="stat s-purple press" href="03-followup.html">
+            <span class="ic"><i data-icon="clock" data-size="15"></i></span>
+            <span class="num">28</span>
+            <span class="lb">לא הגיבו</span>
+            <span class="cp">שלח תזכורת</span>
+          </a>
+          <a class="stat s-navy press" href="15-event.html">
+            <span class="ic"><i data-icon="user-check" data-size="15"></i></span>
+            <span class="num">64</span>
+            <span class="lb">נרשמים</span>
+            <span class="cp">50%</span>
+          </a>
+          <a class="stat s-green press" href="15-event.html">
+            <span class="ic"><i data-icon="users-round" data-size="15"></i></span>
+            <span class="num">128</span>
+            <span class="lb">מוזמנים</span>
+            <span class="cp">12+ מהשבוע שעבר</span>
+          </a>
+        </div>
+
+        <button class="banner press" data-action="toast" data-toast="נפתחה רשימת 28 המוזמנים שטרם הגיבו" data-toast-icon="sparkles">
+          <span class="sp"><i data-icon="sparkles" data-size="14"></i></span>
+          <span class="txt">הזדמנות מצוינת לשתף: 28 אנשים טרם הגיבו ויכולים להצטרף לאירוע!</span>
+          <span class="ch"><i data-icon="chevron-left" data-size="12"></i></span>
+        </button>
+
+        <div class="panel panel-1">
+          <h3>מי עשוי להתאים במיוחד לאירוע?</h3>
+          <p class="psub">בהתאם לאינטרסים וההיסטוריה של הקשר</p>
+
+          <!-- סדר ה-DOM הפוך בכוונה: משחזר את סדר התצוגה של המוקאפ -->
+          <div class="ppl ppl-4">
+            <a class="pc" href="02-contact.html">
+              <img src="assets/img/05-a0.png" alt="" />
+              <b>דניאל ששון</b>
+              <span class="why">נהנית מאירועים<br />קהילתיים</span>
+              <span class="mini mini-green"><span>מומלץ</span><i data-icon="star" data-size="10"></i></span>
+            </a>
+            <a class="pc" href="02-contact.html">
+              <img src="assets/img/05-a1.png" alt="" />
+              <b>אבי פרידמן</b>
+              <span class="why">הביע עניין<br />בלימוד עם ילדים</span>
+              <span class="mini mini-green"><span>מומלץ</span><i data-icon="star" data-size="10"></i></span>
+            </a>
+            <a class="pc" href="02-contact.html">
+              <img src="assets/img/05-a2.png" alt="" />
+              <b>שירה לוי</b>
+              <span class="why">הגיעה לסעודה<br />בחודש שעבר</span>
+              <span class="mini mini-green"><span>מומלץ</span><i data-icon="star" data-size="10"></i></span>
+            </a>
+            <a class="pc" href="02-contact.html">
+              <img src="assets/img/05-a3.png" alt="" />
+              <b>יונתן כהן</b>
+              <span class="why">השתתף בשיעור<br />על פרשת שבוע</span>
+              <span class="mini mini-green"><span>מומלץ</span><i data-icon="star" data-size="10"></i></span>
+            </a>
+          </div>
+
+          <button class="more press" data-action="toast" data-toast="נטענו עוד 12 הצעות מותאמות" data-toast-icon="sparkles">
+            <span>הצג עוד</span><i data-icon="chevron-down" data-size="11"></i>
+          </button>
+
+          <!-- סדר ה-DOM הפוך בכוונה: הכפתור הראשי בשמאל, כמו במוקאפ -->
+          <div class="acts">
+            <button class="btn ghost press" data-action="sheet" data-sheet="share-sheet">
+              <span>שתף את האירוע</span><i data-icon="share-2" data-size="12"></i>
+            </button>
+            <button class="btn solid solid-purple press" data-action="toast" data-toast="נשלחה תזכורת ל-28 מוזמנים" data-toast-icon="send">
+              <span>שלח תזכורת לאלה שלא הגיבו</span><i data-icon="send" data-size="13"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= כרטיס הקמפיין ================= -->
+      <section class="card card-2">
+        <div class="chead">
+          <img class="thumb round" src="assets/img/05-campaign.png" alt="בונים בית לתורה" />
+          <div class="txt">
+            <h2><span>בונים בית לתורה</span> <i data-icon="heart" data-size="12"></i></h2>
+            <p>״בית חב״ד גדול יותר – יותר אנשים, יותר אור״</p>
+          </div>
+          <span class="tag tag-green"><i data-icon="megaphone" data-size="12"></i><span>קמפיין פעיל</span></span>
+        </div>
+
+        <!-- סדר ה-DOM הפוך בכוונה: משחזר את סדר התצוגה של המוקאפ -->
+        <div class="stats stats-2">
+          <a class="stat s-purple press" href="15-event.html">
+            <span class="ic"><i data-icon="calendar-star" data-size="15"></i></span>
+            <span class="num">35</span>
+            <span class="lb">ימים לסיום</span>
+            <span class="cp">ט״ז אייר</span>
+          </a>
+          <a class="stat s-blue press" href="06-rebbe-report.html">
+            <span class="ic"><i data-icon="target" data-size="15"></i></span>
+            <span class="num" dir="ltr">₪300,000</span>
+            <span class="lb">יעד גיוס</span>
+            <span class="cp">&nbsp;</span>
+          </a>
+          <a class="stat s-green press" href="06-rebbe-report.html">
+            <span class="ic"><i data-icon="leaf" data-size="15"></i></span>
+            <span class="num" dir="ltr">₪186,450</span>
+            <span class="lb">נתרם עד כה</span>
+            <span class="cp">62% מהיעד</span>
+          </a>
+          <a class="stat s-orange press" href="03-followup.html">
+            <span class="ic"><i data-icon="users-round" data-size="15"></i></span>
+            <span class="num">42</span>
+            <span class="lb">שותפים</span>
+            <span class="cp">6+ השבוע</span>
+          </a>
+        </div>
+
+        <div class="panel panel-2">
+          <h3>אנשים שכדאי לפנות אליהם אישית</h3>
+          <p class="psub">בעלי זיקה ונכונות גבוהה לתמוך</p>
+
+          <!-- סדר ה-DOM הפוך בכוונה: משחזר את סדר התצוגה של המוקאפ -->
+          <div class="ppl ppl-5">
+            <a class="pc" href="02-contact.html">
+              <img src="assets/img/05-b0.png" alt="" />
+              <b>אריאל לוי</b>
+              <span class="why">עסק עצמאי<br />בקהילה</span>
+              <span class="mini mini-wa"><span>פנה אליו</span><i data-icon="whatsapp" data-size="10"></i></span>
+            </a>
+            <a class="pc" href="02-contact.html">
+              <img src="assets/img/05-b1.png" alt="" />
+              <b>מיכל כהן</b>
+              <span class="why">הביעה עניין<br />בפרויקטים</span>
+              <span class="mini mini-wa"><span>פנה אליה</span><i data-icon="whatsapp" data-size="10"></i></span>
+            </a>
+            <a class="pc" href="02-contact.html">
+              <img src="assets/img/05-b2.png" alt="" />
+              <b>יוסי בן דוד</b>
+              <span class="why">ביקש להיות<br />שותף בעבר</span>
+              <span class="mini mini-wa"><span>פנה אליו</span><i data-icon="whatsapp" data-size="10"></i></span>
+            </a>
+            <a class="pc" href="02-contact.html">
+              <img src="assets/img/05-b3.png" alt="" />
+              <b>נועה רוזן</b>
+              <span class="why">מעורבת מאוד<br />בקהילה</span>
+              <span class="mini mini-wa"><span>פנה אליה</span><i data-icon="whatsapp" data-size="10"></i></span>
+            </a>
+            <a class="pc" href="02-contact.html">
+              <img src="assets/img/05-b4.png" alt="" />
+              <b>משה אדרי</b>
+              <span class="why">תמך בעבר<br />בקמפיינים</span>
+              <span class="mini mini-wa"><span>פנה אליו</span><i data-icon="whatsapp" data-size="10"></i></span>
+            </a>
+          </div>
+
+          <button class="more press" data-action="toast" data-toast="נטענו עוד 9 הצעות לפנייה אישית" data-toast-icon="sparkles">
+            <span>הצג עוד הצעות</span><i data-icon="chevron-down" data-size="11"></i>
+          </button>
+
+          <!-- סדר ה-DOM הפוך בכוונה: הכפתור הראשי בשמאל, כמו במוקאפ -->
+          <div class="acts">
+            <button class="btn ghost press" data-action="sheet" data-sheet="share-sheet">
+              <span>שתף קמפיין</span><i data-icon="share-2" data-size="12"></i>
+            </button>
+            <button class="btn solid solid-green press" data-action="sheet" data-sheet="camp-sheet">
+              <span>נהל את הקמפיין</span><i data-icon="megaphone" data-size="13"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= סרגל תחתון ================= -->
+
+<!-- ================= גיליונות ================= -->
+      <div class="sheet" id="menu-sheet" role="dialog" aria-label="תפריט">
+        <div class="sheet-grab"></div>
+        <h3 style="font-size: 16px; margin-bottom: 4px">תפריט</h3>
+        <a class="press" href="01-shaliach-home.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="home" data-size="17"></i> מרכז השליח</a>
+        <a class="press" href="06-rebbe-report.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="scroll-text" data-size="17"></i> דוח לרבי</a>
+        <a class="press" href="07-network.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="globe" data-size="17"></i> רישות בתי חב״ד</a>
+        <a class="press" href="all.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px"><i data-icon="layout-grid" data-size="17"></i> כל המסכים</a>
+      </div>
+
+      <div class="sheet" id="filter-sheet" role="dialog" aria-label="סינון">
+        <div class="sheet-grab"></div>
+        <h3 style="font-size: 16px; margin-bottom: 8px">סינון תצוגה</h3>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px;font-weight:600" data-action="close-sheet"><i data-icon="check" data-size="16"></i> הכל</button>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px" data-action="toast" data-toast="מוצגים אירועים בלבד"><i data-icon="calendar" data-size="16"></i> אירועים קרובים בלבד</button>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px" data-action="toast" data-toast="מוצגים קמפיינים בלבד"><i data-icon="target" data-size="16"></i> קמפיינים פעילים בלבד</button>
+      </div>
+
+      <div class="sheet" id="share-sheet" role="dialog" aria-label="שיתוף">
+        <div class="sheet-grab"></div>
+        <h3 style="font-size: 16px; margin-bottom: 8px">שיתוף</h3>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px" data-action="toast" data-toast="הקישור הועתק"><i data-icon="external-link" data-size="16"></i> העתק קישור</button>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px" data-action="toast" data-toast="נפתחה הודעת וואטסאפ"><i data-icon="message-circle" data-size="16"></i> שליחה בוואטסאפ</button>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px" data-action="toast" data-toast="נפתחה טיוטת מייל"><i data-icon="mail" data-size="16"></i> שליחה במייל</button>
+      </div>
+
+      <div class="sheet" id="camp-sheet" role="dialog" aria-label="ניהול הקמפיין">
+        <div class="sheet-grab"></div>
+        <h3 style="font-size: 16px; margin-bottom: 8px">בונים בית לתורה</h3>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px" data-action="toast" data-toast="נפתח עדכון יעד"><i data-icon="target" data-size="16"></i> עדכון יעד הגיוס</button>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px" data-action="toast" data-toast="נפתחה רשימת 42 השותפים"><i data-icon="users-round" data-size="16"></i> רשימת השותפים</button>
+        <button class="press" style="display:flex;width:100%;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px" data-action="toast" data-toast="נפתחה טיוטת עדכון לתורמים"><i data-icon="square-pen" data-size="16"></i> עדכון לתורמים</button>
+      </div>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script>
+      /* אייקונים שאינם בספרייה המשותפת — מוטמעים מקומית (assets/icons.js משותף לסוכנים) */
+      (function () {
+        var LOCAL = {
+          'user-check':
+            '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/>',
+          leaf:
+            '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.9 4.5-8"/>',
+          whatsapp:
+            '<path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.9-1.3A9.5 9.5 0 1 0 12 2.5Z"/><path d="M9 8.4c.2-.5.4-.5.6-.5h.5c.2 0 .4 0 .6.5l.6 1.5c.1.2.1.4 0 .5l-.4.5c-.1.2-.2.3-.1.5.3.6 1.1 1.6 2.2 2.1.2.1.3.1.5-.1l.5-.5c.1-.2.3-.2.5-.1l1.4.7c.2.1.3.2.3.4 0 .5-.4 1.2-1.3 1.4-1.4.2-3.1-.8-4.2-1.9-1.1-1.1-1.8-2.4-1.8-3.3 0-.8.4-1.5.9-1.7Z"/>',
+        }
+        var el = document.querySelectorAll('i[data-icon]')
+        for (var i = 0; i < el.length; i++) {
+          var n = el[i].dataset.icon
+          if (!LOCAL[n]) continue
+          var s = parseFloat(el[i].dataset.size || '20')
+          el[i].outerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" ' +
+            'fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            LOCAL[n] + '</svg>'
+        }
+      })()
+    </script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>

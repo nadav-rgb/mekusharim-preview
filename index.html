@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="מקושרים" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#241a12" />
+    <title>מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 26px;
+        padding: max(28px, env(safe-area-inset-top)) 22px max(28px, env(safe-area-inset-bottom));
+        background:
+          radial-gradient(120% 80% at 50% -10%, #3a2a1c 0%, transparent 60%),
+          linear-gradient(170deg, #241a12 0%, #17110b 60%, #100b07 100%);
+        color: #fff;
+        font-family: var(--font);
+        -webkit-font-smoothing: antialiased;
+      }
+      .brand { text-align: center; }
+      .brand .mark {
+        width: 64px; height: 64px; margin: 0 auto 16px;
+        border-radius: 20px;
+        display: grid; place-items: center;
+        background: linear-gradient(150deg, var(--gold) 0%, var(--gold-deep) 100%);
+        box-shadow: 0 10px 30px rgba(204, 147, 62, 0.4);
+        color: #241a12;
+      }
+      .brand h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.5px; }
+      .brand p { margin-top: 8px; font-size: 15px; color: #cbb89e; font-weight: 500; }
+
+      .cards { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 440px; margin: 0 auto; }
+      .entry {
+        display: flex; align-items: center; gap: 15px;
+        padding: 18px 18px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        color: #fff;
+        transition: transform 0.16s var(--ease-out), background 0.2s, border-color 0.2s;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .entry:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.08); }
+      @media (hover: hover) { .entry:hover { border-color: rgba(204, 147, 62, 0.5); background: rgba(255, 255, 255, 0.07); } }
+      .entry .ic {
+        width: 52px; height: 52px; flex: none;
+        border-radius: 15px; display: grid; place-items: center;
+      }
+      .entry.shaliach .ic { background: rgba(204, 147, 62, 0.16); color: var(--gold); }
+      .entry.consumer .ic { background: rgba(120, 160, 220, 0.16); color: #9db8e0; }
+      .entry .tx { flex: 1; min-width: 0; }
+      .entry .tx b { display: block; font-size: 18px; font-weight: 700; }
+      .entry .tx span { display: block; font-size: 13px; color: #b9ab97; margin-top: 3px; line-height: 1.4; }
+      .entry .go { color: #6f6353; flex: none; }
+
+      .foot { text-align: center; font-size: 12px; color: #7c6f5e; }
+      .foot a { color: #a68a5e; text-decoration: underline; text-underline-offset: 3px; }
+    </style>
+  </head>
+  <body>
+    <div class="brand">
+      <span class="mark"><i data-icon="sparkles" data-size="32" data-stroke="2"></i></span>
+      <h1>מקושרים</h1>
+      <p>מערכת ההפעלה של השליח והקהילה</p>
+    </div>
+
+    <div class="cards">
+      <a class="entry shaliach" href="01-shaliach-home.html">
+        <span class="ic"><i data-icon="users-round" data-size="26"></i></span>
+        <span class="tx">
+          <b>מרכז השליח</b>
+          <span>הכלי של השליח — מי לפנות אליו היום, ולמה</span>
+        </span>
+        <span class="go"><i data-icon="chevron-left" data-size="22" data-stroke="2.4"></i></span>
+      </a>
+
+      <a class="entry consumer" href="08-consumer-home.html">
+        <span class="ic"><i data-icon="heart" data-size="26"></i></span>
+        <span class="tx">
+          <b>אפליקציית הקהילה</b>
+          <span>מה שחבר הקהילה רואה — בית חב״ד, לימוד, אירועים</span>
+        </span>
+        <span class="go"><i data-icon="chevron-left" data-size="22" data-stroke="2.4"></i></span>
+      </a>
+    </div>
+
+    <div class="foot">פרוטוטייפ · 15 מסכים · <a href="all.html">כל המסכים כרשת</a></div>
+
+    <script src="assets/icons.js"></script>
+  </body>
+</html>

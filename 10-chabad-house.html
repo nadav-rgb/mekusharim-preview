@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=427, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#faf6f1" />
+    <title>בית חב״ד תל אביב — מקושרים</title>
+    <link rel="stylesheet" href="assets/tokens.css" />
+    <link rel="stylesheet" href="assets/base.css" />
+    <style>
+      /* כל מידה כאן נמדדה מ"דף הבית של בית חבד מסויים.png" (853x1844 = @2x) וחולקה ב-2.
+         גדלי הגופן חושבו ב-scripts/calibrate.mjs: רוחב דיו במוקאפ → גודל גופן. */
+
+      :root {
+        --navy: #0b1030;
+        --navy-2: #2a2e4a;
+        --navy-3: #454860;
+        --gold-10: #c99a45;
+        --gold-nav: #dfa44b;
+        --card: #fdfcfb;
+        --card-line: #f2ece4;
+        --tint-cat: #faf3eb;
+        --tint-ban: #f8efe5;
+        --shadow-10: 0 1px 2px rgba(60, 42, 24, 0.04), 0 3px 10px rgba(60, 42, 24, 0.035);
+      }
+
+      .screen {
+        background: linear-gradient(180deg, #fcfaf8 0%, #fdfbf9 45%, #fffefd 100%);
+      }
+
+      .wrap { padding-inline: 13.5px; }
+
+      /* ===================== גיבור: תצלום בית החב״ד ===================== */
+      .hero {
+        position: relative;
+        height: 241.5px;
+      }
+      .hero-img {
+        width: 427px;
+        height: 241.5px;
+        object-fit: cover;
+        object-position: top center;
+      }
+
+      /* שורת "בתי חב״ד ›" ושורת הסטטוס צרובות בתצלום (טקסט לבן על צילום).
+         כאן רק אזור-מגע שקוף מעליהן כדי שהניווט יעבוד. */
+      .hero-back {
+        position: absolute;
+        inset-inline-start: 8px;
+        top: 38px;
+        width: 82px;
+        height: 26px;
+        border-radius: 8px;
+      }
+
+      .hero-tools {
+        position: absolute;
+        inset-inline-end: 15px; /* ב-RTL: end = שמאל. במוקאפ שני העיגולים בשמאל */
+        top: 35px;
+        display: flex;
+        gap: 5px;
+      }
+      .hero-circ {
+        width: 30px;
+        height: 30px;
+        border-radius: var(--r-pill);
+        background: #fff;
+        display: grid;
+        place-items: center;
+        color: #1b2144;
+        box-shadow: 0 1px 3px rgba(20, 16, 10, 0.18);
+      }
+
+      /* גוש הכותרת מיושר לשמאל במוקאפ — שלוש השורות מתחילות ב-x=18 */
+      .hero-txt {
+        position: absolute;
+        inset-inline-end: 18px;
+        top: 126px;
+        text-align: end;
+        color: #fff;
+      }
+      .hero-txt h1 {
+        font-size: 19.5px;
+        font-weight: 800;
+        line-height: 1;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+      }
+      .hero-addr {
+        margin-top: 10px;
+        font-size: 10px;
+        font-weight: 400;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 4px;
+        color: #f4f1ec;
+        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+      }
+      .hero-addr svg { color: var(--gold); }
+      .hero-admin {
+        margin-top: 11.5px;
+        font-size: 10px;
+        font-weight: 400;
+        line-height: 1;
+        color: #efece7;
+        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+      }
+      .hero-admin b { color: #d8a54e; font-weight: 600; }
+
+      /* ארבעת כפתורי הפעולה — רוחב כל כפתור נמדד בנפרד, הם אינם שווים */
+      .hero-acts {
+        position: absolute;
+        top: 198.5px;
+        inset-inline: 12.5px 11px;
+        display: flex;
+      }
+      .hact {
+        height: 35px;
+        border-radius: 8px;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #161a3c;
+        box-shadow: 0 1px 4px rgba(20, 16, 10, 0.14);
+      }
+      .hact svg { color: #1b2247; }
+      /* סדר האייקון בכפתורים האלה הפוך מ-RTL: במוקאפ האייקון בשמאל, אחרי הטקסט.
+         מתועד בדוח כהיפוך RTL של המוקאפ. */
+      .hact-1 { width: 100.5px; margin-inline-end: 11.5px; background: #101540; color: #e6b45f; border: 1px solid #b98b3f; }
+      .hact-1 svg { color: #e0a94f; }
+      .hact-2 { width: 91.5px; margin-inline-end: 8.5px; }
+      .hact-3 { width: 94.5px; margin-inline-end: 8px; }
+      .hact-4 { width: 88.5px; }
+
+      /* ===================== שתי עמודות ===================== */
+      .duo {
+        display: flex;
+        gap: 8.5px;
+        align-items: flex-start;
+      }
+      .col { width: 195.5px; min-width: 0; }
+      .col-left { display: flex; flex-direction: column; gap: 8.5px; }
+
+      .card10 {
+        background: var(--card);
+        border: 1px solid var(--card-line);
+        border-radius: 13px;
+        box-shadow: var(--shadow-10);
+        overflow: hidden;
+      }
+
+      .chead {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 5px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #0b1030;
+        line-height: 1;
+      }
+      .cbubble {
+        width: 17px;
+        height: 17px;
+        border-radius: var(--r-pill);
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .chead > span { min-width: 0; white-space: nowrap; }
+
+      /* --- אירועים קרובים (עמודה ימנית, גובה מלא) --- */
+      .evcard { height: 226.5px; display: flex; flex-direction: column; }
+      .evcard .chead { padding: 11px 13px 0; }
+      .evbody { padding-inline: 9.5px; margin-top: 9.5px; flex: 1; }
+      .ev {
+        display: flex;
+        gap: 10.5px;
+        height: 45px;
+        align-items: flex-start;
+      }
+      .ev + .ev { margin-top: 11px; }
+      .ev .thumb {
+        width: 55.5px;
+        height: 45px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex: none;
+        background: var(--surface-sunken);
+      }
+      .ev .m { flex: 1; min-width: 0; text-align: start; padding-top: 3px; }
+      .ev .m b { display: block; font-size: 9.5px; font-weight: 700; line-height: 1; color: #0d1130; }
+      .ev .m .t { display: block; margin-top: 8.5px; font-size: 9px; font-weight: 400; line-height: 1; color: #3a3e58; }
+      .ev .m .s { display: block; margin-top: 8px; font-size: 8.5px; font-weight: 400; line-height: 1; color: #2f6b47; }
+      .ev .m .s.muted { color: #6f7286; }
+
+      .morelink {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 10px;
+        font-weight: 600;
+        color: #0b1030;
+        line-height: 1;
+      }
+      .morelink svg { color: #0b1030; }
+
+      /* --- הודעה מהשליח --- */
+      .msgcard { height: 129px; position: relative; }
+      .msgcard .chead { padding: 10.5px 13px 0; }
+      .msgbody { display: flex; gap: 11px; padding: 12px 13px 0 10.5px; }
+      .msgtxt { flex: 1; min-width: 0; text-align: start; }
+      .msgtxt p { font-size: 8px; font-weight: 400; line-height: 1; color: #171b38; }
+      .msgtxt p + p { margin-top: 10.5px; }
+      .msgtxt p.pack { margin-top: 6.5px; }
+      .msgtxt p.strong { font-weight: 700; margin-top: 9.5px; }
+      .msgsign { position: absolute; inset-inline-end: 10.5px; top: 110px; font-size: 8.5px; color: #232743; line-height: 1; }
+      .msgpic { position: relative; flex: none; width: 56.5px; height: 85px; }
+      .msgpic img { width: 56.5px; height: 85px; object-fit: cover; border-radius: 9px; }
+      .readmore {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 2px;
+        width: 53px;
+        height: 13.5px;
+        border-radius: var(--r-pill);
+        background: #fdf8ef;
+        border: 1px solid #ecdcc0;
+        display: grid;
+        place-items: center;
+        font-size: 9px;
+        font-weight: 500;
+        color: #6b4f22;
+      }
+      .readmore:active { transform: translateX(-50%) scale(0.95); }
+
+      /* --- זמני תפילות --- */
+      .timecard { min-height: 96px; }
+      .timecard .chead { padding: 10.5px 13px 0; }
+      .timeday { margin-top: 8px; padding-inline: 9.5px; text-align: start; font-size: 9.5px; font-weight: 700; line-height: 1; color: #10142f; }
+      .times { margin-top: 8px; display: flex; }
+      .times > div { flex: 1; min-width: 0; text-align: center; }
+      .times .lbl { font-size: 9.5px; font-weight: 400; line-height: 1; color: #262b48; }
+      .times .val { margin-top: 6px; font-size: 11px; font-weight: 700; line-height: 1; color: #080c2c; }
+      .timecard .morelink { margin-top: 11px; padding-inline-end: 12px; }
+
+      /* ===================== ארבעה שערים ===================== */
+      .cats { display: flex; gap: 6px; }
+      .cat {
+        width: 95.5px;
+        min-width: 0;
+        height: 103.5px;
+        border-radius: 11px;
+        background: var(--tint-cat);
+        border: 1px solid #f4e9d9;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 1px 2px rgba(60, 42, 24, 0.035);
+      }
+      .cat img { height: 19px; width: auto; margin-top: 10px; object-fit: contain; mix-blend-mode: multiply; }
+      .cat b { margin-top: 11px; font-size: 11px; font-weight: 700; line-height: 1; color: #0a0e2c; }
+      .cat p { margin-top: 10px; font-size: 8.5px; font-weight: 400; line-height: 1.28; color: #262b49; text-align: center; }
+      .cat .pill {
+        margin-top: auto;
+        margin-bottom: 6.5px;
+        width: 79px;
+        height: 15px;
+        border-radius: var(--r-pill);
+        border: 1px solid #e6cea0;
+        background: #fdf8ef;
+        display: grid;
+        place-items: center;
+        font-size: 8.5px;
+        font-weight: 500;
+        color: #1e2444;
+      }
+
+      /* ===================== קמפיין + צור קשר ===================== */
+      .row3 .card10 { min-height: 154.5px; }
+
+      .contactcard { padding: 11px 13px 0; }
+      .contactcard h3 { font-size: 10.5px; font-weight: 700; line-height: 1; color: #0b1030; margin-top: 14.5px; text-align: start; }
+      .contactcard .sub { margin-top: 6px; font-size: 9.5px; font-weight: 400; line-height: 1; color: #2b3050; text-align: start; }
+      .cbtns { margin-top: 12.5px; display: flex; justify-content: center; gap: 41px; }
+      .cbtn { width: 21px; }
+      .cbtn .circ {
+        width: 21px;
+        height: 21px;
+        border-radius: var(--r-pill);
+        background: #fbf1e1;
+        display: grid;
+        place-items: center;
+        color: #1b2247;
+      }
+      .cbtn .cl { display: block; margin-top: 5px; font-size: 9px; font-weight: 400; line-height: 1; color: #262b49; text-align: center; white-space: nowrap; }
+
+      .darkbtn {
+        height: 22.5px;
+        border-radius: 7px;
+        background: var(--navy);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4.5px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1;
+      }
+      .darkbtn svg { color: #fff; }
+      .contactcard .darkbtn { margin-top: 9.5px; }
+
+      .campcard { padding: 11px 13px 0 10.5px; }
+      .campcard h3 { margin-top: 13.5px; font-size: 12.5px; font-weight: 700; line-height: 1; color: #0a0e2c; text-align: start; }
+      .campcard .g { margin-top: 12.5px; font-size: 10px; font-weight: 400; line-height: 1; color: #0a0e2c; text-align: start; }
+      .campcard .g + .g { margin-top: 7px; }
+      /* מד ההתקדמות מתמלא משמאל לימין — כמו במוקאפ. היפוך RTL, מתועד בדוח. */
+      .prog { margin-top: 8px; display: flex; align-items: center; gap: 5px; direction: ltr; }
+      .prog .pct { font-size: 9.5px; font-weight: 700; line-height: 1; color: #0a0e2c; }
+      .prog .track { flex: 1; height: 5.5px; border-radius: var(--r-pill); background: #e9e7e4; overflow: hidden; }
+      .prog .fill { height: 100%; width: 64.5%; border-radius: var(--r-pill); background: var(--navy); transition: width 700ms var(--ease-out); }
+      .campcard .darkbtn { margin-top: 10.5px; }
+      .campcard .morelink { margin-top: 11px; }
+
+      /* ===================== באנר "משיח" ===================== */
+      .banner {
+        position: relative;
+        height: 57px;
+        border-radius: 12px;
+        background: linear-gradient(90deg, #fdf7f0 0%, #f8eee2 55%, #f3e5d3 100%);
+        border: 1px solid #f3e6d4;
+        overflow: hidden;
+        display: block;
+      }
+      .banner img {
+        position: absolute;
+        inset-inline-start: 0;
+        top: 0;
+        width: 118px;
+        height: 57px;
+        object-fit: cover;
+      }
+      .banner .crown {
+        position: absolute;
+        inset-inline-end: 15px;
+        top: 13.5px;
+        width: 30px;
+        height: 30px;
+        border-radius: var(--r-pill);
+        background: #fff;
+        display: grid;
+        place-items: center;
+        color: var(--gold);
+        box-shadow: 0 1px 3px rgba(60, 42, 24, 0.1);
+      }
+      .banner .bt {
+        position: absolute;
+        inset-inline-start: 133px;
+        top: 15px;
+        text-align: start;
+      }
+      .banner .bt b { display: block; font-size: 13.5px; font-weight: 700; line-height: 1; color: #0a0e2a; }
+      .banner .bt span { display: block; margin-top: 7px; font-size: 10.5px; font-weight: 400; line-height: 1; color: #1b1f36; }
+      .banner .bt span i { font-style: normal; color: #8b8ea0; }
+      .dots { display: flex; gap: 3.5px; }
+      .dots i { width: 4.5px; height: 4.5px; border-radius: var(--r-pill); background: #b9b7c2; display: block; }
+
+      .homebar {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 6px;
+        width: 139px;
+        height: 3.5px;
+        border-radius: var(--r-pill);
+        background: #10142f;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="screen" data-nav="consumer" data-current="houses">
+      <!-- ============ תצלום בית החב״ד + פעולות מהירות ============ -->
+      <header class="hero">
+        <img class="hero-img" src="assets/img/10-hero.png" alt="בית חב״ד תל אביב" />
+
+        <a class="hero-back" href="09-find-chabad.html" aria-label="חזרה לרשימת בתי חב״ד"></a>
+
+        <div class="hero-tools">
+          <button class="hero-circ press" aria-label="שיתוף" data-action="toast" data-toast="קישור לבית חב״ד הועתק" data-toast-icon="check-circle">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3v12" /><path d="m8 7 4-4 4 4" /><path d="M6 12H4v8h16v-8h-2" />
+            </svg>
+          </button>
+          <button class="hero-circ press" aria-label="שמירה למועדפים" aria-pressed="false" data-action="toggle" data-toast-on="בית חב״ד תל אביב נשמר למועדפים" data-toast-off="הוסר מהמועדפים">
+            <i data-icon="heart" data-size="15" data-stroke="1.9"></i>
+          </button>
+        </div>
+
+        <div class="hero-txt">
+          <h1>בית חב״ד תל אביב</h1>
+          <p class="hero-addr">
+            <i data-icon="map-pin" data-size="10.5" data-stroke="2"></i>
+            <span>רח׳ אלנבי 122, תל אביב</span>
+          </p>
+          <p class="hero-admin"><b>בהנהלת:</b> הרב שניאור זלמן ושרה הענדל</p>
+        </div>
+
+        <div class="hero-acts">
+          <button class="hact hact-1 press" data-action="toast" data-toast="סימנת שאתה בבית — נשמח לראותך" data-toast-icon="home">
+            <span>אני בבית</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 10.5 12 3l9 7.5" /><path d="M5 9.6V21h14V9.6" /><path d="M10 21v-5h4v5" />
+            </svg>
+          </button>
+          <button class="hact hact-2 press" data-action="toast" data-toast="פותח ניווט לרח׳ אלנבי 122" data-toast-icon="navigation">
+            <span>ניווט</span>
+            <i data-icon="navigation" data-size="13"></i>
+          </button>
+          <button class="hact hact-3 press" data-action="toast" data-toast="נפתחה שיחת וואטסאפ עם בית חב״ד" data-toast-icon="message-circle">
+            <span>וואטסאפ</span>
+            <svg width="13.5" height="13.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 11.5a8.4 8.4 0 0 1-12.6 7.3L3 20.5l1.8-5.3A8.4 8.4 0 1 1 21 11.5Z" />
+              <path d="M8.6 9.1c.3-.7.6-.7.9-.7h.6c.2 0 .5 0 .7.6l.7 1.7c.1.3 0 .5-.1.7l-.4.5c-.1.2-.2.3 0 .6.3.5.9 1.3 1.8 1.8.3.2.5.2.7 0l.5-.5c.2-.2.4-.2.6-.1l1.6.8c.3.2.4.4.4.6 0 .5-.4 1.4-1.5 1.6-.9.1-2.2 0-4-1.3-1.9-1.3-2.8-3.2-3-3.9-.2-.7-.1-1.6.4-2.4Z" fill="currentColor" stroke="none" />
+            </svg>
+          </button>
+          <button class="hact hact-4 press" data-action="toast" data-toast="מחייג לבית חב״ד תל אביב" data-toast-icon="phone">
+            <span>התקשר</span>
+            <i data-icon="phone" data-size="13"></i>
+          </button>
+        </div>
+      </header>
+
+      <main class="wrap">
+        <!-- ============ שתי עמודות: אירועים | הודעה + זמנים ============ -->
+        <!-- ב-RTL הילד הראשון יושב בימין: כרטיס האירועים -->
+        <div class="duo" style="margin-top: 10.5px">
+          <section class="col card10 evcard">
+            <div class="chead">
+              <span class="cbubble" style="background: #f4ecfa; color: #5a3f93"><i data-icon="calendar" data-size="10.5" data-stroke="1.9"></i></span>
+              <span>אירועים קרובים</span>
+            </div>
+            <div class="evbody">
+              <a class="ev press-soft" href="15-event.html">
+                <img class="thumb" src="assets/img/10-ev1.png" alt="" />
+                <span class="m">
+                  <b>סעודת שבת</b>
+                  <span class="t" dir="rtl">י״ב תמוז • 19:30</span>
+                  <span class="s">הרשמה פתוחה</span>
+                </span>
+              </a>
+              <a class="ev press-soft" href="15-event.html">
+                <img class="thumb" src="assets/img/10-ev2.png" alt="" />
+                <span class="m">
+                  <b>התוועדות לכבוד י״ג תמוז</b>
+                  <span class="t" dir="rtl">20/07 • 21:00</span>
+                  <span class="s">הרשמה פתוחה</span>
+                </span>
+              </a>
+              <a class="ev press-soft" href="15-event.html">
+                <img class="thumb" src="assets/img/10-ev3.png" alt="" />
+                <span class="m">
+                  <b>שיעור חסידות לנשים</b>
+                  <span class="t" dir="rtl">22/07 • 20:30</span>
+                  <span class="s muted">הצטרפי אלינו</span>
+                </span>
+              </a>
+            </div>
+            <a class="morelink press" href="05-events-campaigns.html" style="padding: 0 0 12px 12px">
+              <i data-icon="chevron-left" data-size="11" data-stroke="2.2"></i>
+              <span>לוח אירועים מלא</span>
+            </a>
+          </section>
+
+          <div class="col col-left">
+            <!-- הודעה מהשליח -->
+            <section class="card10 msgcard">
+              <div class="chead">
+                <span class="cbubble" style="background: #fbf1e0; color: #1b2247"><i data-icon="message-square" data-size="10.5" data-stroke="1.9"></i></span>
+                <span>הודעה מהשליח</span>
+              </div>
+              <div class="msgbody">
+                <div class="msgtxt">
+                  <p>ברוכים הבאים לבית חב״ד תל אביב!</p>
+                  <p>אנו כאן בשבילכם, בכל זמן ובכל צורך.</p>
+                  <p class="pack">בית חם לכל יהודי – מקומכם איתנו.</p>
+                  <p class="strong">נשמח לראותכם!</p>
+                </div>
+                <div class="msgpic">
+                  <img src="assets/img/10-rabbi.png" alt="הרב שניאור זלמן" />
+                  <button class="readmore press" data-action="toast" data-toast="ההודעה המלאה מהשליח תיפתח בגרסה הבאה" data-toast-icon="message-square">קרא עוד</button>
+                </div>
+              </div>
+              <div class="msgsign">הרב שניאור זלמן</div>
+            </section>
+
+            <!-- זמני תפילות -->
+            <section class="card10 timecard">
+              <div class="chead">
+                <span class="cbubble" style="background: #fbf1e0; color: #b07f24"><i data-icon="clock" data-size="10.5" data-stroke="1.9"></i></span>
+                <span>זמני תפילות</span>
+              </div>
+              <div class="timeday">היום, י׳ תמוז</div>
+              <!-- שחרית → מנחה → ערבית מימין לשמאל: סדר כרונולוגי תקין ב-RTL -->
+              <div class="times">
+                <div><div class="lbl">שחרית</div><div class="val" dir="ltr">6:15</div></div>
+                <div><div class="lbl">מנחה</div><div class="val" dir="ltr">19:10</div></div>
+                <div><div class="lbl">ערבית</div><div class="val" dir="ltr">20:20</div></div>
+              </div>
+              <a class="morelink press" href="12-daily-study.html">
+                <i data-icon="chevron-left" data-size="11" data-stroke="2.2"></i>
+                <span>לוח זמני תפילה מלא</span>
+              </a>
+            </section>
+          </div>
+        </div>
+
+        <!-- ============ ארבעה שערים ============ -->
+        <div class="cats" style="margin-top: 8.5px">
+          <a class="cat press" href="12-daily-study.html">
+            <img src="assets/img/10-ico-torah.png" alt="" />
+            <b>שיעורי תורה</b>
+            <p>שיעורים קבועים<br />לכל הגילאים</p>
+            <span class="pill">לוח שיעורים</span>
+          </a>
+          <a class="cat press" href="14-shabbat-meal.html">
+            <img src="assets/img/10-ico-food.png" alt="" />
+            <b>אוכל כשר</b>
+            <p>הזמנת אוכל כשר<br />ומשלוחים</p>
+            <span class="pill">הזמן עכשיו</span>
+          </a>
+          <a class="cat press" href="14-shabbat-meal.html">
+            <img src="assets/img/10-ico-meal.png" alt="" />
+            <b>סעודות שבת</b>
+            <p>הרשמה לסעודות<br />שבת ואירועים</p>
+            <span class="pill">להרשמה</span>
+          </a>
+          <a class="cat press" href="#">
+            <img src="assets/img/10-ico-shop.png" alt="" />
+            <b>חנות</b>
+            <p>מוצרים יהודיים,<br />ספרים ומתנות</p>
+            <span class="pill">צפה בחנות</span>
+          </a>
+        </div>
+
+        <!-- ============ צור קשר | קמפיין ============ -->
+        <div class="duo row3" style="margin-top: 14px">
+          <section class="col card10 contactcard">
+            <div class="chead">
+              <span class="cbubble" style="background: #e9f1ea; color: #2c6b4c"><i data-icon="headphones" data-size="10.5" data-stroke="1.9"></i></span>
+              <span>צור קשר</span>
+            </div>
+            <h3>אנחנו כאן בשבילך!</h3>
+            <div class="sub">מענה מהיר לכל שאלה או בקשה</div>
+            <div class="cbtns">
+              <button class="cbtn press" data-action="toast" data-toast="מחייג לבית חב״ד תל אביב" data-toast-icon="phone">
+                <span class="circ"><i data-icon="phone" data-size="11" data-stroke="1.8"></i></span>
+                <span class="cl">התקשר</span>
+              </button>
+              <button class="cbtn press" data-action="toast" data-toast="נפתחה שיחת וואטסאפ עם בית חב״ד" data-toast-icon="message-circle">
+                <span class="circ">
+                  <svg width="11.5" height="11.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 11.5a8.4 8.4 0 0 1-12.6 7.3L3 20.5l1.8-5.3A8.4 8.4 0 1 1 21 11.5Z" />
+                    <path d="M8.6 9.1c.3-.7.6-.7.9-.7h.6c.2 0 .5 0 .7.6l.7 1.7c.1.3 0 .5-.1.7l-.4.5c-.1.2-.2.3 0 .6.3.5.9 1.3 1.8 1.8.3.2.5.2.7 0l.5-.5c.2-.2.4-.2.6-.1l1.6.8c.3.2.4.4.4.6 0 .5-.4 1.4-1.5 1.6-.9.1-2.2 0-4-1.3-1.9-1.3-2.8-3.2-3-3.9-.2-.7-.1-1.6.4-2.4Z" fill="currentColor" stroke="none" />
+                  </svg>
+                </span>
+                <span class="cl">וואטסאפ</span>
+              </button>
+              <button class="cbtn press" data-action="toast" data-toast="נפתחה טיוטת מייל לבית חב״ד" data-toast-icon="mail">
+                <span class="circ"><i data-icon="mail" data-size="11" data-stroke="1.8"></i></span>
+                <span class="cl">מייל</span>
+              </button>
+            </div>
+            <button class="darkbtn press" data-action="sheet" data-sheet="msg-sheet">
+              <i data-icon="send" data-size="11" data-stroke="1.9"></i>
+              <span>שלח הודעה</span>
+            </button>
+          </section>
+
+          <section class="col card10 campcard">
+            <div class="chead">
+              <span class="cbubble" style="background: #fbf1e0; color: #c08a2c"><i data-icon="gift" data-size="10.5" data-stroke="1.9"></i></span>
+              <span>קמפיין נוכחי</span>
+            </div>
+            <h3>תומכים בבית חב״ד תל אביב</h3>
+            <div class="g">יעד: <span dir="ltr">100,000 ₪</span></div>
+            <div class="g">גויס עד כה: <span dir="ltr">68,450 ₪</span></div>
+            <div class="prog">
+              <span class="pct">68%</span>
+              <span class="track"><span class="fill"></span></span>
+            </div>
+            <button class="darkbtn press" data-action="toast" data-toast="פותח דף תרומה מאובטח" data-toast-icon="gift">
+              <i data-icon="send" data-size="11" data-stroke="1.9"></i>
+              <span>לתרומה</span>
+            </button>
+            <a class="morelink press" href="05-events-campaigns.html">
+              <i data-icon="chevron-left" data-size="11" data-stroke="2.2"></i>
+              <span>לכל הקמפיינים</span>
+            </a>
+          </section>
+        </div>
+
+        <!-- ============ באנר ============ -->
+        <a class="banner press-soft" href="13-letter-to-rebbe.html" style="margin-top: 13px">
+          <img src="assets/img/10-rebbe.png" alt="" />
+          <span class="crown">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 7.5 6.5 15h11L21 7.5l-4.4 3.2L12 4.5 7.4 10.7 3 7.5Z" />
+              <path d="M6.5 18h11" />
+            </svg>
+          </span>
+          <span class="bt">
+            <b>משיח יגיע, תיכף ומיד ממש</b>
+            <span>יחי אדוננו מורנו ורבינו מלך המשיח <i>לעולם ועד</i></span>
+          </span>
+        </a>
+      </main>
+
+      <!-- ============ סרגל תחתון (צרכן) ============ -->
+
+<div class="homebar" aria-hidden="true"></div>
+
+      <!-- ============ גיליונות ============ -->
+      <div class="sheet" id="more-sheet" role="dialog" aria-label="עוד">
+        <div class="sheet-grab"></div>
+        <h3 style="font-size: 16px; margin-bottom: 4px">עוד</h3>
+        <a class="press" href="08-consumer-home.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="home" data-size="17"></i> דף הבית</a>
+        <a class="press" href="11-my-jewish-life.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="sparkles" data-size="17"></i> החיים היהודיים שלי</a>
+        <a class="press" href="14-shabbat-meal.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="utensils" data-size="17"></i> סעודת שבת ואוכל כשר</a>
+        <a class="press" href="13-letter-to-rebbe.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--divider);font-size: 14.5px"><i data-icon="scroll-text" data-size="17"></i> מכתב לרבי</a>
+        <a class="press" href="all.html" style="display:flex;align-items:center;gap:10px;padding:11px 0;font-size: 14.5px"><i data-icon="layout-grid" data-size="17"></i> כל המסכים</a>
+      </div>
+
+      <div class="sheet" id="msg-sheet" role="dialog" aria-label="שליחת הודעה">
+        <div class="sheet-grab"></div>
+        <h3 style="font-size: 16px; margin-bottom: 8px">שלח הודעה לבית חב״ד</h3>
+        <form data-toast="ההודעה נשלחה — נחזור אליך בהקדם">
+          <textarea rows="3" placeholder="במה נוכל לעזור?" style="width:100%;font:inherit;font-size: 14px;padding:10px;border:1px solid var(--border);border-radius:10px;resize:none"></textarea>
+          <button class="press" type="submit" style="margin-top:10px;width:100%;height:42px;border-radius:12px;background:var(--navy);color:#fff;font-size: 15px;font-weight:600">שליחה</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="assets/icons.js"></script>
+    <script src="assets/nav.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
