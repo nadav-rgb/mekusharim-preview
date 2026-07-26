@@ -64,7 +64,10 @@ body {
   word-spacing: 0.05em;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* clip ולא hidden — hidden על body הופך אותו למכל-גלילה שנתקע ב-iOS Safari
+     (overflow-y מחושב ל-auto, והגלילה האנכית במגע מתה). clip חוסם גלישה אופקית
+     בלי להפוך את body למכל — html נשאר הגולל הטבעי, והגלילה חיה. */
+  overflow-x: clip;
   overscroll-behavior: none;
 }
 
@@ -535,7 +538,7 @@ svg {
   body {
     display: block;
     background: var(--bg-bottom);
-    overflow-x: hidden;
+    overflow-x: clip; /* לא hidden — ר' ההערה למעלה: hidden שובר גלילה אנכית ב-iOS */
   }
   .screen {
     width: 100%;
