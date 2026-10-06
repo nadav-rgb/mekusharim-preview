@@ -1,0 +1,121 @@
+/* במה משותפת: רקע, מסגרת דפדפן (web) / טלפון (mobile), כתוביות, פתיח וסגיר. */
+@font-face { font-family: Heebo; font-weight: 400; src: url(../node_modules/@fontsource/heebo/files/heebo-hebrew-400-normal.woff2); }
+@font-face { font-family: Heebo; font-weight: 500; src: url(../node_modules/@fontsource/heebo/files/heebo-hebrew-500-normal.woff2); }
+@font-face { font-family: Heebo; font-weight: 700; src: url(../node_modules/@fontsource/heebo/files/heebo-hebrew-700-normal.woff2); }
+@font-face { font-family: Heebo; font-weight: 800; src: url(../node_modules/@fontsource/heebo/files/heebo-hebrew-800-normal.woff2); }
+@font-face { font-family: Heebo; font-weight: 900; src: url(../node_modules/@fontsource/heebo/files/heebo-hebrew-900-normal.woff2); }
+@font-face { font-family: Heebo; font-weight: 400; src: url(../node_modules/@fontsource/heebo/files/heebo-latin-400-normal.woff2); unicode-range: U+0000-00FF; }
+@font-face { font-family: Heebo; font-weight: 700; src: url(../node_modules/@fontsource/heebo/files/heebo-latin-700-normal.woff2); unicode-range: U+0000-00FF; }
+@font-face { font-family: Heebo; font-weight: 800; src: url(../node_modules/@fontsource/heebo/files/heebo-latin-800-normal.woff2); unicode-range: U+0000-00FF; }
+
+:root {
+  /* מיתוג הסדנה — יוחלף בצבעים האמיתיים כשיגיעו */
+  --brand-bg-1: #15110d;
+  --brand-bg-2: #2a1f15;
+  --brand-accent: #f2b544;
+  --brand-ink: #ffffff;
+  --brand-ink-2: rgba(255, 255, 255, 0.72);
+  --stage-font: Heebo, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 100vw; height: 100vh; overflow: hidden; }
+body {
+  font-family: var(--stage-font);
+  color: var(--brand-ink);
+  background:
+    radial-gradient(90% 70% at 80% 0%, color-mix(in srgb, var(--brand-accent) 22%, transparent) 0%, transparent 60%),
+    radial-gradient(80% 60% at 0% 100%, color-mix(in srgb, var(--brand-accent) 10%, transparent) 0%, transparent 60%),
+    linear-gradient(160deg, var(--brand-bg-2) 0%, var(--brand-bg-1) 70%);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- המצלמה: עוטפת את המכשיר, מאפשרת זום ותזוזה ---- */
+.camera { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
+
+/* ---- מכשיר: web = חלון דפדפן ---- */
+.device { position: absolute; overflow: hidden; }
+.fmt-web .device {
+  width: 1440px; height: 900px;
+  left: calc(50% - 720px); top: 150px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.fmt-web .chrome {
+  height: 44px; display: flex; align-items: center; gap: 10px; padding: 0 16px;
+  background: #ece9e6; border-bottom: 1px solid #dcd8d3; direction: ltr;
+}
+.fmt-web .chrome .dots { display: flex; gap: 8px; }
+.fmt-web .chrome .dots i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+.fmt-web .chrome .dots i:nth-child(2) { background: #febc2e; }
+.fmt-web .chrome .dots i:nth-child(3) { background: #28c840; }
+.fmt-web .chrome .url {
+  flex: 1; max-width: 560px; margin: 0 auto; height: 28px; border-radius: 8px; background: #fff;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font: 500 14px/1 Heebo, sans-serif; color: #55504b;
+}
+.fmt-web .viewport { position: absolute; top: 44px; left: 0; width: 1440px; height: 856px; overflow: hidden; }
+.fmt-web .chrome-mobile-only { display: none; }
+
+/* ---- מכשיר: mobile = טלפון ---- */
+.fmt-mobile .device {
+  width: 860px; height: 1760px;
+  left: calc(50% - 430px); top: 300px;
+  border-radius: 110px;
+  background: #0b0b0b;
+  padding: 26px;
+  box-shadow: 0 50px 140px rgba(0, 0, 0, 0.6), 0 0 0 3px #2b2b2b, inset 0 0 0 2px #3a3a3a;
+}
+.fmt-mobile .chrome { display: none; }
+.fmt-mobile .viewport {
+  position: relative; width: 808px; height: 1708px; border-radius: 86px; overflow: hidden; background: #fff;
+}
+/* האפליקציה מרונדרת ב-390px ומוגדלת פי 2.07 כדי למלא את המסך */
+.fmt-mobile .app-scale { width: 390px; height: 825px; transform: scale(2.0718); transform-origin: 0 0; }
+.fmt-web .app-scale { width: 1440px; height: 856px; }
+.fmt-mobile .island {
+  position: absolute; top: 44px; left: calc(50% - 90px); width: 180px; height: 52px; border-radius: 30px; background: #000; z-index: 50;
+}
+.fmt-web .island { display: none; }
+
+/* ---- כתוביות ---- */
+.caption {
+  position: absolute; z-index: 40; text-align: center; opacity: 0;
+  font-weight: 800; letter-spacing: -0.5px; line-height: 1.15;
+}
+.fmt-web .caption { top: 34px; left: 0; right: 0; font-size: 62px; }
+.fmt-mobile .caption { top: 80px; left: 60px; right: 60px; font-size: 76px; }
+.caption em { font-style: normal; color: var(--brand-accent); }
+.caption small { display: block; font-size: 0.48em; font-weight: 500; color: var(--brand-ink-2); letter-spacing: 0; margin-top: 10px; }
+/* בווב הכיתוב עולה מעל החלון: החלון יורד מעט כשיש כיתוב */
+
+/* ---- סמן עכבר / נקודת מגע ---- */
+.cursor { position: absolute; z-index: 60; left: 0; top: 0; width: 36px; height: 36px; pointer-events: none; opacity: 0; }
+.cursor svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 8px rgba(0,0,0,.35)); }
+.fmt-mobile .cursor svg { display: none; }
+.fmt-mobile .cursor { width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; background: rgba(40, 40, 40, 0.28); border: 3px solid rgba(255,255,255,.9); }
+.ripple { position: absolute; z-index: 59; width: 80px; height: 80px; margin: -40px 0 0 -40px; border-radius: 50%; border: 4px solid var(--brand-accent); opacity: 0; pointer-events: none; }
+
+/* ---- פתיח / סגיר ---- */
+.card {
+  position: absolute; inset: 0; z-index: 80; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; opacity: 0; pointer-events: none;
+  background:
+    radial-gradient(70% 60% at 50% 40%, color-mix(in srgb, var(--brand-accent) 18%, transparent) 0%, transparent 70%),
+    linear-gradient(160deg, var(--brand-bg-2) 0%, var(--brand-bg-1) 80%);
+}
+.card .kicker { font-weight: 700; color: var(--brand-accent); letter-spacing: 1px; }
+.card .title { font-weight: 900; letter-spacing: -2px; line-height: 1; }
+.card .sub { font-weight: 500; color: var(--brand-ink-2); }
+.fmt-web .card .kicker { font-size: 34px; margin-bottom: 18px; }
+.fmt-web .card .title { font-size: 150px; }
+.fmt-web .card .sub { font-size: 40px; margin-top: 26px; }
+.fmt-mobile .card .kicker { font-size: 44px; margin-bottom: 24px; }
+.fmt-mobile .card .title { font-size: 170px; }
+.fmt-mobile .card .sub { font-size: 52px; margin-top: 30px; padding: 0 80px; }
+.card .brand-line { display: flex; align-items: center; gap: 18px; margin-top: 60px; font-weight: 800; }
+.fmt-web .card .brand-line { font-size: 44px; }
+.fmt-mobile .card .brand-line { font-size: 56px; }
+.card .brand-line .dot { color: var(--brand-accent); }
+.card .brand-line img { height: 1.6em; }
