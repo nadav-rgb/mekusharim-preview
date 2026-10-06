@@ -3,8 +3,8 @@
 // שימוש: node engine/render.mjs <scene.html> <web|mobile> <out.mp4> [fps] [--from s] [--to s] [--still s out.png]
 import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
-import { pathToFileURL } from 'node:url';
 import path from 'node:path';
+import { serve, ROOT } from './serve.mjs';
 
 const require = createRequire('/opt/node22/lib/node_modules/');
 const { chromium } = require('playwright');
@@ -27,17 +27,18 @@ const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromi
 const page = await browser.newPage({ viewport: size, deviceScaleFactor: 1 });
 page.on('console', (m) => m.type() === 'error' && console.error('[page]', m.text()));
 page.on('pageerror', (e) => console.error('[pageerror]', e.message));
-const url = pathToFileURL(path.resolve(scene)).href + `?format=${format}`;
+const srv = await serve();
+const url = srv.base + path.relative(ROOT, path.resolve(scene)) + `?format=${format}`;
 await page.goto(url, { waitUntil: 'load' });
 await page.evaluate(() => document.fonts.ready);
-await page.waitForFunction(() => typeof window.seek === 'function' && window.DURATION > 0);
+await page.waitForFunction(() => typeof window.seek === 'function' && window.DURATION > 0, null, { timeout: 30000 });
 const duration = await page.evaluate(() => window.DURATION);
 
 if (still) {
   await page.evaluate((t) => window.seek(t), parseFloat(still));
   await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
   await page.screenshot({ path: out, type: 'png' });
-  await browser.close();
+  await browser.close(); srv.close();
   console.log(`still ${still}s -> ${out}`);
   process.exit(0);
 }
@@ -61,5 +62,5 @@ for (let i = 0; i < total; i++) {
 }
 ff.stdin.end();
 await new Promise((r) => ff.on('close', r));
-await browser.close();
+await browser.close(); srv.close();
 console.log(`\n${out}: ${total} frames in ${((Date.now() - t0) / 1000).toFixed(0)}s`);

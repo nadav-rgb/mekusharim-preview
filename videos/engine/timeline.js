@@ -30,8 +30,28 @@
     }
   }
 
-  const $ = (sel, root = document) => (typeof sel === 'string' ? root.querySelector(sel) : sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  // בורר עם קידומת "@" = בתוך האפליקציה שב-iframe (#app)
+  const appDoc = () => document.getElementById('app')?.contentDocument;
+  const rootOf = (sel, root) => (typeof sel === 'string' && sel[0] === '@' ? [appDoc(), sel.slice(1)] : [root, sel]);
+  const $ = (sel, root = document) => {
+    if (typeof sel !== 'string') return sel;
+    const [r, s] = rootOf(sel, root);
+    const el = r.querySelector(s);
+    if (!el) throw new Error('missing element: ' + sel);
+    return el;
+  };
+  const $$ = (sel, root = document) => { const [r, s] = rootOf(sel, root); return Array.from(r.querySelectorAll(s)); };
+  // מלבן של אלמנט בקואורדינטות של הבמה — גם כשהוא בתוך iframe מוקטן/מוגדל
+  const rectOf = (sel) => {
+    const el = $(sel);
+    const r = el.getBoundingClientRect();
+    const doc = el.ownerDocument;
+    if (doc === document) return r;
+    const fr = document.getElementById('app');
+    const fb = fr.getBoundingClientRect();
+    const k = fb.width / fr.offsetWidth;
+    return { left: fb.left + r.left * k, top: fb.top + r.top * k, width: r.width * k, height: r.height * k };
+  };
 
   // עזרים נפוצים -------------------------------------------------------------
   const fx = {
@@ -82,5 +102,5 @@
     },
   };
 
-  window.TL = { Timeline, ease, clamp, lerp, fx, $, $$ };
+  window.TL = { Timeline, ease, clamp, lerp, fx, $, $$, rectOf, appDoc };
 })();

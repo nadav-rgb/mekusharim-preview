@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="he" dir="rtl" class="overscroll-none antialiased">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="./">
+<title>ארתור</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  /* שחזור לווידאו: כל מסך הוא שכבה נגללת בתוך העמודה הראשית */
+  html, body { height: 100%; overflow: hidden; }
+  .screens { position: relative; flex: 1; min-height: 0; }
+  .screen { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; display: none; }
+  .screen::-webkit-scrollbar { display: none; }
+  .screen.active { display: block; }
+  /* סמן הקלדה */
+  .typing::after { content: ""; display: inline-block; width: 2px; height: 1.1em; margin-inline-start: 2px; vertical-align: -0.15em; background: currentColor; }
+</style>
+</head>
+<!-- מקור: src/app/layout.tsx + src/components/AppShell.tsx + Sidebar.tsx + AppNav.tsx -->
+<body class="flex h-full flex-col overscroll-none font-[family-name:var(--font-body)] bg-background text-foreground">
+<div class="flex h-full w-full">
+  <!-- Sidebar (דסקטופ) — ללא "הגדרות" כמו במצב דמו -->
+  <aside class="sticky top-0 hidden h-dvh w-[248px] shrink-0 py-3.5 ps-3.5 lg:block">
+    <div class="flex h-full w-full flex-col gap-1 rounded-[22px] border border-[rgba(255,255,255,0.05)] bg-[#0B1322] p-3.5 shadow-[0_18px_50px_rgba(0,0,0,0.35)]" id="sidebar">
+      <a data-nav="home" class="nav-item flex items-center gap-3 rounded-[14px] px-3.5 py-3 text-[14.5px]"><span class="flex items-center gap-3">דף הבית<i data-icon="house" data-size="19" data-stroke="1.6"></i></span></a>
+      <a data-nav="chat" class="nav-item flex items-center gap-3 rounded-[14px] px-3.5 py-3 text-[14.5px]"><span class="flex items-center gap-3">הבוקר<i data-icon="message-circle" data-size="19" data-stroke="1.6"></i></span></a>
+      <a data-nav="loops" class="nav-item flex items-center gap-3 rounded-[14px] px-3.5 py-3 text-[14.5px]"><span class="flex items-center gap-3">קצוות<i data-icon="repeat" data-size="19" data-stroke="1.6"></i></span></a>
+      <a data-nav="people" class="nav-item flex items-center gap-3 rounded-[14px] px-3.5 py-3 text-[14.5px]"><span class="flex items-center gap-3">השולחן העגול<i data-icon="users" data-size="19" data-stroke="1.6"></i></span></a>
+      <a data-nav="reports" class="nav-item flex items-center gap-3 rounded-[14px] px-3.5 py-3 text-[14.5px]"><span class="flex items-center gap-3">דוחות<i data-icon="file-up" data-size="19" data-stroke="1.6"></i></span></a>
+      <a data-nav="insights" class="nav-item flex items-center gap-3 rounded-[14px] px-3.5 py-3 text-[14.5px]"><span class="flex items-center gap-3">תובנות<i data-icon="lightbulb" data-size="19" data-stroke="1.6"></i></span></a>
+      <a data-nav="notifications" class="nav-item flex items-center gap-3 rounded-[14px] px-3.5 py-3 text-[14.5px]"><span class="flex items-center gap-3">התראות<i data-icon="bell" data-size="19" data-stroke="1.6"></i></span></a>
+      <span class="flex-1"></span>
+      <button class="flex w-full items-center gap-3 rounded-[14px] px-3.5 py-3 text-[14.5px] text-[#8990A8]"><i data-icon="log-out" data-size="19" data-stroke="1.6"></i></button>
+    </div>
+  </aside>
+  <div class="flex min-w-0 flex-1 flex-col h-full">
+    <!-- AppNav (מובייל) -->
+    <header class="flex h-12 shrink-0 items-center gap-2 border-b border-border bg-card px-3 lg:hidden">
+      <nav class="flex flex-1 items-center gap-1 overflow-x-auto [scrollbar-width:none]" id="topnav">
+        <a data-nav="home" class="tab -mb-px whitespace-nowrap rounded-t-[6px] border-b-2 px-3 py-3 text-[15px]">דף הבית</a>
+        <a data-nav="chat" class="tab -mb-px whitespace-nowrap rounded-t-[6px] border-b-2 px-3 py-3 text-[15px]">הבוקר</a>
+        <a data-nav="loops" class="tab -mb-px whitespace-nowrap rounded-t-[6px] border-b-2 px-3 py-3 text-[15px]">קצוות</a>
+        <a data-nav="people" class="tab -mb-px whitespace-nowrap rounded-t-[6px] border-b-2 px-3 py-3 text-[15px]">השולחן העגול</a>
+        <a data-nav="reports" class="tab -mb-px whitespace-nowrap rounded-t-[6px] border-b-2 px-3 py-3 text-[15px]">דוחות</a>
+        <a data-nav="insights" class="tab -mb-px whitespace-nowrap rounded-t-[6px] border-b-2 px-3 py-3 text-[15px]">תובנות</a>
+        <a data-nav="notifications" class="tab -mb-px whitespace-nowrap rounded-t-[6px] border-b-2 px-3 py-3 text-[15px]">התראות</a>
+      </nav>
+      <button class="shrink-0 rounded-[6px] text-[13px] font-medium text-muted-foreground">יציאה</button>
+    </header>
+    <div class="screens" id="screens">
+<!--SCREENS-->
+    </div>
+  </div>
+</div>
+<!-- המחלקות של מצב פעיל/לא פעיל — מועתקות מ-Sidebar.tsx ו-AppNav.tsx -->
+<template id="nav-classes">
+  <i class="bg-gradient-to-b from-[#3C3DA0]/50 to-[#2A2B78]/50 font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_22px_rgba(90,92,219,0.18)] ring-1 ring-[rgba(123,124,240,0.35)] text-[#A2A3F8] font-medium text-[#8990A8] border-primary text-foreground border-transparent text-muted-foreground"></i>
+</template>
+<script>
+  // מצב ניווט פעיל — כמו isActive ב-Sidebar/AppNav
+  const SIDE_ON = 'bg-gradient-to-b from-[#3C3DA0]/50 to-[#2A2B78]/50 font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_22px_rgba(90,92,219,0.18)] ring-1 ring-[rgba(123,124,240,0.35)]'.split(' ');
+  const SIDE_OFF = 'font-medium text-[#8990A8]'.split(' ');
+  const TAB_ON = 'border-primary font-semibold text-foreground'.split(' ');
+  const TAB_OFF = 'border-transparent font-medium text-muted-foreground'.split(' ');
+  window.setNav = function (key) {
+    document.querySelectorAll('#sidebar .nav-item').forEach((a) => {
+      const on = a.dataset.nav === key;
+      a.classList.remove(...SIDE_ON, ...SIDE_OFF); a.classList.add(...(on ? SIDE_ON : SIDE_OFF));
+      const svg = a.querySelector('svg'); if (svg) svg.classList.toggle('text-[#A2A3F8]', on);
+    });
+    document.querySelectorAll('#topnav .tab').forEach((a) => {
+      const on = a.dataset.nav === key;
+      a.classList.remove(...TAB_ON, ...TAB_OFF); a.classList.add(...(on ? TAB_ON : TAB_OFF));
+    });
+  };
+  // מסך פעיל: data-nav של המסך הראשון / הפעיל
+  window.showScreen = function (id) {
+    document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('active', s.id === id));
+    const s = document.getElementById(id); if (s) setNav(s.dataset.nav);
+  };
+  const first = document.querySelector('.screen.active') || document.querySelector('.screen');
+  if (first) showScreen(first.id);
+</script>
+</body>
+</html>

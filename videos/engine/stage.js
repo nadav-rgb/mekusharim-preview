@@ -1,7 +1,7 @@
 // במה משותפת: פורמט, מצלמה, סמן/מגע, כתוביות, פתיח וסגיר.
 // סדר ה-tracks חשוב: גלילה ומצלמה נוספים לפני הסמן, כי הסמן מודד מיקום של אלמנטים.
 (function () {
-  const { clamp, lerp, ease, $, $$ } = TL;
+  const { clamp, lerp, ease, $, $$, rectOf } = TL;
   const params = new URLSearchParams(location.search);
   const format = params.get('format') === 'mobile' ? 'mobile' : 'web';
   document.documentElement.classList.add('fmt-' + format);
@@ -19,7 +19,7 @@
       const from = { ...cur };
       let to = { scale: k.scale ?? 1, x: k.x ?? W / 2, y: k.y ?? H / 2 };
       if (k.el) {
-        const r = $(k.el).getBoundingClientRect();
+        const r = rectOf(k.el);
         to.x = r.left + r.width / 2; to.y = r.top + r.height / 2;
       }
       cur = to;
@@ -46,7 +46,7 @@
     const rip = $('.ripple');
     const posOf = (pt) => {
       if (pt.el) {
-        const r = $(pt.el).getBoundingClientRect();
+        const r = rectOf(pt.el);
         return { x: r.left + r.width * (pt.ax ?? 0.5), y: r.top + r.height * (pt.ay ?? 0.5) };
       }
       return { x: pt.x, y: pt.y };
@@ -106,6 +106,19 @@
     }, 'linear');
   }
 
+  // ---- ניווט באפליקציה שב-iframe: [{t, show: 'scr-id'}] — מעבר מיידי כמו באפליקציה + הבהרה קצרה
+  function navigate(tl, keys, dur = 0.35) {
+    tl.add(0, 0, (p, t) => {
+      const w = document.getElementById('app').contentWindow;
+      let idx = 0;
+      keys.forEach((k, i) => { if (t >= k.t) idx = i; });
+      const k = keys[idx];
+      if (w.__cur !== k.show) { w.showScreen(k.show); w.__cur = k.show; }
+      const host = w.document.getElementById('screens');
+      host.style.opacity = idx === 0 ? 1 : 0.15 + 0.85 * ease.out(clamp((t - k.t) / dur));
+    }, 'linear');
+  }
+
   // ---- החלפת מסכים באפליקציה: [{t, show: '#screen-id'}] עם מעבר החלקה
   function screens(tl, keys, dur = 0.5) {
     const all = $$('.screen');
@@ -137,5 +150,21 @@
     }, 'linear');
   }
 
-  window.STAGE = { format, isMobile, pick, camera, cursor, captions, scroll, screens, card };
+  // טוען את האפליקציה ל-iframe#app ומחכה לה (גופנים כלולים); אחר כך קורא ל-build(tl)
+  function boot(build) {
+    const fr = document.getElementById('app');
+    const go = async () => {
+      await fr.contentDocument.fonts.ready;
+      await document.fonts.ready;
+      const tl = new TL.Timeline();
+      build(tl);
+      window.DURATION = tl.duration;
+      window.seek = (t) => tl.seek(t);
+      tl.seek(0);
+    };
+    if (fr.contentDocument && fr.contentDocument.readyState === 'complete' && fr.contentWindow.showScreen) go();
+    else fr.addEventListener('load', go, { once: true });
+  }
+
+  window.STAGE = { format, isMobile, pick, camera, cursor, captions, scroll, screens, navigate, card, boot };
 })();

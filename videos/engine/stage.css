@@ -71,9 +71,20 @@ body {
 .fmt-mobile .viewport {
   position: relative; width: 808px; height: 1708px; border-radius: 86px; overflow: hidden; background: #fff;
 }
-/* האפליקציה מרונדרת ב-390px ומוגדלת פי 2.07 כדי למלא את המסך */
-.fmt-mobile .app-scale { width: 390px; height: 825px; transform: scale(2.0718); transform-origin: 0 0; }
-.fmt-web .app-scale { width: 1440px; height: 856px; }
+/* האפליקציה רצה ב-iframe ברוחב אמיתי (1440 / 390) — כך ה-media queries שלה עובדים כמו בדפדפן */
+#app { border: 0; display: block; background: transparent; }
+.fmt-web #app { width: 1440px; height: 856px; }
+/* מובייל: 390px מוגדל פי 2.0718 = 808px; מתחת לשורת הסטטוס */
+.fmt-mobile #app { width: 390px; height: 771px; transform: scale(2.0718); transform-origin: 0 0; position: absolute; top: 110px; left: 0; }
+.statusbar { display: none; }
+.fmt-mobile .statusbar {
+  display: flex; position: absolute; top: 0; left: 0; right: 0; height: 110px; padding: 34px 70px 0; z-index: 5;
+  justify-content: space-between; align-items: center; direction: ltr;
+  font: 600 34px/1 Heebo, sans-serif; color: var(--status-ink, #fff); background: var(--status-bg, #091020);
+}
+.fmt-mobile .statusbar .icons { display: flex; gap: 10px; align-items: center; }
+.fmt-mobile .home-ind { position: absolute; bottom: 14px; left: calc(50% - 140px); width: 280px; height: 10px; border-radius: 6px; background: rgba(255,255,255,.75); z-index: 6; }
+.fmt-web .home-ind { display: none; }
 .fmt-mobile .island {
   position: absolute; top: 44px; left: calc(50% - 90px); width: 180px; height: 52px; border-radius: 30px; background: #000; z-index: 50;
 }

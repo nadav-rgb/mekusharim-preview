@@ -1,0 +1,169 @@
+@font-face { font-family: "Rubik"; font-weight: 400; src: url(../node_modules/@fontsource/rubik/files/rubik-hebrew-400-normal.woff2) format("woff2"); unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+@font-face { font-family: "Rubik"; font-weight: 400; src: url(../node_modules/@fontsource/rubik/files/rubik-latin-400-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Rubik"; font-weight: 500; src: url(../node_modules/@fontsource/rubik/files/rubik-hebrew-500-normal.woff2) format("woff2"); unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+@font-face { font-family: "Rubik"; font-weight: 500; src: url(../node_modules/@fontsource/rubik/files/rubik-latin-500-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Rubik"; font-weight: 600; src: url(../node_modules/@fontsource/rubik/files/rubik-hebrew-600-normal.woff2) format("woff2"); unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+@font-face { font-family: "Rubik"; font-weight: 600; src: url(../node_modules/@fontsource/rubik/files/rubik-latin-600-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Rubik"; font-weight: 700; src: url(../node_modules/@fontsource/rubik/files/rubik-hebrew-700-normal.woff2) format("woff2"); unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+@font-face { font-family: "Rubik"; font-weight: 700; src: url(../node_modules/@fontsource/rubik/files/rubik-latin-700-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Nunito"; font-weight: 600; src: url(../node_modules/@fontsource/nunito/files/nunito-latin-600-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Nunito"; font-weight: 700; src: url(../node_modules/@fontsource/nunito/files/nunito-latin-700-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Frank Ruhl Libre"; font-weight: 700; src: url(../node_modules/@fontsource/frank-ruhl-libre/files/frank-ruhl-libre-hebrew-700-normal.woff2) format("woff2"); unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+@font-face { font-family: "Frank Ruhl Libre"; font-weight: 700; src: url(../node_modules/@fontsource/frank-ruhl-libre/files/frank-ruhl-libre-latin-700-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@import "tailwindcss";
+@source "./";
+@import "tw-animate-css";
+@import "../node_modules/shadcn/dist/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-heading);
+  --font-serif: var(--font-frank);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-brass: var(--brass);
+  --color-success: var(--success);
+  --color-resolved: var(--resolved-text);
+  --color-border-strong: var(--border-strong);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-decision: var(--accent-decision);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* טוקני "לילה" — לפי design/dashboard-restyle/PALETTE.md (אושר 2026-07-05).
+   הפלטה נדגמה מרפרנס-העיצוב של נדב; הפנקס הבהיר הוחלף במשרד-לילה. */
+:root {
+  /* Nunito ללטיני ולמספרים, נופל ל-Rubik בעברית (אין ל-Nunito עברית) */
+  --font-heading: var(--font-nunito), var(--font-body), sans-serif;
+  /* נדגם מפיקסלים שטוחים של Arthur design 2 (לא שחור טהור — נייבי-אינדיגו עמוק) */
+  --background: #091020;
+  --foreground: #E9EBF5;
+  --card: #10151F;
+  --card-foreground: #E9EBF5;
+  --popover: #10151F;
+  --popover-foreground: #E9EBF5;
+  --primary: #7B7CF0;
+  --primary-foreground: #FFFFFF;
+  --secondary: #161C2A;
+  --secondary-foreground: #E9EBF5;
+  --muted: #161C2A;
+  --muted-foreground: #A9AFC0;
+  --accent: #161C2A;
+  --accent-foreground: #E9EBF5;
+  --destructive: #E05B6A;
+  --border: #232A3A;
+  --input: #232A3A;
+  --ring: #7B7CF0;
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 10px;
+  --sidebar: #0B1322;
+  --sidebar-foreground: #E9EBF5;
+  --sidebar-primary: #7B7CF0;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #161C2A;
+  --sidebar-accent-foreground: #E9EBF5;
+  --sidebar-border: #232A3A;
+  --sidebar-ring: #7B7CF0;
+
+  /* צבעי-משמעות נוספים מ-PALETTE.md — טוקן יחיד לכל שימוש חוזר (₪, success,
+     טקסט done/dropped, הפרדת-פאנל, וסימוני 4-סוגי-הקצוות) במקום hex קשיח
+     חוזר בכל קומפוננטה. תואם ל-loopMeta.ts (מקור-האמת ב-JS לצרכי style=). */
+  --brass: #D9AC6C;
+  --success: #52C98B;
+  --resolved-text: #6A7288;
+  --border-strong: #2B3346;
+  --accent-orange: #E8A24C;
+  --accent-blue: #4FA3E8;
+  /* טרם אושר ע"י נדב מול PALETTE.md — ראה DESIGN.md */
+  --accent-decision: #B583C9;
+}
+
+/* תיבת ההקלטה (בהשראת דף-ההקלטה של Family — נשימה + טבעות חיות).
+   ה"התנפחות" עם הדיבור מונעת ב-JS (rAF) בתוך VoiceSheet; אלה הנשימה
+   כברירת-מחדל, הטבעות המתפשטות, והסמן המהבהב.
+   חריג מכוון לתקציב-התנועה הכללי (≤200ms, בלי scale — ראה DESIGN.md §תנועה):
+   זו אנימציית-זהות של "ארתור חי" בתיבת-הקלטה ייעודית, לא UI רגיל. */
+@keyframes arthurBreath {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+@keyframes arthurRing {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@keyframes arthurBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+@keyframes arthurEmber {
+  0% { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arthur-breath, .arthur-ring, .arthur-ember { animation: none !important; }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html {
+    @apply font-sans;
+  }
+  /* כותרות: Nunito ללטיני/מספרים, Rubik לעברית (שפת insurance/family) */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+  }
+}
+/* ---- תוספת לווידאו: גופנים מקומיים במקום next/font ---- */
+:root { --font-body: "Rubik", sans-serif; --font-nunito: "Nunito"; --font-frank: "Frank Ruhl Libre"; }
